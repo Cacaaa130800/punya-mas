@@ -1,117 +1,518 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mood Tracker Mas 💙</title>
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <link rel="stylesheet" href="styles.css" />
   <style>
-    /* minimal core styles kept inline so user doesn't need extra files */
-    :root{--bg:#eaf3ff;--text:#1b2b3c;--card:#fff;--accent:#6fa8dc}
-    .dark{--bg:#0f1621;--text:#f1f6ff;--card:#1d2b40;--accent:#4a90e2}
+    :root { --bg:#e7f1ff; --text:#1a2a3a; --card:#ffffff; --accent:#6fa8dc; }
+    .dark { --bg:#0f1621; --text:#f1f6ff; --card:#1d2b40; --accent:#4a90e2; }
     *{box-sizing:border-box}
-    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text);margin:0;padding:18px;display:flex;flex-direction:column;align-items:center;transition:background .25s,color .25s,filter .25s}
-    h1{margin:6px 0 10px}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-    .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;background:var(--accent);color:#fff}
-    .secondary{background:transparent;color:var(--text);border:1px solid rgba(0,0,0,0.08)}
-    .mood-container{display:flex;gap:12px;margin:18px 0;justify-content:center;flex-wrap:wrap}
-    .mood{font-size:38px;cursor:pointer;transition:transform .12s}
-    .mood:hover{transform:scale(1.14)}
-    .card{background:var(--card);padding:14px;width:92%;max-width:760px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06);margin-top:14px}
-    textarea{width:100%;height:78px;border-radius:10px;padding:10px;border:1px solid #ccc;background:transparent;color:var(--text);resize:vertical}
-    #reaction{margin-top:12px;font-size:18px;text-align:center;min-height:36px}
-    #entries div,#notes div{padding:8px 0;border-bottom:1px dashed rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center}
-    #sticker{position:fixed;right:12px;bottom:12px;width:110px;opacity:0;transform:translateY(18px);transition:transform .4s,opacity .3s;z-index:999}
-    #sticker.show{opacity:1;transform:translateY(0)}
-    .loveHeart{position:fixed;font-size:26px;animation:floatUp 2.4s ease-out;pointer-events:none;z-index:9999}
+    body{
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg);
+      color:var(--text);
+      margin:0;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:background .25s, color .25s;
+    }
+    h1{margin:6px 0 8px 0}
+    .controls{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px}
+    .btn{
+      padding:8px 12px; border-radius:10px; border:none; cursor:pointer;
+      background:var(--accent); color:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.12)
+    }
+    .secondary{background:transparent; color:var(--text); border:1px solid rgba(0,0,0,0.08)}
+    .mood-container{display:flex; gap:14px; margin:18px 0; justify-content:center; flex-wrap:wrap; position: relative;} /* Added position: relative for sparkle effect */
+    .mood{font-size:38px; cursor:pointer; transition:transform .12s}
+    .mood:hover{transform:scale(1.18)}
+    .card{
+      background:var(--card);
+      padding:14px;
+      width:92%;
+      max-width:560px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(16,24,40,0.06);
+      margin-top:14px;
+    }
+    textarea{width:100%; height:78px; border-radius:10px; padding:10px; border:1px solid #ccc; resize:vertical;
+      background:transparent; color:var(--text)}
+    #reaction{margin-top:12px; font-size:18px; text-align:center; min-height:36px}
+    
+    /* CSS UNTUK LOG & TOMBOL HAPUS */
+    #entries div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding:8px 0; 
+      border-bottom:1px dashed rgba(0,0,0,0.06)
+    }
+    .delete-btn{
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 10px;
+      color: #e74c3c;
+    }
+    #notes div{
+      padding:8px 0; 
+      border-bottom:1px dashed rgba(0,0,0,0.06)
+    }
+
+    /* NEW CSS FOR GAMIFICATION & DAILY EXP */
+    .exp-area{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px}
+    #expBar{height:6px;width:100%;background:rgba(0,0,0,0.1);border-radius:3px;margin-top:4px}
+    #expFill{height:100%;background:#ffaa7f;border-radius:3px;transition:width .5s ease}
+    .exp-text{font-weight:bold;color:#f39c12}
+    
+    /* NEW CSS FOR SPARKLE EFFECT */
+    .loveSparkle{position:absolute;font-size:16px;pointer-events:none;z-index:100;animation:fadeNscale 1.5s ease-out}
+    @keyframes fadeNscale{0%{opacity:1;transform:scale(0.8)}100%{opacity:0;transform:scale(1.5)}}
+
+    #sticker{position:fixed; right:12px; bottom:12px; width:120px; display:none; z-index:999}
+    #sticker.show{display:block; transform:translateY(0); transition:transform .45s ease, opacity .35s}
+    #sticker.hidden{opacity:0; transform:translateY(20px)}
+    .loveHeart{position:fixed; font-size:28px; animation:floatUp 2.4s ease-out; pointer-events:none; z-index:9999}
     @keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-160px);opacity:0}}
-    .bubble{position:fixed;right:16px;bottom:16px;padding:10px 14px;background:#ffb7e6;color:#000;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.12);z-index:99999;opacity:1;transition:1s}
-    .voiceBubble{position:fixed;left:16px;top:16px;background:#fff6b8;padding:10px 14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.12);z-index:99999;opacity:1;transition:1s}
-    .loveBadge{margin:10px;font-size:16px;font-weight:600;text-align:center}
-    #secretModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center;z-index:2000}
-    #secretModal .box{background:var(--card);color:var(--text);padding:18px;border-radius:14px;width:88%;max-width:420px;text-align:center}
-    @media(max-width:420px){.mood{font-size:34px}#sticker{width:86px}}
+    #secretModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(3px); align-items:center; justify-content:center; z-index:2000}
+    #secretModal .box{background:var(--card); color:var(--text); padding:18px; border-radius:14px; width:88%; max-width:420px; text-align:center}
+    @media (max-width:420px){ .mood{font-size:34px} #sticker{width:96px} }
   </style>
 </head>
 <body>
-
-  <!-- Gate -->
-  <div id="gate" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:3000;flex-direction:column;gap:12px;padding:20px">
-    <h2>💙 Siapa kamu? 💙</h2>
-    <input id="gateInput" placeholder="ketik: mas" style="padding:10px;border-radius:10px;border:1px solid #bbb;max-width:260px" />
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn" id="gateEnterBtn">Masuk ➜</button>
-      <button class="btn secondary" id="gateSurprise">Aku temen mas (surprise)</button>
-    </div>
-    <div id="gateMsg" style="color:#e74c3c;margin-top:6px"></div>
+  
+  <div id="gate" style="position: fixed; inset: 0; background: var(--bg); color: var(--text); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+    <h1>🔒 Hai, Mas! 💙</h1>
+    <p style="margin: 0 0 16px 0;">Masukkan kode rahasia atau nama panggilan spesial dari caca untuk membuka.</p>
+    <input type="text" id="gateInput" placeholder="Kode atau Nama Spesial" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 80%; max-width: 300px; margin-bottom: 12px; background: var(--card); color: var(--text);" />
+    <button id="gateEnterBtn" class="btn" style="background: var(--accent); color: white;">Masuk ke Tracker</button>
+    <p id="gateMsg" style="margin-top: 10px; color: #e74c3c; min-height: 20px;"></p>
   </div>
-
   <h1>Mood Tracker Mas 💙</h1>
 
   <div class="controls">
     <button id="themeBtn" class="btn">🌙 Mode</button>
     <button id="musicBtn" class="btn">▶ Backsound</button>
+    <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
     <button id="secretBtn" class="btn secondary">💌 Surat Rahasia</button>
-    <button id="downloadBtn" class="btn secondary">⬇️ Download</button>
+    <button id="downloadBtn" class="btn secondary">⬇️ Download HTML</button>
   </div>
 
-  <p> Klik mood mas hari ini — caca bakal tau perasaanmu dan kasih respon manis:</p>
+  <p style="margin:6px 0 0 0">Klik mood mas hari ini — langsung muncul reaksi manis dari caca:</p>
 
   <div class="mood-container">
     <span class="mood" data-mood="😄 Senang">😄</span>
     <span class="mood" data-mood="🙂 Biasa aja">🙂</span>
     <span class="mood" data-mood="😢 Sedih">😢</span>
     <span class="mood" data-mood="😡 Kesel">😡</span>
-    <span class="mood" data-mood="🥰 Sayang cacaaa">🥰</span>
+    <span class="mood" data-mood="🥰 Sayang caca">🥰</span>
   </div>
 
   <div id="reaction"></div>
 
   <div class="card">
-    <h3>Riwayat Mood</h3>
+    <h3>Catatan Mood & Statistik</h3>
+    <div class="exp-area">
+        <span>Poin Cinta: <span id="currentEXP" class="exp-text">0</span></span>
+        <span>Streak: <span id="currentStreak" class="exp-text">0</span> Hari</span>
+    </div>
+    <div id="expBar"><div id="expFill"></div></div>
+    <small style="margin-top: 4px; display: block;">*Mendapatkan 10 Poin Cinta setiap hari!</small>
+    <div id="monthlySummary" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background: rgba(111, 168, 220, 0.1); border-radius: 8px;">
+      <em>Loading ringkasan mood mas bulan ini...</em>
+    </div>
+    <canvas id="moodChart" height="140"></canvas>
     <div id="entries" style="margin-top:10px"></div>
   </div>
 
   <div class="card">
-    <h3>Mood Bulan Ini</h3>
-    <p id="avgMood">Menghitung…</p>
-    <canvas id="moodChart" height="120"></canvas>
-  </div>
-
-  <div class="card">
-    <h3>Catatan dari mas:</h3>
-    <textarea id="noteInput" placeholder="Mas mau nulis apa ke cacaaa?"></textarea>
-    <div style="display:flex;gap:8px;margin-top:8px">
+    <h3>Catatan Penting dari Mas</h3>
+    <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca?"></textarea>
+    <div style="display:flex; gap:8px; margin-top:8px">
       <button id="saveNote" class="btn">Simpan Catatan</button>
       <button id="clearNotes" class="btn secondary">Bersihkan Semua</button>
-      <button id="gachaBtn" class="btn secondary">🎁 Gacha</button>
     </div>
     <div id="notes" style="margin-top:12px"></div>
   </div>
 
-  <div class="card" style="cursor:pointer;text-align:center" id="secretPreview">
-    <h3>💙 Halaman Rahasia</h3>
-    <small>Klik tombol Surat Rahasia untuk buka</small>
+  <div class="card" style="cursor:pointer; text-align:center" id="secretPreview">
+    <h3>💙 Buka Halaman Rahasia</h3>
+    <small>Klik tombol Surat Rahasia atau tombol di atas</small>
   </div>
 
-  <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" alt="sticker">
+  <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" alt="cute sticker">
 
   <div id="secretModal">
-    <div class="box"><h2>Pesan Rahasia Buat Mas 💌</h2><p>Mas itu rumah ternyaman cacaaa... 🩵<br>makasih udah ada di hidup cacaaa yaaa...</p><div style="margin-top:12px"><button id="closeSecret" class="btn">Tutup</button></div></div>
+    <div class="box">
+      <h2>Pesan Rahasia Buat Mas 💌</h2>
+      <p>Mas tuh rumah ternyaman caca... 🩵<br>makasih udah ada di hidup caca yaaa...</p>
+      <div style="margin-top:12px">
+        <button id="closeSecret" class="btn">Tutup</button>
+      </div>
+    </div>
   </div>
 
-  <audio id="bgm" loop preload="auto"><source src="music.mp3" type="audio/mpeg"></audio>
+  <audio id="bgm" loop preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
 
-  <button id="hugButton" class="btn" style="position:fixed;left:10px;bottom:10px;background:#ff8ac8;z-index:9999">🤗 Kirim peluk ke cacaaa</button>
+<script>
+/* --- Utility & state --- */
+// Gate Refs
+const gate = document.getElementById('gate');
+const gateInput = document.getElementById('gateInput');
+const gateEnterBtn = document.getElementById('gateEnterBtn');
+const gateMsg = document.getElementById('gateMsg');
 
-  <div id="sparkleContainer" aria-hidden="true"></div>
+// Gate Code
+const SECRET_CODE = "sayang"; // <-- GANTI DENGAN KODE RAHASIA PILIHAN ANDA
+const CODE_NAME = "Mas";    // <-- GANTI DENGAN NAMA PANGGILAN RAHASIA PILIHAN ANDA
 
-  <!-- main script (all features) -->
-  <script src="script.js"></script>
+// App Refs
+const moodButtons = document.querySelectorAll('.mood');
+const reaction = document.getElementById('reaction');
+const entriesBox = document.getElementById('entries');
+const notesBox = document.getElementById('notes');
+const noteInput = document.getElementById('noteInput');
+const bgm = document.getElementById('bgm');
+const sticker = document.getElementById('sticker');
+const secretModal = document.getElementById('secretModal');
+let moodChart;
+let isDark = false;
+
+// Gamification State
+let loveEXP = parseInt(localStorage.getItem('loveEXP') || '0');
+let lastMoodDate = localStorage.getItem('lastMoodDate') || null;
+let currentStreak = parseInt(localStorage.getItem('currentStreak') || '0');
+
+/* --- Data helpers --- */
+function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]'); }
+function saveLogs(logs){ localStorage.setItem('masMoodLog', JSON.stringify(logs)); }
+function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
+function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
+
+/* --- Reactions map --- */
+const reactions = {
+  '😄 Senang':'mas seneng?? ya ampun caca ikut senenggg 😭💙 peluk dulu sini 🫂',
+  '🙂 Biasa aja':'mas biasa aja ya hari ini? sini caca temenin biar makin happy 🩵',
+  '😢 Sedih':'kok mas sedihhhh 😭💙 cini ciniiiiii, caca peyukkkkk 🫂🩵',
+  '😡 Kesel':'siapa yang bikin mas kesel?? ceritain yaaaa, biar caca cubit orang yang nakalin masssss 😤💙',
+  '🥰 Sayang caca':'aaaa mas sayang cacaaa?? caca juga sayang mas banyak banyakkkkkkk 🥹🩵💙'
+};
+
+/* --- Gate Logic --- */
+function checkGate(code){
+    if (code.toLowerCase() === SECRET_CODE || code === CODE_NAME) {
+        gate.style.display = 'none';
+        gateMsg.textContent = '';
+        localStorage.setItem('gateOpened', 'true');
+        initApp(); // Jalankan aplikasi setelah gate dibuka
+        return true;
+    } else {
+        gateMsg.textContent = 'Kode salah, Mas! Coba lagi ya.';
+        return false;
+    }
+}
+
+/* --- Gamification: EXP & Streak --- */
+function updateEXPDisplay() {
+    document.getElementById('currentEXP').textContent = loveEXP;
+    document.getElementById('currentStreak').textContent = currentStreak;
+    // Progress bar (per 100 EXP)
+    const levelMax = 100;
+    const progress = (loveEXP % levelMax) / levelMax;
+    document.getElementById('expFill').style.width = `${progress * 100}%`;
+}
+
+
+/* --- Mood click handler (WITH DAILY EXP) --- */
+moodButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const today = new Date().toDateString();
+    let expGained = false;
+
+    // Logic EXP & STREAK
+    if (lastMoodDate !== today) {
+        loveEXP += 10; // Tambah 10 EXP per hari
+        if (lastMoodDate) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (lastMoodDate === yesterday.toDateString()) {
+                currentStreak += 1;
+            } else {
+                currentStreak = 1; // Reset jika terlewat
+            }
+        } else {
+            currentStreak = 1; // First log, start streak
+        }
+        localStorage.setItem('loveEXP', loveEXP);
+        localStorage.setItem('lastMoodDate', today);
+        localStorage.setItem('currentStreak', currentStreak);
+        updateEXPDisplay();
+        expGained = true;
+    }
+
+    const mood = btn.dataset.mood;
+    const date = new Date().toLocaleString();
+    const entry = { mood, date };
+    const logs = loadLogs();
+    logs.unshift(entry);
+    saveLogs(logs);
+    renderLogs();
+    
+    let reactionText = reactions[mood] || '';
+    if (expGained) {
+        reactionText += ` (${loveEXP-10} + 10 Poin Cinta! 💖)`;
+    }
+    reaction.textContent = reactionText;
+
+    spawnTinyHearts();
+    if(mood.includes('Sayang')) spawnBigHearts();
+    showSticker();
+    updateChart();
+    renderMonthlySummary(); 
+  });
+});
+
+/* --- Delete Log handler (FITUR HAPUS) --- */
+window.deleteLog = function(index){
+  const logs = loadLogs();
+  if(confirm(`Yakin ingin menghapus log mood: ${logs[index].mood} pada ${logs[index].date}?`)){
+    logs.splice(index, 1);
+    saveLogs(logs);
+    renderLogs();
+    updateChart();
+    renderMonthlySummary();
+  }
+}
+
+/* --- Render logs & notes (FIXED SINTAKS) --- */
+function renderLogs(){
+  const logs = loadLogs();
+  entriesBox.innerHTML = '';
+  if(logs.length===0) entriesBox.innerHTML = '<em>Belum ada mood tercatat.</em>';
+  
+  logs.forEach((l, index)=>{ 
+    const d = document.createElement('div');
+    d.innerHTML = `<span>${l.date} — ${l.mood}</span>
+      <span class="delete-btn" onclick="deleteLog(${index})">🗑️ Hapus</span>`;
+    entriesBox.appendChild(d);
+  });
+}
+function renderNotes(){
+  const notes = loadNotes();
+  notesBox.innerHTML = '';
+  if(notes.length===0) notesBox.innerHTML = '<em>Belum ada catatan.</em>';
+  notes.forEach(n=>{
+    const d = document.createElement('div');
+    d.textContent = `${n.time} — ${n.text}`;
+    notesBox.appendChild(d);
+  });
+}
+
+/* --- Visual Effect: Sparkle on Hover --- */
+function startSparkles(el) {
+    el.addEventListener('mousemove', function(e) {
+        if (Math.random() < 0.2) { // Sparkle 20% of the time on move
+            const sparkle = document.createElement('div');
+            sparkle.className = 'loveSparkle';
+            sparkle.textContent = '✨'; 
+            const rect = el.getBoundingClientRect();
+            // Posisi relatif terhadap elemen induk
+            sparkle.style.left = (e.clientX - rect.left) + 'px';
+            sparkle.style.top = (e.clientY - rect.top) + 'px';
+            
+            // Atur posisi agar elemen muncul di atas area mouse
+            sparkle.style.position = 'absolute';
+
+            el.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 1500);
+        }
+    });
+}
+
+/* --- Animation Functions (Sticker, Hearts) --- */
+function showReaction(mood){ reaction.textContent = reactions[mood] || ''; }
+function showSticker(){
+  sticker.classList.remove('hidden'); sticker.classList.add('show'); sticker.style.opacity='1';
+  setTimeout(()=>{ sticker.classList.remove('show'); sticker.classList.add('hidden'); }, 3000);
+}
+function spawnTinyHearts(){
+  for(let i=0;i<6;i++){
+    const h = document.createElement('div'); h.className='loveHeart'; h.textContent='💙';
+    h.style.left = Math.random()*92 + 'vw'; h.style.bottom = '-10px';
+    document.body.appendChild(h); setTimeout(()=>h.remove(), 2500);
+  }
+}
+function spawnBigHearts(){
+  for(let i=0;i<12;i++){
+    const h = document.createElement('div'); h.className='loveHeart';
+    h.style.fontSize = 34 + Math.floor(Math.random()*18) + 'px'; h.textContent = '💖';
+    h.style.left = (40 + Math.random()*20) + 'vw'; h.style.bottom = '-10px';
+    document.body.appendChild(h); setTimeout(()=>h.remove(), 2600);
+  }
+}
+
+/* --- Chart Update --- */
+function updateChart(){
+  const logs = loadLogs();
+  const moodNames = ['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca'];
+  const counts = moodNames.map(m => logs.filter(l => l.mood===m).length);
+  const ctx = document.getElementById('moodChart').getContext('2d');
+  if(moodChart) moodChart.destroy();
+  moodChart = new Chart(ctx, {
+    type:'bar',
+    data: { labels: moodNames, datasets: [{ label:'Jumlah', data: counts, backgroundColor: ['#66c2ff','#99d6ff','#aab6ff','#c0c0ff','#ffb6c1'] }] },
+    options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, ticks:{precision:0} } } }
+  });
+}
+
+/* --- Monthly Summary (FIXED) --- */
+function renderMonthlySummary(){
+  const logs = loadLogs();
+  const summaryBox = document.getElementById('monthlySummary');
+  
+  if (logs.length === 0) {
+    summaryBox.innerHTML = '<em>Catatan mood masih kosong. Yuk, mulai hari ini!</em>';
+    return;
+  }
+  
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  const currentMonthLogs = logs.filter(l => {
+    const logDate = new Date(l.date);
+    return logDate.getMonth() === currentMonth && logDate.getFullYear() === currentYear;
+  });
+  
+  if (currentMonthLogs.length === 0) {
+    summaryBox.innerHTML = '<em>Belum ada catatan mood di bulan ini.</em>';
+    return;
+  }
+  
+  const moodCounts = {};
+  currentMonthLogs.forEach(l => {
+    const moodKey = l.mood.split(' ')[0]; 
+    moodCounts[moodKey] = (moodCounts[moodKey] || 0) + 1;
+  });
+  
+  let dominantMoodText = '';
+  let maxCount = 0;
+  let totalCount = currentMonthLogs.length;
+
+  for (const moodKey in moodCounts) {
+    if (moodCounts[moodKey] > maxCount) {
+      maxCount = moodCounts[moodKey];
+      for (const fullMood in reactions) {
+        if (fullMood.startsWith(moodKey)) {
+          dominantMoodText = fullMood;
+          break;
+        }
+      }
+    }
+  }
+
+  const percentage = ((maxCount / totalCount) * 100).toFixed(0);
+
+  let message = `Mood Mas di bulan ini (${now.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}) didominasi oleh **${dominantMoodText}** (${percentage}% dari total ${totalCount} catatan). `;
+  
+  if (dominantMoodText.includes('Senang') || dominantMoodText.includes('Sayang')) {
+    message += `Pertahankan mood baik ini, mas sayang! caca ikut bahagia! 🥳💙`;
+  } else if (dominantMoodText.includes('Sedih') || dominantMoodText.includes('Kesel')) {
+    message += `Yuk, coba lebih banyak tersenyum! caca selalu di sini untuk menemani Mas. 🤗`;
+  } else {
+    message += `Semoga hari-hari berikutnya makin berwarna dan happy ya, Mas!`;
+  }
+  
+  summaryBox.innerHTML = `<p style="font-weight: bold; margin: 0">${message}</p>`;
+}
+
+
+/* --- Event Listeners lainnya --- */
+document.getElementById('saveNote').addEventListener('click', ()=>{
+  const text = noteInput.value.trim();
+  if(!text) return;
+  const notes = loadNotes();
+  notes.unshift({ text, time: new Date().toLocaleString() });
+  saveNotes(notes);
+  noteInput.value='';
+  renderNotes();
+});
+document.getElementById('clearNotes').addEventListener('click', ()=>{
+  if(confirm('Bersihkan semua catatan?')){ localStorage.removeItem('masNotes'); renderNotes(); }
+});
+noteInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ document.getElementById('saveNote').click(); e.preventDefault(); }});
+
+document.getElementById('secretBtn').addEventListener('click', ()=>{ secretModal.style.display='flex'; });
+document.getElementById('closeSecret').addEventListener('click', ()=>{ secretModal.style.display='none'; });
+document.getElementById('secretPreview').addEventListener('click', ()=>{ secretModal.style.display='flex'; });
+
+document.getElementById('musicBtn').addEventListener('click', ()=>{
+  if(bgm.paused){ bgm.play(); document.getElementById('musicBtn').textContent='⏸ Backsound'; }
+  else { bgm.pause(); document.getElementById('musicBtn').textContent='▶ Backsound'; }
+});
+bgm.addEventListener('play', ()=>{ document.getElementById('musicBtn').textContent='⏸ Backsound'; });
+bgm.addEventListener('pause', ()=>{ document.getElementById('musicBtn').textContent='▶ Backsound'; });
+
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  document.body.classList.toggle('dark'); isDark = document.body.classList.contains('dark');
+  document.getElementById('themeBtn').textContent = isDark ? '☀️ Mode' : '🌙 Mode';
+});
+
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const blob = new Blob([document.documentElement.outerHTML], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mood_tracker_mas.html';
+  document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+});
+
+document.getElementById('resetDataBtn').addEventListener('click', ()=>{
+  if(confirm('Yakin ingin menghapus SEMUA data mood dan catatan? Ini tidak bisa dikembalikan!')){
+    localStorage.removeItem('masMoodLog');
+    localStorage.removeItem('masNotes');
+    localStorage.removeItem('gateOpened'); // Hapus gate status juga!
+    alert('Data berhasil di-reset! Silakan muat ulang halaman.');
+    window.location.reload();
+  }
+});
+
+
+/* --- Fungsi Utama Aplikasi --- */
+function initApp() {
+    renderLogs(); 
+    renderNotes(); 
+    updateChart(); 
+    renderMonthlySummary();
+    updateEXPDisplay(); // Panggil fungsi EXP display
+    
+    // Terapkan efek sparkle
+    startSparkles(document.querySelector('.mood-container'));
+    startSparkles(document.getElementById('secretPreview'));
+}
+
+
+/* --- Init: Pengecekan Gate --- */
+gateEnterBtn.addEventListener('click', () => {
+    checkGate(gateInput.value.trim());
+});
+
+gateInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        checkGate(gateInput.value.trim());
+    }
+});
+
+// Jalankan initApp segera jika gate sudah pernah dibuka
+if (localStorage.getItem('gateOpened') === 'true') {
+    gate.style.display = 'none';
+    initApp();
+}
+</script>
 </body>
 </html>
