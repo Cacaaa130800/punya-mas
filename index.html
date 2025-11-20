@@ -63,6 +63,7 @@
   <div class="controls">
     <button id="themeBtn" class="btn">🌙 Mode</button>
     <button id="musicBtn" class="btn">▶ Backsound</button>
+    <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
     <button id="secretBtn" class="btn secondary">💌 Surat Rahasia</button>
     <button id="downloadBtn" class="btn secondary">⬇️ Download HTML</button>
   </div>
@@ -100,10 +101,8 @@
     <small>Klik tombol Surat Rahasia atau tombol di atas</small>
   </div>
 
-  <!-- sticker (cute character) -->
   <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" alt="cute sticker">
 
-  <!-- secret modal -->
   <div id="secretModal">
     <div class="box">
       <h2>Pesan Rahasia Buat Mas 💌</h2>
@@ -114,11 +113,9 @@
     </div>
   </div>
 
-  <!-- audio (backsound) -->
   <audio id="bgm" loop preload="auto">
     <source src="music.mp3" type="audio/mpeg">
-    <!-- fallback: if external source blocked, user can host audio locally -->
-  </audio>
+    </audio>
 
 <script>
 /* --- Utility & state --- */
@@ -284,6 +281,16 @@ function updateChart(){
     options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, ticks:{precision:0} } } }
   });
 }
+
+/* --- New: Reset Data Handler --- */
+document.getElementById('resetDataBtn').addEventListener('click', ()=>{
+  if(confirm('Yakin ingin menghapus SEMUA data mood dan catatan? Ini tidak bisa dikembalikan!')){
+    localStorage.removeItem('masMoodLog');
+    localStorage.removeItem('masNotes');
+    alert('Data berhasil di-reset! Silakan muat ulang halaman.');
+    window.location.reload();
+  }
+});
 
 /* --- Init --- */
 renderLogs(); renderNotes(); updateChart();
