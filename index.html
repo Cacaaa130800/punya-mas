@@ -1,76 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mood Tracker Mas 💙</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+
+/* ===== EXTRA FEATURES PACK 💙===== */
+
+/* === MODE JEALOUS 😤💗 === */
+let jealous = false;
+const jealousBtn = document.createElement('button');
+jealousBtn.textContent = '😤 Mode Jealous';
+jealousBtn.className = 'btn';
+jealousBtn.style.margin = '10px';
+jealousBtn.onclick = () => {
+  jealous = !jealous;
+  if (jealous) {
+    document.body.style.background = '#ffe6e6';
+    document.body.style.color = '#5a0000';
+    showBubble('mas lagi jealous ya?? sini caca pelukkk 😤💗');
+  } else {
+    document.body.style.background = '';
+    document.body.style.color = '';
+  }
+};
+document.body.insertBefore(jealousBtn, document.body.children[3]);
+
+/* === RANDOM STICKER POP === */
+const stickerList = [
+  'https://i.imgur.com/cy7Q5pA.png',
+  'https://i.imgur.com/6XH8O1g.png',
+  'https://i.imgur.com/OeQO3ZN.png'
+];
+setInterval(() => {
+  const img = document.createElement('img');
+  img.src = stickerList[Math.floor(Math.random()*stickerList.length)];
+  img.style.position='fixed'; img.style.left=Math.random()*80+'vw'; img.style.top='-30px';
+  img.style.width='90px'; img.style.transition='3s'; img.style.zIndex='99999';
+  document.body.appendChild(img);
+  setTimeout(()=>{ img.style.top='100vh'; img.style.opacity='0'; },50);
+  setTimeout(()=>img.remove(),3000);
+}, 4000);
+
+/* === SAKURA PETALS EFFECT === */
+setInterval(()=>{
+  const p=document.createElement('div');
+  p.textContent='🌸';
+  p.style.position='fixed';
+  p.style.left=Math.random()*100+'vw';
+  p.style.top='-20px';
+  p.style.fontSize='20px';
+  p.style.transition='4s linear';
+  document.body.appendChild(p);
+  setTimeout(()=>{ p.style.top='100vh'; p.style.opacity='0'; },20);
+  setTimeout(()=>p.remove(),4000);
+},1000);
+
+/* === VOICE BUBBLE === */
+function voiceBubble(text){
+  const b=document.createElement('div');
+  b.textContent=text;
+  b.style.position='fixed'; b.style.left='20px'; b.style.top='20px';
+  b.style.padding='12px 16px'; b.style.background='#fff6b8';
+  b.style.borderRadius='12px'; b.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';
+  b.style.zIndex='99999'; b.style.opacity='1'; b.style.transition='1.5s';
+  document.body.appendChild(b);
+  setTimeout(()=>b.style.opacity='0',1500);
+  setTimeout(()=>b.remove(),2500);
+}
+
+setInterval(()=>{
+  const lines=[
+    'mas lagi ngapain siiihh 🥺💙',
+    'caca liat mas dari sini 😳',
+    'mas jangan lupa minummm 🩵',
+    'caca kangen mas 😭💙'
+  ];
+  voiceBubble(lines[Math.floor(Math.random()*lines.length)]);
+}, 15000);
+
+/* === EXP LOVE SYSTEM === */
+let exp = parseInt(localStorage.getItem('loveEXP') || '0');
+function addEXP(){
+  exp += 5;
+  localStorage.setItem('loveEXP', exp);
+  showBubble('❤️ LOVE EXP +5 (Total: '+exp+')');
+}
+
+// add exp when mood clicked
+moodButtons.forEach(btn=>{
+  btn.addEventListener('click',()=>addEXP());
+});
+
+// add exp on note
+const originalSave = saveNote;
+saveNote = function(){ originalSave(); addEXP(); };
+
+
+
+/* ============================================= */
+/*         ✨ SUPER CUTE UPDATE PART 2 ✨         */
+/* ============================================= */
+
+/* === FEATURE 8: MODE MARAH PETIR ⚡😡 === */
+let marahMode = false;
+const marahBtn = document.createElement('button');
+marahBtn.textContent = '⚡ Mode Marah';
+marahBtn.className = 'btn';
+marahBtn.style.margin = '10px';
+marahBtn.onclick = () => {
+  marahMode = !marahMode;
+  if (marahMode) {
+    document.body.style.background = '#ffdbdb';
+    showBubble('mas lagi marahh?? caca disiniiiiii, bakal peluk mas kuat kuatttttt 😭💙');
+    startLightning();
+  } else {
+    stopLightning();
+    document.body.style.background = '';
+  }
+};
+document.body.insertBefore(marahBtn, document.body.children[4]);
+
+let lightningInterval;
+function startLightning(){
+  lightningInterval = setInterval(()=>{
+    const flash = document.createElement('div');
+    flash.style.position='fixed'; flash.style.inset='0';
+    flash.style.background='rgba(255,255,255,0.7)';
+    flash.style.opacity='1'; flash.style.transition='0.2s';
+    flash.style.zIndex='999999';
+    document.body.appendChild(flash);
+    setTimeout(()=>flash.style.opacity='0',50);
+    setTimeout(()=>flash.remove(),200);
+  },1200);
+}
+function stopLightning(){ clearInterval(lightningInterval); }
+
+
+/* === FEATURE 9: MODE NGANTUK 😴✨ === */
+let sleepy = false;
+const sleepyBtn = document.createElement('button');
+sleepyBtn.textContent = '😴 Mode Ngantuk';
+sleepyBtn.className = 'btn';
+sleepyBtn.style.margin = '10px';
+sleepyBtn.onclick = ()=>{
+  sleepy = !sleepy;
+  if(sleepy){
+    document.body.style.filter='brightness(0.8)';
+    showBubble('mas ngantuk ya? caca temenin boboooo 🩵😴');
+    startZZZ();
+  } else {
+    stopZZZ(); document.body.style.filter='';
+  }
+};
+document.body.insertBefore(sleepyBtn, document.body.children[5]);
+
+let zzzInterval;
+function startZZZ(){
+  zzzInterval = setInterval(()=>{
+    const z=document.createElement('div');
+    z.textContent='💤';
+    z.style.position='fixed'; z.style.left=Math.random()*100+'vw';
+    z.style.top='-10px'; z.style.fontSize='22px';
+    z.style.transition='3s linear';
+    document.body.appendChild(z);
+    setTimeout(()=>{ z.style.top='100vh'; z.style.opacity='0'; },20);
+    setTimeout(()=>z.remove(),3000);
+  },800);
+}
+function stopZZZ(){ clearInterval(zzzInterval); }
+
+
+/* === FEATURE 10: GACHA STICKER 🎁🩵 === */
+const gachaBtn = document.createElement('button');
+gachaBtn.textContent = '🎁 Gacha Stiker';
+gachaBtn.className = 'btn';
+gachaBtn.style.margin = '10px';
+gachaBtn.onclick = ()=>{
+  const gachabox = document.createElement('div');
+  gachabox.style.position='fixed'; gachabox.style.inset='0';
+  gachabox.style.background='rgba(0,0,0,0.6)';
+  gachabox.style.display='flex'; gachabox.style.flexDirection='column';
+  gachabox.style.justifyContent='center'; gachabox.style.alignItems='center';
+  gachabox.style.zIndex='99999';
+
+  const s = stickerList[Math.floor(Math.random()*stickerList.length)];
+  const img = document.createElement('img');
+  img.src = s;
+  img.style.width='200px'; img.style.borderRadius='12px';
+  img.style.boxShadow='0 6px 18px rgba(0,0,0,0.4)';
+
+  const msg = document.createElement('p');
+  msg.textContent='mas dapet stiker lucuuu 🩵';
+  msg.style.color='white'; msg.style.marginTop='10px';
+
+  const close = document.createElement('button');
+  close.textContent='tutup';
+  close.className='btn';
+  close.style.marginTop='10px';
+  close.onclick=()=>gachabox.remove();
+
+  gachabox.appendChild(img);
+  gachabox.appendChild(msg);
+  gachabox.appendChild(close);
+  document.body.appendChild(gachabox);
+};
+document.body.insertBefore(gachaBtn, document.body.children[6]);
+
+
+/* === FEATURE 11: LOVE LEVEL BADGES ❤️🏅 === */
+function updateLoveBadge(){
+  const level = exp;
+  let badge = '';
+  if(level < 50) badge = '💗 Baby Love';
+  else if(level < 150) badge = '💞 Sweetheart';
+  else if(level < 300) badge = '💘 Lover Lv.3';
+  else badge = '💝 Soulmate Max';
+
+  let badgeBox = document.getElementById('loveBadge');
+  if(!badgeBox){
+    badgeBox = document.createElement('div');
+    badgeBox.id='loveBadge';
+    badgeBox.style.margin='10px';
+    badgeBox.style.fontSize='20px';
+    badgeBox.style.fontWeight='bold';
+    badgeBox.style.textAlign='center';
+    document.body.insertBefore(badgeBox, document.body.children[1]);
+  }
+  badgeBox.textContent = '❤️ Love Level: ' + badge;
+}
+updateLoveBadge();
+
+// hook EXP update
+const EXPoriginal = addEXP;
+addEXP = function(){ EXPoriginal(); updateLoveBadge(); };
+
+
+
+/* ================================================= */
+/*            ✨ SUPER CUTE UPDATE PART 3 ✨          */
+/* ================================================= */
+
+/* === MODE MANJA 🥺💗 === */
+let manja=false;
+const manjaBtn=document.createElement('button');
+manjaBtn.textContent='🐰 Mode Manja';
+manjaBtn.className='btn';
+manjaBtn.style.margin='10px';
+manjaBtn.onclick=()=>{
+  manja=!manja;
+  if(manja){
+    document.body.style.filter='saturate(1.4) brightness(1.1)';
+    showBubble('mas lagi manja yaaa?? caca sukaaaaa 🥺💗🐰');
+    startBlush();
+  } else { stopBlush(); document.body.style.filter=''; }
+};
+document.body.insertBefore(manjaBtn, document.body.children[7]);
+
+let blushInterval;
+function startBlush(){
+  blushInterval=setInterval(()=>{
+    const b=document.createElement('div');
+    b.textContent='💕';
+    b.style.position='fixed'; b.style.left=Math.random()*100+'vw';
+    b.style.top='-20px'; b.style.fontSize='26px';
+    b.style.transition='3s linear';
+    document.body.appendChild(b);
+    setTimeout(()=>b.style.top='100vh',20);
+    setTimeout(()=>b.remove(),3000);
+  },900);
+}
+function stopBlush(){ clearInterval(blushInterval); }
+
+
+/* === MODE SEDIH 🌧️😭 === */
+let sedih=false;
+const sedihBtn=document.createElement('button');
+sedihBtn.textContent='🌧️ Mode Sedih';
+sedihBtn.className='btn';
+sedihBtn.style.margin='10px';
+sedihBtn.onclick=()=>{
+  sedih=!sedih;
+  if(sedih){
+    document.body.style.filter='grayscale(0.4)';
+    showBubble('mas sedih yaaa?? ciniiiii caca peluk erattt 😭💙');
+    startRain();
+  } else { stopRain(); document.body.style.filter=''; }
+};
+document.body.insertBefore(sedihBtn, document.body.children[8]);
+
+let rainInterval;
+function startRain(){
+  rainInterval=setInterval(()=>{
+    const r=document.createElement('div');
+    r.textContent='💧';
+    r.style.position='fixed'; r.style.left=Math.random()*100+'vw';
+    r.style.top='-20px'; r.style.fontSize='18px';
+    r.style.transition='2s linear';
+    document.body.appendChild(r);
+    setTimeout(()=>r.style.top='100vh',20);
+    setTimeout(()=>r.remove(),2000);
+  },120);
+}
+function stopRain(){ clearInterval(rainInterval); }
+
+
+/* === MODE PROTEKTIF 🔥🛡️ === */
+let protek=false;
+const protekBtn=document.createElement('button');
+protekBtn.textContent='🛡️ Mode Protektif';
+protekBtn.className='btn';
+protekBtn.style.margin='10px';
+protekBtn.onclick=()=>{
+  protek=!protek;
+  if(protek){
+    showBubble('mas protektif ya?? cacaaa aman kok sama mas 😳🛡️');
+    startShield();
+  } else stopShield();
+};
+document.body.insertBefore(protekBtn, document.body.children[9]);
+
+let shieldInterval;
+function startShield(){
+  shieldInterval=setInterval(()=>{
+    const s=document.createElement('div');
+    s.textContent='🛡️';
+    s.style.position='fixed'; s.style.left=(Math.random()*80+10)+'vw';
+    s.style.top=(Math.random()*80+10)+'vh';
+    s.style.fontSize='30px'; s.style.opacity='0';
+    s.style.transition='1s';
+    document.body.appendChild(s);
+    setTimeout(()=>s.style.opacity='1',50);
+    setTimeout(()=>s.remove(),1500);
+  },500);
+}
+function stopShield(){ clearInterval(shieldInterval); }
+
+
+/* === LOVE EXPLOSION (tiap EXP kelipatan 50) 💥💗 === */
+function loveExplosion(){
+  for(let i=0;i<20;i++){
+    const h=document.createElement('div');
+    h.textContent='💗';
+    h.style.position='fixed';
+    h.style.left='50vw'; h.style.top='50vh';
+    h.style.fontSize='24px';
+    h.style.transition='1.2s';
+    let angle=Math.random()*360;
+    h.style.transform=`translate(0px,0px)`;
+    document.body.appendChild(h);
+    setTimeout(()=>{
+      h.style.transform=`translate(${Math.cos(angle)*200}px,${Math.sin(angle)*200}px)`;
+      h.style.opacity='0';
+    },20);
+    setTimeout(()=>h.remove(),1200);
+  }
+}
+
+const oldAddEXP = addEXP;
+addEXP = function(){
+  oldAddEXP();
+  if(exp % 50 === 0) loveExplosion();
+};
+
+
+/* === EVENT HARIAN 🎀🎉 === */
+function showDailyQuest(){
+  const quests=[
+    'kirim mood jujur hari ini 🩵',
+    'tulis satu kalimat buat caca 😳💗',
+    'peluk caca 3x 🤗🤗🤗',
+    'bilang “aku sayang cacaaa” 😭💙',
+    'kasih stiker favorit mas 🩵'
+  ];
+  const q=quests[Math.floor(Math.random()*quests.length)];
+
+  const box=document.createElement('div');
+  box.style.position='fixed'; box.style.inset='0';
+  box.style.background='rgba(0,0,0,0.5)';
+  box.style.display='flex'; box.style.flexDirection='column';
+  box.style.justifyContent='center'; box.style.alignItems='center';
+  box.style.zIndex='999999';
+
+  const card=document.createElement('div');
+  card.style.background='white';
+  card.style.padding='20px';
+  card.style.borderRadius='14px';
+  card.style.textAlign='center';
+  card.style.boxShadow='0 8px 20px rgba(0,0,0,0.3)';
+
+  const t=document.createElement('h3');
+  t.textContent='🎀 Daily Quest Mas';
+  const p=document.createElement('p');
+  p.textContent=q;
+
+  const ok=document.createElement('button');
+  ok.className='btn';
+  ok.textContent='oke cacaaaa 🩵';
+  ok.onclick=()=>box.remove();
+
+  card.appendChild(t); card.appendChild(p); card.appendChild(ok);
+  box.appendChild(card);
+  document.body.appendChild(box);
+}
+
+setTimeout(showDailyQuest, 2000);
+
+
+/* === AI AUTO-REPLY to MOOD (super cute) 🤖💙 === */
+function aiReplyToMood(mood){
+  const replies={
+    '😄 Senang':'caca ikut seneng bangettt 😭💙 ayo kita rayain dikit yuk! ✨',
+    '🙂 Biasa aja':'ga papa mas, sini caca temenin biar hari mas lebih hangat 🩵',
+    '😢 Sedih':'mas sedih?? caca disini yaaa, nantiii aku peluk ampe tenang 😭🤍',
+    '😡 Kesel':'siapa yang buat mas kesel?? ayoooo, kita cubit bareng barenggggg! 😤💙',
+    '🥰 Sayang Ca':'MAS SAYANG CACAA??? caca lebih sayang mas 10000x 😭💗'
+  };
+  showBubble(replies[mood] || 'caca ada buat mas 🩵');
+}
+
+const oldSaveMood = saveMood;
+saveMood = function(mood){
+  oldSaveMood(mood);
+  aiReplyToMood(mood);
+};
+
+</script>
   <style>
-    :root { --bg:#e7f1ff; --text:#1a2a3a; --card:#ffffff; --accent:#6fa8dc; }
+    :root { --bg:#eaf3ff; --text:#1b2b3c; --card:#ffffff; --accent:#6fa8dc; }
     .dark { --bg:#0f1621; --text:#f1f6ff; --card:#1d2b40; --accent:#4a90e2; }
-    *{box-sizing:border-box}
-    body{
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background:var(--bg);
-      color:var(--text);
-      margin:0;
-      padding:20px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      transition:background .25s, color .25s;
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: .3s;
     }
-    h1{margin:6px 0 8px 0}
-    .controls{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px}
-    .btn{
-      padding:8px 12px; border-radius:10px; border:none; cursor:pointer;
-      background:var(--accent); color:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.12)
+
+    .hidden { display:none; }
+
+    /* GATE SCREEN */
+    #gate {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      z-index: 2000;
     }
-    .secondary{background:transparent; color:var(--text); border:1px solid rgba(0,0,0,0.08)}
-    .mood-container{display:flex; gap:14px; margin:18px 0; justify-content:center; flex-wrap:wrap}
-    .mood{font-size:38px; cursor:pointer; transition:transform .12s}
-    .mood:hover{transform:scale(1.18)}
-    .card{
-      background:var(--card);
-      padding:14px;
-      width:92%;
-      max-width:560px;
-      border-radius:12px;
-      box-shadow:0 6px 18px rgba(16,24,40,0.06);
-      margin-top:14px;
+    #gate input {
+      padding: 10px;
+      border-radius: 10px;
+      border:1px solid #aaa;
     }
-    textarea{width:100%; height:78px; border-radius:10px; padding:10px; border:1px solid #ccc; resize:vertical;
-      background:transparent; color:var(--text)}
-    #reaction{margin-top:12px; font-size:18px; text-align:center; min-height:36px}
-    #entries div{display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px dashed rgba(0,0,0,0.06)}
-    .delete-btn{cursor:pointer; font-size:14px; margin-left:10px; color:#e74c3c;}
-    #notes div{padding:8px 0; border-bottom:1px dashed rgba(0,0,0,0.06)}
-    #sticker{position:fixed; right:12px; bottom:12px; width:120px; display:none; z-index:999}
-    /* sticker animation */
-    #sticker.show{display:block; transform:translateY(0); transition:transform .45s ease, opacity .35s}
-    #sticker.hidden{opacity:0; transform:translateY(20px)}
-    /* love hearts */
-    .loveHeart{position:fixed; font-size:28px; animation:floatUp 2.4s ease-out; pointer-events:none; z-index:9999}
-    @keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-160px);opacity:0}}
-    /* secret modal */
-    #secretModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(3px); align-items:center; justify-content:center; z-index:2000}
-    #secretModal .box{background:var(--card); color:var(--text); padding:18px; border-radius:14px; width:88%; max-width:420px; text-align:center}
-    /* mobile tweaks */
-    @media (max-width:420px){ .mood{font-size:34px} #sticker{width:96px} }
+    
+    h1 { margin-bottom: 10px; }
+
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .mood-container { display:flex; gap:15px; margin:20px; flex-wrap:wrap; }
+    .mood { font-size:38px; cursor:pointer; transition:.2s; }
+    .mood:hover { transform:scale(1.18); }
+
+    .card {
+      background: var(--card);
+      padding: 15px;
+      width: 92%;
+      max-width: 550px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+
+    textarea {
+      width: 100%; height: 80px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #aaa;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    /* DELETE BUTTON */
+    .deleteBtn {
+      background:#ff6b6b; color:white; border:none; border-radius:6px;
+      padding:3px 8px; margin-left:10px; cursor:pointer;
+    }
+
+    #sticker {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      width: 120px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: .4s;
+      z-index: 999;
+    }
+
+    #sticker.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* hearts */
+    .loveHeart {
+      position: fixed;
+      font-size: 26px;
+      animation: floatUp 2.3s ease-out;
+      pointer-events:none;
+      z-index: 9000;
+    }
+
+    @keyframes floatUp {
+      0% { transform:translateY(0); opacity:1; }
+      100% { transform:translateY(-150px); opacity:0; }
+    }
   </style>
 </head>
 <body>
-  <h1>Mood Tracker Mas 💙</h1>
 
-  <div class="controls">
-    <button id="themeBtn" class="btn">🌙 Mode</button>
-    <button id="musicBtn" class="btn">▶ Backsound</button>
-    <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
-    <button id="secretBtn" class="btn secondary">💌 Surat Rahasia</button>
-    <button id="downloadBtn" class="btn secondary">⬇️ Download HTML</button>
+  <!-- GATE LOGIN CUTE ENTRY -->
+  <div id="gate">
+    <h2>💙 Siapa kamu? 💙</h2>
+    <p>Mas harus jawab duluuu~</p>
+    <input id="gateInput" placeholder="ketik: mas" />
+    <button class="btn" onclick="enterGate()">Masuk ➜</button>
+    <div id="gateMsg" style="color:red"></div>
   </div>
 
-  <p style="margin:6px 0 0 0">Klik mood mas hari ini — langsung muncul reaksi manis dari caca:</p>
+  <h1>Mood Tracker Mas 💙</h1>
+
+  <button class="btn" onclick="toggleDark()">🌙 Dark/Light</button>
+  <button class="btn" onclick="toggleMusic()">🎵 Music</button>
+
+  <p>Pilih mood mas hari ini:</p>
 
   <div class="mood-container">
     <span class="mood" data-mood="😄 Senang">😄</span>
@@ -80,308 +561,260 @@
     <span class="mood" data-mood="🥰 Sayang caca">🥰</span>
   </div>
 
-  <div id="reaction"></div>
+  <div id="reaction" style="font-size:18px; text-align:center; min-height:40px;"></div>
 
   <div class="card">
-    <h3>Catatan Mood & Statistik</h3>
-    <div id="monthlySummary" style="margin-bottom: 15px; padding:10px: background:rgba(111,168,220,0.1); border-radius:8px;">
-      <em>Loading ringkasan mood mas bulan ini...</em>
-    </div>
-    <canvas id="moodChart" height="140"></canvas>
-    <div id="entries" style="margin-top:10px"></div>
+    <h3>Riwayat Mood</h3>
+    <div id="entries" style="margin-top:12px"></div>
   </div>
 
   <div class="card">
-    <h3>Catatan Penting dari Mas</h3>
+    <h3>Mood Bulan Ini</h3>
+    <p id="avgMood"></p>
+    <canvas id="moodChart" height="150"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>Catatan dari mas:</h3>
     <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca?"></textarea>
-    <div style="display:flex; gap:8px; margin-top:8px">
-      <button id="saveNote" class="btn">Simpan Catatan</button>
-      <button id="clearNotes" class="btn secondary">Bersihkan Semua</button>
-    </div>
-    <div id="notes" style="margin-top:12px"></div>
+    <button class="btn" onclick="saveNote()">Simpan</button>
+    <div id="notes" style="margin-top:10px"></div>
   </div>
 
-  <div class="card" style="cursor:pointer; text-align:center" id="secretPreview">
-    <h3>💙 Buka Halaman Rahasia</h3>
-    <small>Klik tombol Surat Rahasia atau tombol di atas</small>
-  </div>
+  <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" />
 
-  <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" alt="cute sticker">
-
-  <div id="secretModal">
-    <div class="box">
-      <h2>Pesan Rahasia Buat Mas 💌</h2>
-      <p>Mas tuh rumah ternyaman caca... 🩵<br>makasih udah ada di hidup caca yaaa...</p>
-      <div style="margin-top:12px">
-        <button id="closeSecret" class="btn">Tutup</button>
-      </div>
-    </div>
-  </div>
-
-  <audio id="bgm" loop preload="auto">
-    <source src="music.mp3" type="audio/mpeg">
-    </audio>
+  <audio id="bgm" loop>
+    <source src="music.mp3" type="audio/mpeg" />
+  </audio>
 
 <script>
-/* --- Utility & state --- */
-const moodButtons = document.querySelectorAll('.mood');
-const reaction = document.getElementById('reaction');
-const entriesBox = document.getElementById('entries');
-const notesBox = document.getElementById('notes');
-const noteInput = document.getElementById('noteInput');
-const bgm = document.getElementById('bgm');
-const sticker = document.getElementById('sticker');
-const secretModal = document.getElementById('secretModal');
+
+/* GATE */
+function enterGate(){
+  const val=document.getElementById('gateInput').value.trim().toLowerCase();
+  if(val==='mas'){
+    document.getElementById('gate').classList.add('hidden');
+  } else {
+    document.getElementById('gateMsg').textContent='jawabannya salah 😡 cuma mas yang boleh masuk!';
+  }
+}
+
+function toggleDark(){ document.body.classList.toggle('dark'); }
+function toggleMusic(){ const m=document.getElementById('bgm'); m.paused?m.play():m.pause(); }
+
+const moodButtons=document.querySelectorAll('.mood');
+const reaction=document.getElementById('reaction');
+const sticker=document.getElementById('sticker');
 let moodChart;
-let isDark = false;
 
-/* --- Data helpers --- */
-function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]'); }
-function saveLogs(logs){ localStorage.setItem('masMoodLog', JSON.stringify(logs)); }
-function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
-function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
-
-/* --- Reactions map --- */
-const reactions = {
-  '😄 Senang':'mas seneng?? ya ampun aku ikut senenggg 😭💙 peluk dulu sini 🫂',
-  '🙂 Biasa aja':'mas biasa aja ya hari ini? sini aku temenin biar makin happy 🩵',
-  '😢 Sedih':'kok mas sedihhhh 😭💙 cini ciniiiiii, aku peyukkkkk 🫂🩵',
-  '😡 Kesel':'siapa yang bikin mas kesel?? ceritain yaaaa, biar aku cubit orang yang nakalin masssss 😤💙',
-  '🥰 Sayang caca':'aaaa mas sayang akuuuu?? aku juga sayang mas banyak banyakkkkkkk 🥹🩵💙'
+const reactions={
+  '😄 Senang':'mas seneng?? caca ikut seneng banget 😭💙',
+  '🙂 Biasa aja':'hari ini biasa aja ya mas? sini caca temenin 🩵',
+  '😢 Sedih':'mas sedihhh? sini aku pelukkkkk 😭🩵',
+  '😡 Kesel':'siapa yang bikin mas kesel?? caca cubit tuh orang 😤💙',
+  '🥰 Sayang caca':'mas sayang cacaaa?? cacaaa juga sayang mas banyak banyakkkkkk 🥹💙'
 };
 
-/* --- Mood click handler --- */
 moodButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const mood = btn.dataset.mood;
-    const date = new Date().toLocaleString();
-    const entry = { mood, date };
-    const logs = loadLogs();
-    logs.unshift(entry);
-    saveLogs(logs);
-    renderLogs();
+  btn.addEventListener('click',()=>{
+    const mood=btn.dataset.mood;
+    const date=new Date().toLocaleString();
+
+    let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
+    logs.unshift({mood,date});
+    localStorage.setItem('masMoodLog',JSON.stringify(logs));
+
     showReaction(mood);
-    spawnTinyHearts();
-    if(mood.includes('Sayang')) spawnBigHearts();
-    // make sticker show briefly
+    renderLogs();
+    spawnHearts();
     showSticker();
     updateChart();
-    renderMonthSummary();
+    calcAverage();
   });
 });
 
-/* --- Delete Log handler (NEW FEATURE 1) --- */
-window.deleteLog = function(index){
-  const logs = loadLogs();
-  if(confirm(`Yakin ingin menghapus log mood: ${logs[index].mood} pada ${logs[index].date}?`)){
-    logs.splice(index, 1);
-    saveLogs(logs);
-    renderLogs();
-    updateChart();
-    renderMonthlySummary();
-  }
-}
+function showReaction(mood){ reaction.textContent=reactions[mood]||''; }
 
-/* --- Render logs & notes --- */
-function renderLogs(){
-  const logs = loadLogs();
-  entriesBox.innerHTML = '';
-  if(logs.length===0) entriesBox.innerHTML = '<em>Belum ada mood tercatat.</em>';
-  logs.forEach(l, index)=>{
-    const d = document.createElement('div');
-    d.innerHTML = `<span>${l.date} — ${l.mood}</span>
-      <span class="delete-btn" onclick="deleteLog(${index})">🗑️ Hapus</span>`;
-    entriesBox.appendChild(d);
-  });
-}
-function renderNotes(){
-  const notes = loadNotes();
-  notesBox.innerHTML = '';
-  if(notes.length===0) notesBox.innerHTML = '<em>Belum ada catatan.</em>';
-  notes.forEach(n=>{
-    const d = document.createElement('div');
-    d.textContent = `${n.time} — ${n.text}`;
-    notesBox.appendChild(d);
-  });
-}
-
-/* --- Notes save/clear --- */
-document.getElementById('saveNote').addEventListener('click', ()=>{
-  const text = noteInput.value.trim();
-  if(!text) return;
-  const notes = loadNotes();
-  notes.unshift({ text, time: new Date().toLocaleString() });
-  saveNotes(notes);
-  noteInput.value='';
-  renderNotes();
-});
-document.getElementById('clearNotes').addEventListener('click', ()=>{
-  if(confirm('Bersihkan semua catatan?')){ localStorage.removeItem('masNotes'); renderNotes(); }
-});
-
-/* --- Reaction display & sticker --- */
-function showReaction(mood){
-  reaction.textContent = reactions[mood] || '';
-}
 function showSticker(){
-  sticker.classList.remove('hidden');
   sticker.classList.add('show');
-  sticker.style.opacity='1';
-  setTimeout(()=>{
-    sticker.classList.remove('show');
-    sticker.classList.add('hidden');
-  }, 3000);
+  setTimeout(()=>sticker.classList.remove('show'),2500);
 }
 
-/* --- Hearts animations --- */
-function spawnTinyHearts(){
+function spawnHearts(){
   for(let i=0;i<6;i++){
-    const h = document.createElement('div');
+    const h=document.createElement('div');
     h.className='loveHeart';
     h.textContent='💙';
-    h.style.left = Math.random()*92 + 'vw';
-    h.style.bottom = '-10px';
+    h.style.left=Math.random()*90+'vw';
+    h.style.bottom='-10px';
     document.body.appendChild(h);
-    setTimeout(()=>h.remove(), 2500);
-  }
-}
-function spawnBigHearts(){
-  for(let i=0;i<12;i++){
-    const h = document.createElement('div');
-    h.className='loveHeart';
-    h.style.fontSize = 34 + Math.floor(Math.random()*18) + 'px';
-    h.textContent = '💖';
-    h.style.left = (40 + Math.random()*20) + 'vw';
-    h.style.bottom = '-10px';
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(), 2600);
+    setTimeout(()=>h.remove(),2300);
   }
 }
 
-/* --- Secret modal handlers --- */
-document.getElementById('secretBtn').addEventListener('click', ()=>{ secretModal.style.display='flex'; });
-document.getElementById('closeSecret').addEventListener('click', ()=>{ secretModal.style.display='none'; });
-document.getElementById('secretPreview').addEventListener('click', ()=>{ secretModal.style.display='flex'; });
+function renderLogs(){
+  const box=document.getElementById('entries');
+  let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
+  box.innerHTML='';
 
-/* --- Music toggle --- */
-document.getElementById('musicBtn').addEventListener('click', ()=>{
-  if(bgm.paused){ bgm.play(); document.getElementById('musicBtn').textContent='⏸ Backsound'; }
-  else { bgm.pause(); document.getElementById('musicBtn').textContent='▶ Backsound'; }
-});
-bgm.addEventListener('play', ()=>{ document.getElementById('musicBtn').textContent='⏸ Backsound'; });
-bgm.addEventListener('pause', ()=>{ document.getElementById('musicBtn').textContent='▶ Backsound'; });
+  logs.forEach((l,index)=>{
+    const d=document.createElement('div');
+    d.innerHTML=`${l.date} — ${l.mood} <button class='deleteBtn' onclick='deleteMood(${index})'>hapus</button>`;
+    box.appendChild(d);
+  });
+}
 
-/* --- Theme toggle --- */
-document.getElementById('themeBtn').addEventListener('click', ()=>{
-  document.body.classList.toggle('dark'); isDark = document.body.classList.contains('dark');
-  document.getElementById('themeBtn').textContent = isDark ? '☀️ Mode' : '🌙 Mode';
-});
+function deleteMood(i){
+  let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
+  logs.splice(i,1);
+  localStorage.setItem('masMoodLog',JSON.stringify(logs));
+  renderLogs(); updateChart(); calcAverage();
+}
 
-/* --- Download HTML button (gives current file) --- */
-document.getElementById('downloadBtn').addEventListener('click', ()=>{
-  const blob = new Blob([document.documentElement.outerHTML], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'mood_tracker_mas.html';
-  document.body.appendChild(a); a.click();
-  a.remove(); URL.revokeObjectURL(url);
-});
+/* NOTES */
+function saveNote(){
+  const text=document.getElementById('noteInput').value.trim(); if(!text) return;
+  let notes=JSON.parse(localStorage.getItem('masNotes')||'[]');
+  notes.unshift({text,time:new Date().toLocaleString()});
+  localStorage.setItem('masNotes',JSON.stringify(notes));
+  document.getElementById('noteInput').value='';
+  renderNotes();
+}
 
-/* --- Chart --- */
+function renderNotes(){
+  const box=document.getElementById('notes');
+  let notes=JSON.parse(localStorage.getItem('masNotes')||'[]');
+  box.innerHTML='';
+  notes.forEach(n=>{
+    const d=document.createElement('div');
+    d.textContent=`${n.time} — ${n.text}`;
+    box.appendChild(d);
+  });
+}
+
+/* MONTHLY AVG */
+function calcAverage(){
+  let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
+  if(logs.length===0){ document.getElementById('avgMood').textContent='Belum ada mood'; return; }
+
+  const score={
+    '😄 Senang':5,
+    '🙂 Biasa aja':3,
+    '😢 Sedih':1,
+    '😡 Kesel':2,
+    '🥰 Sayang caca':4
+  };
+
+  let total=0;
+  logs.forEach(l=> total+=score[l.mood]||0);
+  let avg=(total/logs.length).toFixed(2);
+
+  let moodText='';
+  if(avg>=4.5) moodText='Mas happy banget bulan ini 🥰💙';
+  else if(avg>=3) moodText='Mood mas lumayan stabil bulan ini 🩵';
+  else moodText='Mas lagi butuh banyak peluk kayaknya 😭💙';
+
+  document.getElementById('avgMood').textContent=`Rata-rata mood: ${avg} — ${moodText}`;
+}
+
+/* CHART */
 function updateChart(){
-  const logs = loadLogs();
-  const moodNames = ['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca'];
-  const counts = moodNames.map(m => logs.filter(l => l.mood===m).length);
-  const ctx = document.getElementById('moodChart').getContext('2d');
+  let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
+  const labels=['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca'];
+  const counts=labels.map(m=>logs.filter(l=>l.mood===m).length);
+
+  const ctx=document.getElementById('moodChart').getContext('2d');
   if(moodChart) moodChart.destroy();
-  moodChart = new Chart(ctx, {
+
+  moodChart=new Chart(ctx,{
     type:'bar',
-    data: { labels: moodNames, datasets: [{ label:'Jumlah', data: counts, backgroundColor: ['#66c2ff','#99d6ff','#aab6ff','#c0c0ff','#ffb6c1'] }] },
-    options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, ticks:{precision:0} } } }
+    data:{ labels, datasets:[{ data:counts, backgroundColor:['#7fc8ff','#a6d4ff','#b8b4ff','#d7d1ff','#ffb6d5'] }]},
+    options:{ plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
   });
 }
 
-/* --- Monthly Summary (NEW FEATURE 2) --- */
-function renderMonthlySummary(){
-  const logs = loadLogs();
-  const summaryBox = document.getElementById('monthlySummary');
-  
-  if (logs.length === 0) {
-    summaryBox.innerHTML = '<em>Catatan mood masih kosong. Yuk, mulai hari ini!</em>';
-    return;
-  }
-  
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-  
-  const currentMonthLogs = logs.filter(l => {
-    const logDate = new Date(l.date);
-    return logDate.getMonth() === currentMonth && logDate.getFullYear() === currentYear;
-  });
-  
-  if (currentMonthLogs.length === 0) {
-    summaryBox.innerHTML = '<em>Belum ada catatan mood di bulan ini.</em>';
-    return;
-  }
-  
-  const moodCounts = {};
-  currentMonthLogs.forEach(l => {
-    const moodKey = l.mood.split(' ')[0]; // Ambil emoji saja
-    moodCounts[moodKey] = (moodCounts[moodKey] || 0) + 1;
-  });
-  
-  let dominantMoodText = '';
-  let maxCount = 0;
-  let totalCount = currentMonthLogs.length;
+renderLogs();
+renderNotes();
+updateChart();
+calcAverage();
 
-  // Temukan mood yang dominan
-  for (const moodKey in moodCounts) {
-    if (moodCounts[moodKey] > maxCount) {
-      maxCount = moodCounts[moodKey];
-      // Cari teks lengkap mood dari reactions map
-      for (const fullMood in reactions) {
-        if (fullMood.startsWith(moodKey)) {
-          dominantMoodText = fullMood;
-          break;
-        }
-      }
-    }
-  }
+</script>
 
-  const percentage = ((maxCount / totalCount) * 100).toFixed(0);
 
-  // Buat pesan manis
-  let message = `Mood Mas di bulan ini (${now.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}) didominasi oleh **${dominantMoodText}** (${percentage}% dari total ${totalCount} catatan). `;
-  
-  if (dominantMoodText.includes('Senang') || dominantMoodText.includes('Sayang')) {
-    message += `Pertahankan mood baik ini, mas sayang! caca ikut bahagia! 🥳💙`;
-  } else if (dominantMoodText.includes('Sedih') || dominantMoodText.includes('Kesel')) {
-    message += `Yuk, coba lebih banyak tersenyum! caca selalu di sini untuk menemani Mas. 🤗`;
+<!-- SPARKLE ANIMATION CONTAINER -->
+<div id="sparkleContainer"></div>
+
+<!-- PELUK BUTTON FIXED -->
+<button id="hugButton" class="btn" style="position:fixed; left:10px; bottom:10px; background:#ff8ac8; z-index:9999;">🤗 Kirim peluk ke Caca</button>
+
+<script>
+
+/* ====== SPARKLE EFFECT ====== */
+setInterval(()=>{
+  const s=document.createElement('div');
+  s.textContent='✨';
+  s.style.position='fixed';
+  s.style.left=Math.random()*100+'vw';
+  s.style.top='-10px';
+  s.style.fontSize=(14+Math.random()*10)+'px';
+  s.style.opacity='1';
+  s.style.transition='3s linear';
+  document.body.appendChild(s);
+  setTimeout(()=>{ s.style.top='100vh'; s.style.opacity='0'; },50);
+  setTimeout(()=>s.remove(),3000);
+}, 500);
+
+/* ====== NOTIF BUBBLE CUTE ====== */
+function showBubble(msg){
+  const b=document.createElement('div');
+  b.textContent=msg;
+  b.style.position='fixed';
+  b.style.right='20px';
+  b.style.bottom='20px';
+  b.style.padding='10px 14px';
+  b.style.background='#ffb7e6';
+  b.style.color='#000';
+  b.style.borderRadius='12px';
+  b.style.boxShadow='0 4px 10px rgba(0,0,0,0.2)';
+  b.style.opacity='1';
+  b.style.transition='1s';
+  b.style.zIndex='99999';
+  document.body.appendChild(b);
+  setTimeout(()=>b.style.opacity='0',2000);
+  setTimeout(()=>b.remove(),3000);
+}
+
+/* Trigger bubble on note save */
+const originalSaveNote = saveNote;
+saveNote = function(){
+  originalSaveNote();
+  showBubble('Catatan mas udah caca simpen 🩵');
+};
+
+/* ====== MODE KANGEN ====== */
+let kangen=false;
+const kangenBtn=document.createElement('button');
+kangenBtn.textContent='🥺 Mode Kangen';
+kangenBtn.className='btn';
+kangenBtn.style.margin='10px';
+kangenBtn.onclick=()=>{
+  kangen=!kangen;
+  if(kangen){
+    document.body.style.filter='hue-rotate(300deg) brightness(1.2)';
+    showBubble('mas lagi kangen cacaaa yaaa? 😭🩵');
   } else {
-    message += `Semoga hari-hari berikutnya makin berwarna dan happy ya, Mas!`;
+    document.body.style.filter='none';
   }
-  
-  summaryBox.innerHTML = `<p style="font-weight: bold; margin: 0">${message}</p>`;
-}
+};
+document.body.insertBefore(kangenBtn, document.body.children[2]);
 
-/* --- New: Reset Data Handler --- */
-document.getElementById('resetDataBtn').addEventListener('click', ()=>{
-  if(confirm('Yakin ingin menghapus SEMUA data mood dan catatan? Ini tidak bisa dikembalikan!')){
-    localStorage.removeItem('masMoodLog');
-    localStorage.removeItem('masNotes');
-    alert('Data berhasil di-reset! Silakan muat ulang halaman.');
-    window.location.reload();
-  }
+/* ====== HUG BUTTON ====== */
+document.getElementById('hugButton').addEventListener('click', ()=>{
+  showBubble('caca dapet peluk dari mas 🤗🩵');
+  spawnHearts();
 });
 
-/* --- Init --- */
-renderLogs(); renderNotes(); updateChart(); renderMonthlySummary();
-
-/* --- small compatibility: if bgm blocked by browser autoplay policies, user can tap Backsound button --- */
-
-/* --- Accessibility: keyboard enter on textarea saves note --- */
-noteInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ document.getElementById('saveNote').click(); e.preventDefault(); }});
 </script>
+
 </body>
 </html>
