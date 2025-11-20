@@ -231,7 +231,7 @@
   </div>
 
   <audio id="bgm" loop preload="auto">
-    <source src="music.mp3" type="audio/mpeg">
+    <source src="music.mp3" type="audio/mpeg"> 
   </audio>
 
 <script>
@@ -264,7 +264,7 @@ let currentStreak = parseInt(localStorage.getItem('currentStreak') || '0');
 let hugCount = parseInt(localStorage.getItem('hugCount') || '0'); 
 const QUESTS_KEY = 'dailyQuests'; 
 const DAILY_EXP_REWARD = 20;      
-const DAILY_MSG_KEY = 'dailyMsgData'; // KEY BARU
+const DAILY_MSG_KEY = 'dailyMsgData'; 
 const allQuests = [
     { text: "Kirim Pelukan Pertama Hari Ini", action: "hug" },
     { text: "Tulis Minimal 1 Catatan Penting", action: "note" },
@@ -276,7 +276,7 @@ const allQuests = [
     { text: "Kirim 4 Pelukan Hari Ini", action: "hug_4" }
 ];
 
-// [BARU] KUMPULAN PESAN HARIAN DARI CACA (Mas bisa tambahkan di sini)
+// KUMPULAN PESAN HARIAN DARI CACA
 const DAILY_MESSAGE_POOL = [
     "Mas adalah alasan caca tersenyum hari ini. Have a good day, sayang! 💙",
     "Mas tuh rumah ternyaman caca... makasih udah ada di hidup caca yaaa... 🥹",
@@ -301,11 +301,11 @@ const DAILY_MESSAGE_POOL = [
 /* --- Level System Data (NEW) --- */
 const LOVE_LEVELS = [
     { exp: 0, title: "Sayang Junior 🐣" },
-    { exp: 30, title: "Jagoan Senyum Caca 😊" },
-    { exp: 80, title: "Pahlawan Mood 🦸" },
-    { exp: 150, title: "Sayang Sejati 💍" },
-    { exp: 300, title: "Pemilik Hati Caca 👑" },
-    { exp: 500, title: "Cinta Abadi ✨" }
+    { exp: 100, title: "Jagoan Senyum Caca 😊" },
+    { exp: 150, title: "Pahlawan Mood 🦸" },
+    { exp: 250, title: "Sayang Sejati 💍" },
+    { exp: 500, title: "Pemilik Hati Caca 👑" },
+    { exp: 1000, title: "Cinta Abadi ✨" }
 ];
 
 
@@ -314,7 +314,6 @@ function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]')
 function saveLogs(logs){ localStorage.setItem('masMoodLog', JSON.stringify(logs)); }
 function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
 function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
-// function loadDailyMessage() { return localStorage.getItem('cacaDailyMessage') || 'Belum ada pesan baru hari ini. 🥺'; }
 
 
 /* --- Reactions map & Color Map --- */
@@ -335,13 +334,13 @@ const MOOD_COLOR_MAP = {
 };
 
 
-/* --- Gate Logic --- */
+/* --- Gate Logic (MODIFIED for always-on login) --- */
 function checkGate(code){
     const gateMsg = document.getElementById('gateMsg');
     if (code.toLowerCase() === SECRET_CODE || code === CODE_NAME) {
         gate.style.display = 'none';
         gateMsg.textContent = '';
-        localStorage.setItem('gateOpened', 'true');
+        // HAPUS: localStorage.setItem('gateOpened', 'true'); - Dihapus agar gate muncul lagi setelah browser ditutup
         initApp(); // Jalankan aplikasi setelah gate dibuka
         return true;
     } else {
@@ -376,7 +375,6 @@ function updateEXPDisplay() {
 
 /* --- Daily Message Logic (RANDOM PER DAY) --- */
 function loadDailyMessage() {
-    // Jika tidak ada pesan di pool, gunakan default
     if (DAILY_MESSAGE_POOL.length === 0) {
         return 'Belum ada pesan baru hari ini. 🥺';
     }
@@ -384,16 +382,13 @@ function loadDailyMessage() {
     const storedData = JSON.parse(localStorage.getItem(DAILY_MSG_KEY));
     const today = new Date().toDateString();
 
-    // 1. Cek: Jika data ada DAN tanggalnya hari ini, kembalikan pesan yang sudah dipilih
     if (storedData && storedData.date === today) {
         return storedData.message; 
     }
 
-    // 2. Jika hari baru, pilih pesan baru secara acak
     const randomIndex = Math.floor(Math.random() * DAILY_MESSAGE_POOL.length);
     const newMessage = DAILY_MESSAGE_POOL[randomIndex];
 
-    // 3. Simpan pesan baru dan tanggal hari ini
     localStorage.setItem(DAILY_MSG_KEY, JSON.stringify({
         date: today,
         message: newMessage
@@ -409,7 +404,7 @@ function renderDailyMessage() {
 }
 /* --- END Daily Message Logic --- */
 
-/* --- NEW FEATURE: EXPORT/COPY DATA FOR CACA (MODIFIED) --- */
+/* --- NEW FEATURE: EXPORT/COPY DATA FOR CACA --- */
 async function exportData() {
     const data = {
         moodLog: loadLogs(),
@@ -424,13 +419,12 @@ async function exportData() {
         lastUpdated: new Date().toLocaleString('id-ID')
     };
     
-    const json = JSON.stringify(data, null, 2); // Format JSON jadi teks rapi
+    const json = JSON.stringify(data, null, 2); 
     
     try {
-        await navigator.clipboard.writeText(json); // Copy ke clipboard
+        await navigator.clipboard.writeText(json); 
         reaction.textContent = 'Data Mood Mas berhasil di-copy ke clipboard! Silakan tempel (paste) di chat ke caca! 📋';
     } catch (err) {
-        // Fallback jika browser tidak mengizinkan copy otomatis 
         reaction.textContent = 'Gagal copy otomatis. Mas harus kirim screenshot Log ini ya. 🥺';
         console.error("Copy failed: ", err);
     }
@@ -444,7 +438,7 @@ function updateHugCount() {
 }
 
 function sendHug() {
-    const storedQuests = generateQuests();
+    const storedQuests = generateQuests(); 
     const isRewarded = storedQuests.rewarded;
 
     hugCount += 1;
@@ -463,13 +457,75 @@ function sendHug() {
     // Notifikasi
     reaction.textContent = `Pelukan ke-${hugCount} berhasil dikirim ke caca! 💙`;
     
-    // Check Quest Completion
+    // Check Quest Completion: panggil checker dengan actionType='hug'
     if (!isRewarded) {
         checkQuestCompletion('hug');
     }
 }
 
-/* --- Daily Quest Logic (MODIFIED to support multi-step quests) --- */
+/* --- Daily Quest Generator --- */
+function generateQuests() {
+    const today = new Date().toDateString();
+    let storedQuests = JSON.parse(localStorage.getItem(QUESTS_KEY));
+
+    if (!storedQuests || storedQuests.date !== today) {
+        // Jika hari baru atau tidak ada data, generate 3 misi baru
+        const shuffled = allQuests.sort(() => 0.5 - Math.random());
+        // Memastikan Hug-1 (action: hug) dan Note-1 (action: note) selalu ada jika tersedia
+        const guaranteedQuests = allQuests.filter(q => q.action === 'hug' || q.action === 'note');
+        
+        let pool = allQuests.filter(q => q.action !== 'hug' && q.action !== 'note');
+        let newQuests = [...guaranteedQuests];
+
+        // Ambil sisa quest hingga total 3
+        const numToPick = 3 - guaranteedQuests.length;
+        if (numToPick > 0) {
+            const shuffledPool = pool.sort(() => 0.5 - Math.random());
+            newQuests = newQuests.concat(shuffledPool.slice(0, numToPick));
+        }
+
+        storedQuests = { date: today, list: newQuests.map(q => ({ ...q, completed: false })), rewarded: false };
+        localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
+    }
+    return storedQuests;
+}
+
+
+function renderQuests() {
+    const storedQuests = generateQuests();
+    const quests = storedQuests.list;
+    const listEl = document.getElementById('questList');
+    listEl.innerHTML = '';
+    
+    if (storedQuests.rewarded) {
+        listEl.innerHTML = '<p style="font-weight: bold; color: var(--accent);">🎉 Semua Misi Hari Ini Selesai! Mas sudah dapat hadiah EXP! 🎉</p>';
+        return;
+    }
+
+    if(quests.length === 0) {
+        listEl.innerHTML = '<em>Tidak ada misi hari ini.</em>';
+        return;
+    }
+
+    quests.forEach((q, index) => {
+        const item = document.createElement('p');
+        const status = q.completed ? '✅' : '⬜';
+        item.innerHTML = `${status} ${q.text}`;
+        item.style.margin = '4px 0';
+        
+        if (q.completed) {
+            item.style.opacity = '0.6';
+            item.style.textDecoration = 'line-through'; 
+        } else {
+            item.style.opacity = '1';
+            item.style.textDecoration = 'none';
+        }
+        
+        listEl.appendChild(item);
+    });
+}
+
+// FUNGSI INI SUDAH DIREVISI TOTAL DAN DIPASTIKAN BENAR UNTUK MULTI-HUG
 function checkQuestCompletion(actionType, value = null) {
     let storedQuests = generateQuests();
     let changed = false;
@@ -480,9 +536,7 @@ function checkQuestCompletion(actionType, value = null) {
     const logs = loadLogs();
     const notes = loadNotes();
     const today = new Date().toDateString();
-    // Hitung jumlah log mood hari ini (untuk misi mood_2)
     const todayLogsCount = logs.filter(l => new Date(l.date).toDateString() === today).length;
-    // Hitung jumlah catatan hari ini (untuk misi note_2)
     const todayNotesCount = notes.filter(n => new Date(n.time).toDateString() === today).length;
 
     storedQuests.list.forEach(q => {
@@ -505,7 +559,6 @@ function checkQuestCompletion(actionType, value = null) {
         }
 
         // 3. Hug Quests (hug, hug_2, hug_3, hug_4)
-        // Cek jika ada aksi pelukan OR misi adalah misi pelukan
         if (actionType === 'hug' || q.action.startsWith('hug')) { 
             // Cek untuk misi 'Kirim Pelukan Pertama' (action: hug)
             if (q.action === 'hug' && hugCount >= 1) {
@@ -522,7 +575,6 @@ function checkQuestCompletion(actionType, value = null) {
         }
         
         // 4. Note Quests (note, note_2)
-        // Cek jika ada aksi catatan OR misi adalah misi catatan
         if (actionType === 'note' || q.action.startsWith('note')) {
             // Cek untuk misi 'Tulis Minimal 1 Catatan' (action: note)
             if (q.action === 'note' && todayNotesCount >= 1) {
@@ -564,7 +616,7 @@ function checkQuestCompletion(actionType, value = null) {
     }
 }
 /* --- END Daily Quest Logic --- */
-  
+
 /* --- NEW FEATURE: MOOD CALENDAR LOGIC --- */
 function getMoodsByDate() {
     const logs = loadLogs();
@@ -684,7 +736,7 @@ moodButtons.forEach(btn=>{
     renderLogs();
     
     // Pengecekan Quest Mood ke-2
-    checkQuestCompletion('mood_2');
+    checkQuestCompletion('mood'); 
 
     let reactionText = reactions[mood] || '';
     if (expGained) {
@@ -710,8 +762,8 @@ window.deleteLog = function(index){
     updateChart();
     renderMonthlySummary();
     renderCalendar(currentCalendarDate);
-    // Rerun mood_2 check to see if completion state changes
-    checkQuestCompletion('mood_2'); 
+    // Rerun quest check to see if completion state changes
+    checkQuestCompletion('mood'); 
   }
 }
 
@@ -914,21 +966,21 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   a.remove(); URL.revokeObjectURL(url);
 });
 
-/* --- FINAL FIX: Reset Data Handler (MODIFIED) --- */
+/* --- FINAL FIX: Reset Data Handler --- */
 document.getElementById('resetDataBtn').addEventListener('click', ()=>{
   if(confirm('Yakin ingin menghapus SEMUA data mood, catatan, EXP, Level, dan Streak? Ini tidak bisa dikembalikan!')){
     // Data Aplikasi Utama
     localStorage.removeItem('masMoodLog');
     localStorage.removeItem('masNotes');
-    // NOTE: Keep 'gateOpened' for a moment so the app can load the fresh state
-    
+    // NOTE: Menghapus gateOpened sudah tidak perlu karena kita tidak menyimpannya lagi
+
     // KUNCI: DATA GAMIFIKASI, QUEST, & MESSAGE
     localStorage.removeItem('loveEXP');
     localStorage.removeItem('lastMoodDate');
     localStorage.removeItem('currentStreak');
     localStorage.removeItem(QUESTS_KEY); 
     localStorage.removeItem('hugCount'); 
-    localStorage.removeItem(DAILY_MSG_KEY); // Hapus data pesan harian
+    localStorage.removeItem(DAILY_MSG_KEY); 
 
     // Now, force reload to apply clean state
     alert('Data berhasil di-reset! Silakan muat ulang halaman.');
@@ -947,7 +999,7 @@ function initApp() {
     renderQuests(); 
     updateHugCount(); 
     renderCalendar(currentCalendarDate); 
-    renderDailyMessage(); // NEW: Render pesan harian
+    renderDailyMessage(); 
     
     // Terapkan efek sparkle
     startSparkles(document.querySelector('.mood-container'));
@@ -966,11 +1018,9 @@ gateInput.addEventListener('keydown', (e) => {
     }
 });
 
-// Jalankan initApp segera jika gate sudah pernah dibuka
-if (localStorage.getItem('gateOpened') === 'true') {
-    gate.style.display = 'none';
-    initApp();
-}
+// NOTE: Pengecekan gateOpened Dihapus total, sehingga gate selalu muncul.
+// Aplikasi hanya berjalan setelah checkGate berhasil dipanggil (di listener di atas).
 </script>
+
 </body>
 </html>
