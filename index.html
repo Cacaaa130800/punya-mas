@@ -42,7 +42,9 @@
     textarea{width:100%; height:78px; border-radius:10px; padding:10px; border:1px solid #ccc; resize:vertical;
       background:transparent; color:var(--text)}
     #reaction{margin-top:12px; font-size:18px; text-align:center; min-height:36px}
-    #entries div, #notes div{padding:8px 0; border-bottom:1px dashed rgba(0,0,0,0.06)}
+    #entries div{display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px dashed rgba(0,0,0,0.06)}
+    .delete-btn{cursor:pointer; font-size:14px; margin-left:10px; color:#e74c3c;}
+    #notes div{padding:8px 0; border-bottom:1px dashed rgba(0,0,0,0.06)}
     #sticker{position:fixed; right:12px; bottom:12px; width:120px; display:none; z-index:999}
     /* sticker animation */
     #sticker.show{display:block; transform:translateY(0); transition:transform .45s ease, opacity .35s}
@@ -82,6 +84,8 @@
 
   <div class="card">
     <h3>Catatan Mood & Statistik</h3>
+    <div id="monthlySummary" style="margin-bottom: 15px; padding:10px: background:rgba(111,168,220,0.1); border-radius:8px;">
+      <em>Loading ringkasan mood mas bulan ini...</em>
     <canvas id="moodChart" height="140"></canvas>
     <div id="entries" style="margin-top:10px"></div>
   </div>
@@ -161,8 +165,21 @@ moodButtons.forEach(btn=>{
     // make sticker show briefly
     showSticker();
     updateChart();
+    renderMonthSummary();
   });
 });
+
+/* --- Delete Log handler (NEW FEATURE 1) --- */
+window.deleteLog = function(index){
+  const logs = loadLogs();
+  if(confirm(`Yakin ingin menghapus log mood: ${logs[index].mood} pada ${logs[index].date}?`)){
+    logs.splice(index, 1);
+    saveLogs(logs);
+    renderLogs();
+    updateChart();
+    renderMonthlySummary();
+  }
+}
 
 /* --- Render logs & notes --- */
 function renderLogs(){
@@ -282,6 +299,70 @@ function updateChart(){
   });
 }
 
+/* --- Monthly Summary (NEW FEATURE 2) --- */
+function renderMonthlySummary(){
+  const logs = loadLogs();
+  const summaryBox = document.getElementById('monthlySummary');
+  
+  if (logs.length === 0) {
+    summaryBox.innerHTML = '<em>Catatan mood masih kosong. Yuk, mulai hari ini!</em>';
+    return;
+  }
+  
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  const currentMonthLogs = logs.filter(l => {
+    const logDate = new Date(l.date);
+    return logDate.getMonth() === currentMonth && logDate.getFullYear() === currentYear;
+  });
+  
+  if (currentMonthLogs.length === 0) {
+    summaryBox.innerHTML = '<em>Belum ada catatan mood di bulan ini.</em>';
+    return;
+  }
+  
+  const moodCounts = {};
+  currentMonthLogs.forEach(l => {
+    const moodKey = l.mood.split(' ')[0]; // Ambil emoji saja
+    moodCounts[moodKey] = (moodCounts[moodKey] || 0) + 1;
+  });
+  
+  let dominantMoodText = '';
+  let maxCount = 0;
+  let totalCount = currentMonthLogs.length;
+
+  // Temukan mood yang dominan
+  for (const moodKey in moodCounts) {
+    if (moodCounts[moodKey] > maxCount) {
+      maxCount = moodCounts[moodKey];
+      // Cari teks lengkap mood dari reactions map
+      for (const fullMood in reactions) {
+        if (fullMood.startsWith(moodKey)) {
+          dominantMoodText = fullMood;
+          break;
+        }
+      }
+    }
+  }
+
+  const percentage = ((maxCount / totalCount) * 100).toFixed(0);
+
+  // Buat pesan manis
+  let message = `Mood Mas di bulan ini (${now.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}) didominasi oleh **${dominantMoodText}** (${percentage}% dari total ${totalCount} catatan). `;
+  
+  if (dominantMoodText.includes('Senang') || dominantMoodText.includes('Sayang')) {
+    message += `Pertahankan mood baik ini, mas sayang! caca ikut bahagia! 🥳💙`;
+  } else if (dominantMoodText.includes('Sedih') || dominantMoodText.includes('Kesel')) {
+    message += `Yuk, coba lebih banyak tersenyum! caca selalu di sini untuk menemani Mas. 🤗`;
+  } else {
+    message += `Semoga hari-hari berikutnya makin berwarna dan happy ya, Mas!`;
+  }
+  
+  summaryBox.innerHTML = `<p style="font-weight: bold; margin: 0">${message}</p>`;
+}
+
 /* --- New: Reset Data Handler --- */
 document.getElementById('resetDataBtn').addEventListener('click', ()=>{
   if(confirm('Yakin ingin menghapus SEMUA data mood dan catatan? Ini tidak bisa dikembalikan!')){
@@ -293,7 +374,7 @@ document.getElementById('resetDataBtn').addEventListener('click', ()=>{
 });
 
 /* --- Init --- */
-renderLogs(); renderNotes(); updateChart();
+renderLogs(); renderNotes(); updateChart(); renderMonthlySummary();
 
 /* --- small compatibility: if bgm blocked by browser autoplay policies, user can tap Backsound button --- */
 
