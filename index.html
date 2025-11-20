@@ -15,8 +15,8 @@
       --mood-kesel: #F44336; /* Red */
       --mood-sayang: #FF69B4; /* Pink */
       --mood-default: #d1d1d1; /* Gray */
-      --msg-bg: #ffe4e6; /* Light Pink for Message Card */
-      --msg-border: #ff85a2; /* Medium Pink */
+      --msg-bg: #ffe4e6; /* Light Pink for Message Card (NEW) */
+      --msg-border: #ff85a2; /* Medium Pink (NEW) */
     }
     .dark { 
       --bg:#0f1621; --text:#f1f6ff; --card:#1d2b40; --accent:#4a90e2; 
@@ -59,7 +59,22 @@
       background:transparent; color:var(--text)}
     #reaction{margin-top:12px; font-size:18px; text-align:center; min-height:36px}
     
-    /* NEW CSS FOR LEVEL & EXP */
+    /* CSS UNTUK LOG & TOMBOL HAPUS */
+    #entries div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding:8px 0; 
+      border-bottom:1px dashed rgba(0,0,0,0.06)
+    }
+    .delete-btn{
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 10px;
+      color: #e74c3c;
+    }
+
+    /* NEW CSS FOR LEVEL & EXP (MODIFIED) */
     #currentTitle {
         font-size: 1.1em;
         font-weight: 800;
@@ -73,22 +88,32 @@
     #expFill{height:100%;background:#ffaa7f;border-radius:3px;transition:width .5s ease}
     .exp-text{font-weight:bold;color:#f39c12}
     
+    /* NEW CSS FOR DAILY QUEST */
+    #questList p { margin: 6px 0; font-size: 15px; }
+    
     /* NEW CSS FOR CALENDAR MOOD */
     #moodCalendar{width:100%; margin-top:12px; text-align:center}
     #calendarHeader{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
     #calendarGrid{display:grid; grid-template-columns:repeat(7, 1fr); gap:4px}
     .day-name{font-weight:bold; font-size:12px; padding:4px 0}
     .day-cell{
-        width:100%; aspect-ratio: 1 / 1; display:flex; 
-        align-items:center; justify-content:center; 
-        border-radius:50%; font-size:12px; font-weight:bold;
-        background:var(--mood-default); color:var(--text);
-        position:relative; transition:background .2s, color .2s;
+        width:100%; 
+        aspect-ratio: 1 / 1; 
+        display:flex; 
+        align-items:center; 
+        justify-content:center; 
+        border-radius:50%; 
+        font-size:12px;
+        font-weight:bold;
+        background:var(--mood-default);
+        color:var(--text);
+        position:relative;
+        transition:background .2s, color .2s;
     }
     .day-cell.mood-set {
         color: white; /* Text white for colored backgrounds */
         cursor: help;
-        box-shadow: 0 0 0 2px var(--card) inset;
+        box-shadow: 0 0 0 2px var(--card) inset; /* Border inside cell */
     }
     .day-cell.today{box-shadow: 0 0 0 3px var(--accent) !important; color:var(--accent)}
 
@@ -98,6 +123,19 @@
         background: var(--msg-bg) !important;
         box-shadow: 0 6px 18px rgba(255, 133, 162, 0.2);
     }
+
+    /* NEW CSS FOR SPARKLE EFFECT */
+    .loveSparkle{position:absolute;font-size:16px;pointer-events:none;z-index:100;animation:fadeNscale 1.5s ease-out}
+    @keyframes fadeNscale{0%{opacity:1;transform:scale(0.8)}100%{opacity:0;transform:scale(1.5)}}
+    
+    /* STICKER CSS REMOVED */
+
+    .loveHeart{position:fixed; font-size:28px; animation:floatUp 2.4s ease-out; pointer-events:none; z-index:9999}
+    @keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-160px);opacity:0}}
+    #secretModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(3px); align-items:center; justify-content:center; z-index:2000}
+    #secretModal .box{background:var(--card); color:var(--text); padding:18px; border-radius:14px; width:88%; max-width:420px; text-align:center}
+    @media (max-width:420px){ .mood{font-size:34px} } 
+    /* STICKER MEDIA QUERY REMOVED */
   </style>
 </head>
 <body>
@@ -130,10 +168,10 @@
   </div>
 
   <div id="reaction"></div>
-
+  
   <div class="card" id="dailyMessageCard">
     <h3 style="margin-top: 0; text-align: center;">💌 Pesan Harian dari Caca 💌</h3>
-    <p id="dailyMessageContent" style="font-style: italic; text-align: center; margin: 0; font-size: 1.1em;"></p>
+    <p id="dailyMessageContent" style="font-style: italic; text-align: center; margin: 0; font-size: 1.1em;">Belum ada pesan baru hari ini. 🥺</p>
   </div>
   <div class="card" id="dailyQuestCard">
     <h3>✨ Misi Harian Buat Mas</h3>
@@ -184,8 +222,6 @@
     <small>Klik tombol Surat Rahasia atau tombol di atas</small>
   </div>
 
-  <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" alt="cute sticker">
-
   <div id="secretModal">
     <div class="box">
       <h2>Pesan Rahasia Buat Mas 💌</h2>
@@ -209,18 +245,28 @@
 
 <script>
 /* --- Utility & state --- */
-// Gate & App Refs (standard)
+// Gate Refs
 const gate = document.getElementById('gate');
 const gateInput = document.getElementById('gateInput');
 const gateEnterBtn = document.getElementById('gateEnterBtn');
 const gateMsg = document.getElementById('gateMsg');
-const moodButtons = document.querySelectorAll('.mood');
-const reaction = document.getElementById('reaction');
-// ... (other refs)
 
 // Gate Code
 const SECRET_CODE = "sayang"; 
-const CODE_NAME = "Mas";   
+const CODE_NAME = "Mas";    
+
+// App Refs
+const moodButtons = document.querySelectorAll('.mood');
+const reaction = document.getElementById('reaction');
+const entriesBox = document.getElementById('entries');
+const notesBox = document.getElementById('notes');
+const noteInput = document.getElementById('noteInput');
+const bgm = document.getElementById('bgm');
+// const sticker = document.getElementById('sticker'); // REMOVED
+const secretModal = document.getElementById('secretModal');
+let moodChart;
+let isDark = false;
+let currentCalendarDate = new Date(); 
 
 // Gamification State
 let loveEXP = parseInt(localStorage.getItem('loveEXP') || '0');
@@ -229,10 +275,13 @@ let currentStreak = parseInt(localStorage.getItem('currentStreak') || '0');
 let hugCount = parseInt(localStorage.getItem('hugCount') || '0'); 
 const QUESTS_KEY = 'dailyQuests'; 
 const DAILY_EXP_REWARD = 20;      
-
-// NEW: Message & Level Keys
 const DAILY_MSG_KEY = 'cacaDailyMessage'; 
-let currentCalendarDate = new Date(); 
+const allQuests = [
+    { text: "Kirim Pelukan Pertama Hari Ini", action: "hug" },
+    { text: "Tulis Minimal 1 Catatan Penting", action: "note" },
+    { text: "Catat Mood Lebih dari Sekali", action: "mood_2" },
+    { text: "Buka Halaman Rahasia", action: "secret" },
+];
 
 /* --- Level System Data (NEW) --- */
 const LOVE_LEVELS = [
@@ -244,12 +293,14 @@ const LOVE_LEVELS = [
     { exp: 500, title: "Cinta Abadi ✨" }
 ];
 
+
 /* --- Data helpers --- */
 function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]'); }
 function saveLogs(logs){ localStorage.setItem('masMoodLog', JSON.stringify(logs)); }
 function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
 function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
 function loadDailyMessage() { return localStorage.getItem(DAILY_MSG_KEY) || 'Belum ada pesan baru hari ini. 🥺'; }
+
 
 /* --- Reactions map & Color Map --- */
 const reactions = {
@@ -269,7 +320,21 @@ const MOOD_COLOR_MAP = {
 };
 
 
-/* --- Gamification: EXP & Level Logic (NEW & MODIFIED) --- */
+/* --- Gate Logic --- */
+function checkGate(code){
+    if (code.toLowerCase() === SECRET_CODE || code === CODE_NAME) {
+        gate.style.display = 'none';
+        gateMsg.textContent = '';
+        localStorage.setItem('gateOpened', 'true');
+        initApp(); // Jalankan aplikasi setelah gate dibuka
+        return true;
+    } else {
+        gateMsg.textContent = 'Kode salah, Mas! Coba lagi ya.';
+        return false;
+    }
+}
+
+/* --- Gamification: EXP & Level Logic (MODIFIED) --- */
 function getLoveTitle(exp) {
     let currentTitle = LOVE_LEVELS[0].title;
     for (const level of LOVE_LEVELS) {
@@ -284,7 +349,7 @@ function getLoveTitle(exp) {
 
 function updateEXPDisplay() {
     const title = getLoveTitle(loveEXP);
-    document.getElementById('currentTitle').textContent = `Gelar: ${title}`;
+    document.getElementById('currentTitle').textContent = `Gelar: ${title}`; // NEW
     document.getElementById('currentEXP').textContent = loveEXP;
     document.getElementById('currentStreak').textContent = currentStreak;
     // Progress bar (per 100 EXP)
@@ -317,9 +382,59 @@ function handleSaveDailyMessage() {
         alert('Pesan tidak boleh kosong!');
     }
 }
+/* --- END Daily Message Logic --- */
 
-/* --- Daily Quest Logic (MODIFIED: Strikethrough added) --- */
-// ... (generateQuests, checkQuestCompletion functions are unchanged)
+
+/* --- Hug Logic --- */
+function updateHugCount() {
+    localStorage.setItem('hugCount', hugCount);
+}
+
+function sendHug() {
+    const storedQuests = generateQuests();
+    const isRewarded = storedQuests.rewarded;
+
+    hugCount += 1;
+    updateHugCount();
+    
+    // Tampilkan efek/pesan pelukan
+    const h = document.createElement('div');
+    h.className = 'loveHeart'; 
+    h.style.fontSize = '40px';
+    h.textContent = '🫂'; 
+    h.style.left = '50%'; h.style.bottom = '-10px';
+    h.style.transform = 'translateX(-50%)';
+    document.body.appendChild(h); 
+    setTimeout(() => h.remove(), 2500);
+
+    // Notifikasi
+    reaction.textContent = `Pelukan ke-${hugCount} berhasil dikirim ke caca! 💙`;
+    
+    // Check Quest Completion
+    if (!isRewarded) {
+        checkQuestCompletion('hug');
+    }
+}
+
+/* --- Daily Quest Logic --- */
+function generateQuests() {
+    const today = new Date().toDateString();
+    let storedQuests = JSON.parse(localStorage.getItem(QUESTS_KEY));
+
+    if (!storedQuests || storedQuests.date !== today) {
+        // Jika hari baru atau tidak ada data, generate 3 misi baru
+        const shuffled = allQuests.sort(() => 0.5 - Math.random());
+        const newQuests = shuffled.slice(0, 3).map(q => ({
+            ...q,
+            completed: false
+        }));
+        storedQuests = { date: today, list: newQuests, rewarded: false };
+        localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
+    }
+    return storedQuests;
+}
+
+// MODIFIED: Added Strikethrough logic
 function renderQuests() {
     const storedQuests = generateQuests();
     const quests = storedQuests.list;
@@ -353,18 +468,66 @@ function renderQuests() {
         listEl.appendChild(item);
     });
 }
+
+function checkQuestCompletion(actionType, value = null) {
+    let storedQuests = generateQuests();
+    let changed = false;
+
+    if (storedQuests.rewarded) return; 
+
+    storedQuests.list.forEach(q => {
+        if (q.completed) return;
+
+        if (q.action === actionType) {
+            // Specific checks for mood_2
+            if (q.action === 'mood_2') {
+                const logs = loadLogs();
+                const todayLogs = logs.filter(l => new Date(l.date).toDateString() === new Date().toDateString());
+                if (todayLogs.length >= 2) { // Use real log count
+                    q.completed = true;
+                    changed = true;
+                }
+            } else {
+                q.completed = true;
+                changed = true;
+            }
+        }
+    });
+
+    if (changed) {
+        localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
+        
+        const allCompleted = storedQuests.list.every(q => q.completed);
+        if (allCompleted) {
+            loveEXP += DAILY_EXP_REWARD;
+            localStorage.setItem('loveEXP', loveEXP);
+            storedQuests.rewarded = true; 
+            localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
+
+            updateEXPDisplay();
+            renderQuests(); 
+            reaction.textContent = `SEMUA MISI HARIAN SELESAI! 🎉 Mas dapat ${DAILY_EXP_REWARD} Poin Cinta Tambahan!`;
+        } else {
+            renderQuests(); 
+        }
+    }
+}
 /* --- END Daily Quest Logic --- */
 
-/* --- MOOD CALENDAR LOGIC (UNCHANGED) --- */
+/* --- NEW FEATURE: MOOD CALENDAR LOGIC --- */
 function getMoodsByDate() {
     const logs = loadLogs();
     const moods = {};
+    // Hanya ambil log pertama (mood dominan) per hari
     logs.forEach(l => {
         const dateKey = new Date(l.date).toDateString();
-        if (!moods[dateKey]) { moods[dateKey] = l.mood; }
+        if (!moods[dateKey]) {
+            moods[dateKey] = l.mood;
+        }
     });
     return moods;
 }
+
 function renderCalendar(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -383,11 +546,15 @@ function renderCalendar(date) {
         grid.appendChild(d);
     });
 
-    const firstDayOfMonth = new Date(year, month, 1).getDay(); 
+    const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 for Sunday, 6 for Saturday
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    for (let i = 0; i < firstDayOfMonth; i++) { grid.appendChild(document.createElement('div')); }
+    // Fill initial empty cells
+    for (let i = 0; i < firstDayOfMonth; i++) {
+        grid.appendChild(document.createElement('div'));
+    }
 
+    // Fill days
     for (let day = 1; day <= daysInMonth; day++) {
         const dateKey = new Date(year, month, day).toDateString();
         const cell = document.createElement('div');
@@ -401,7 +568,12 @@ function renderCalendar(date) {
             cell.classList.add('mood-set');
             cell.title = `Mood: ${mood} (Catatan Pertama)`;
         }
-        if (dateKey === todayDateString) { cell.classList.add('today'); }
+
+        // Highlight today
+        if (dateKey === todayDateString) {
+            cell.classList.add('today');
+        }
+
         grid.appendChild(cell);
     }
 }
@@ -412,34 +584,41 @@ function updateCalendarMonth(change) {
 }
 /* --- END MOOD CALENDAR LOGIC --- */
 
-/* --- Mood click handler (MODIFIED: Logs cleaned) --- */
+
+/* --- Mood click handler (WITH DAILY EXP) --- */
 moodButtons.forEach(btn=>{
   btn.addEventListener('click', ()=>{
     const today = new Date().toDateString();
     let expGained = false;
 
     // Logic EXP & STREAK
-    // ... (unchanged EXP/Streak logic)
     if (lastMoodDate !== today) {
-        loveEXP += 10; 
+        const oldTitle = getLoveTitle(loveEXP); // Capture title before EXP gain
+        loveEXP += 10; // Tambah 10 EXP per hari
         if (lastMoodDate) {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             if (lastMoodDate === yesterday.toDateString()) {
                 currentStreak += 1;
             } else {
-                currentStreak = 1; 
+                currentStreak = 1; // Reset jika terlewat
             }
         } else {
-            currentStreak = 1; 
+            currentStreak = 1; // First log, start streak
         }
         localStorage.setItem('loveEXP', loveEXP);
         localStorage.setItem('lastMoodDate', today);
         localStorage.setItem('currentStreak', currentStreak);
         updateEXPDisplay();
         expGained = true;
+        
+        const newTitle = getLoveTitle(loveEXP);
+        if (newTitle !== oldTitle) {
+            reaction.textContent = `LEVEL UP! Mas naik ke Gelar: ${newTitle}! 🏆`;
+            // Bypass default reaction for level up notification
+            return;
+        }
     }
-    // End EXP/Streak Logic
 
     const mood = btn.dataset.mood;
     const date = new Date().toLocaleString();
@@ -454,26 +633,24 @@ moodButtons.forEach(btn=>{
     renderLogs();
     
     // Pengecekan Quest Mood ke-2
-    const todayLogs = cleanedLogs.filter(l => new Date(l.date).toDateString() === today);
-    checkQuestCompletion('mood_2', todayLogs.length);
+    checkQuestCompletion('mood_2');
 
     let reactionText = reactions[mood] || '';
     if (expGained) {
-        reactionText += ` (${loveEXP-10} + 10 Poin Cinta! 💖)`;
+        reactionText += ` (+10 Poin Cinta! 💖)`;
     }
     reaction.textContent = reactionText;
 
-    // Visuals & Updates
     spawnTinyHearts();
     if(mood.includes('Sayang')) spawnBigHearts();
-    showSticker();
+    // showSticker(); // STICKER FUNCTION CALL REMOVED
     updateChart();
     renderMonthlySummary(); 
     renderCalendar(currentCalendarDate);
   });
 });
 
-/* --- Delete Log handler (UNCHANGED) --- */
+/* --- Delete Log handler --- */
 window.deleteLog = function(index){
   const logs = loadLogs();
   if(confirm(`Yakin ingin menghapus log mood: ${logs[index].mood} pada ${logs[index].date}?`)){
@@ -482,11 +659,150 @@ window.deleteLog = function(index){
     renderLogs();
     updateChart();
     renderMonthlySummary();
-    renderCalendar(currentCalendarDate); 
+    renderCalendar(currentCalendarDate);
+    // Rerun mood_2 check to see if completion state changes
+    checkQuestCompletion('mood_2'); 
   }
 }
 
-/* --- Event Listeners lainnya (MODIFIED) --- */
+/* --- Render logs & notes --- */
+function renderLogs(){
+  const logs = loadLogs();
+  entriesBox.innerHTML = '';
+  if(logs.length===0) entriesBox.innerHTML = '<em>Belum ada mood tercatat.</em>';
+  
+  logs.forEach((l, index)=>{ 
+    const d = document.createElement('div');
+    d.innerHTML = `<span>${l.date} — ${l.mood}</span>
+      <span class="delete-btn" onclick="deleteLog(${index})">🗑️ Hapus</span>`;
+    entriesBox.appendChild(d);
+  });
+}
+function renderNotes(){
+  const notes = loadNotes();
+  notesBox.innerHTML = '';
+  if(notes.length===0) notesBox.innerHTML = '<em>Belum ada catatan.</em>';
+  notes.forEach(n=>{
+    const d = document.createElement('div');
+    d.textContent = `${n.time} — ${n.text}`;
+    notesBox.appendChild(d);
+  });
+}
+
+/* --- Visual Effect & Animations --- */
+function startSparkles(el) {
+    el.addEventListener('mousemove', function(e) {
+        if (Math.random() < 0.2) { 
+            const sparkle = document.createElement('div');
+            sparkle.className = 'loveSparkle';
+            sparkle.textContent = '✨'; 
+            const rect = el.getBoundingClientRect();
+            sparkle.style.left = (e.clientX - rect.left) + 'px';
+            sparkle.style.top = (e.clientY - rect.top) + 'px';
+            sparkle.style.position = 'absolute';
+
+            el.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 1500);
+        }
+    });
+}
+// showSticker() function removed
+
+function spawnTinyHearts(){
+  for(let i=0;i<6;i++){
+    const h = document.createElement('div'); h.className='loveHeart'; h.textContent='💙';
+    h.style.left = Math.random()*92 + 'vw'; h.style.bottom = '-10px';
+    document.body.appendChild(h); setTimeout(()=>h.remove(), 2500);
+  }
+}
+function spawnBigHearts(){
+  for(let i=0;i<12;i++){
+    const h = document.createElement('div'); h.className='loveHeart';
+    h.style.fontSize = 34 + Math.floor(Math.random()*18) + 'px'; h.textContent = '💖';
+    h.style.left = (40 + Math.random()*20) + 'vw'; h.style.bottom = '-10px';
+    document.body.appendChild(h); setTimeout(()=>h.remove(), 2600);
+  }
+}
+
+/* --- Chart Update --- */
+function updateChart(){
+  const logs = loadLogs();
+  const moodNames = ['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca'];
+  const counts = moodNames.map(m => logs.filter(l => l.mood===m).length);
+  const ctx = document.getElementById('moodChart').getContext('2d');
+  if(moodChart) moodChart.destroy();
+  moodChart = new Chart(ctx, {
+    type:'bar',
+    data: { labels: moodNames, datasets: [{ label:'Jumlah', data: counts, backgroundColor: ['#66c2ff','#99d6ff','#aab6ff','#c0c0ff','#ffb6c1'] }] },
+    options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, ticks:{precision:0} } } }
+  });
+}
+
+/* --- Monthly Summary --- */
+function renderMonthlySummary(){
+  const logs = loadLogs();
+  const summaryBox = document.getElementById('monthlySummary');
+  
+  if (logs.length === 0) {
+    summaryBox.innerHTML = '<em>Catatan mood masih kosong. Yuk, mulai hari ini!</em>';
+    return;
+  }
+  
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  const currentMonthLogs = logs.filter(l => {
+    const logDate = new Date(l.date);
+    return logDate.getMonth() === currentMonth && logDate.getFullYear() === currentYear;
+  });
+  
+  if (currentMonthLogs.length === 0) {
+    summaryBox.innerHTML = '<em>Belum ada catatan mood di bulan ini.</em>';
+    return;
+  }
+  
+  const moodCounts = {};
+  currentMonthLogs.forEach(l => {
+    const moodKey = l.mood.split(' ')[0]; 
+    moodCounts[moodKey] = (moodCounts[moodKey] || 0) + 1;
+  });
+  
+  let dominantMoodText = '';
+  let maxCount = 0;
+  let totalCount = currentMonthLogs.length;
+
+  for (const moodKey in moodCounts) {
+    if (moodCounts[moodKey] > maxCount) {
+      maxCount = moodCounts[moodKey];
+      for (const fullMood in reactions) {
+        if (fullMood.startsWith(moodKey)) {
+          dominantMoodText = fullMood;
+          break;
+        }
+      }
+    }
+  }
+
+  const percentage = ((maxCount / totalCount) * 100).toFixed(0);
+
+  let message = `Mood Mas di bulan ini (${now.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}) didominasi oleh **${dominantMoodText}** (${percentage}% dari total ${totalCount} catatan). `;
+  
+  if (dominantMoodText.includes('Senang') || dominantMoodText.includes('Sayang')) {
+    message += `Pertahankan mood baik ini, mas sayang! caca ikut bahagia! 🥳💙`;
+  } else if (dominantMoodText.includes('Sedih') || dominantMoodText.includes('Kesel')) {
+    message += `Yuk, coba lebih banyak tersenyum! caca selalu di sini untuk menemani Mas. 🤗`;
+  } else {
+    message += `Semoga hari-hari berikutnya makin berwarna dan happy ya, Mas!`;
+  }
+  
+  summaryBox.innerHTML = `<p style="font-weight: bold; margin: 0">${message}</p>`;
+}
+
+
+/* --- Event Listeners lainnya --- */
+
+// MODIFIED: Save Note Listener
 document.getElementById('saveNote').addEventListener('click', ()=>{
   const text = noteInput.value.trim();
   if(!text) return;
@@ -506,27 +822,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
 document.getElementById('clearNotes').addEventListener('click', ()=>{
   if(confirm('Bersihkan semua catatan?')){ localStorage.removeItem('masNotes'); renderNotes(); }
 });
 noteInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ document.getElementById('saveNote').click(); e.preventDefault(); }});
 
+// MODIFIED: Secret Button Listener
 document.getElementById('secretBtn').addEventListener('click', ()=>{ 
     secretModal.style.display='flex'; 
     checkQuestCompletion('secret');
+    renderDailyMessage(); // Ensures the input box is updated
 });
 document.getElementById('closeSecret').addEventListener('click', ()=>{ secretModal.style.display='none'; });
 document.getElementById('secretPreview').addEventListener('click', ()=>{ 
     secretModal.style.display='flex'; 
     checkQuestCompletion('secret');
+    renderDailyMessage(); // Ensures the input box is updated
 });
 
+// HUG BUTTON LISTENER
 document.getElementById('hugBtn').addEventListener('click', sendHug); 
 
+// NEW: Calendar Controls Listener
 document.getElementById('prevMonth').addEventListener('click', () => updateCalendarMonth(-1));
 document.getElementById('nextMonth').addEventListener('click', () => updateCalendarMonth(1));
 
-// ... (Theme, Music, Download buttons - UNCHANGED)
+
+document.getElementById('musicBtn').addEventListener('click', ()=>{
+  if(bgm.paused){ bgm.play(); document.getElementById('musicBtn').textContent='⏸ Backsound'; }
+  else { bgm.pause(); document.getElementById('musicBtn').textContent='▶ Backsound'; }
+});
+bgm.addEventListener('play', ()=>{ document.getElementById('musicBtn').textContent='⏸ Backsound'; });
+bgm.addEventListener('pause', ()=>{ document.getElementById('musicBtn').textContent='▶ Backsound'; });
+
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  document.body.classList.toggle('dark'); isDark = document.body.classList.contains('dark');
+  document.getElementById('themeBtn').textContent = isDark ? '☀️ Mode' : '🌙 Mode';
+});
+
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const blob = new Blob([document.documentElement.outerHTML], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mood_tracker_mas.html';
+  document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+});
 
 /* --- FINAL FIX: Reset Data Handler (MODIFIED) --- */
 document.getElementById('resetDataBtn').addEventListener('click', ()=>{
@@ -534,7 +876,7 @@ document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     // Data Aplikasi Utama
     localStorage.removeItem('masMoodLog');
     localStorage.removeItem('masNotes');
-    localStorage.removeItem('gateOpened'); 
+    // NOTE: Keep 'gateOpened' for a moment so the app can load the fresh state
     
     // KUNCI: DATA GAMIFIKASI, QUEST, & MESSAGE
     localStorage.removeItem('loveEXP');
@@ -544,13 +886,14 @@ document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     localStorage.removeItem('hugCount'); 
     localStorage.removeItem(DAILY_MSG_KEY); // NEW: Hapus pesan harian
 
+    // Now, force reload to apply clean state
     alert('Data berhasil di-reset! Silakan muat ulang halaman.');
     window.location.reload();
   }
 });
 
 
-/* --- Fungsi Utama Aplikasi (MODIFIED) --- */
+/* --- Fungsi Utama Aplikasi --- */
 function initApp() {
     renderLogs(); 
     renderNotes(); 
@@ -559,7 +902,7 @@ function initApp() {
     updateEXPDisplay(); 
     renderQuests(); 
     updateHugCount(); 
-    renderCalendar(currentCalendarDate);
+    renderCalendar(currentCalendarDate); 
     renderDailyMessage(); // NEW: Render pesan harian
     
     // Terapkan efek sparkle
@@ -567,7 +910,18 @@ function initApp() {
     startSparkles(document.getElementById('secretPreview'));
 }
 
-// ... (Gate logic - UNCHANGED)
+
+/* --- Init: Pengecekan Gate --- */
+gateEnterBtn.addEventListener('click', () => {
+    checkGate(gateInput.value.trim());
+});
+
+gateInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        checkGate(gateInput.value.trim());
+    }
+});
+
 // Jalankan initApp segera jika gate sudah pernah dibuka
 if (localStorage.getItem('gateOpened') === 'true') {
     gate.style.display = 'none';
