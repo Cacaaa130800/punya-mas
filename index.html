@@ -86,6 +86,7 @@
     <h3>Catatan Mood & Statistik</h3>
     <div id="monthlySummary" style="margin-bottom: 15px; padding:10px: background:rgba(111,168,220,0.1); border-radius:8px;">
       <em>Loading ringkasan mood mas bulan ini...</em>
+    </div>
     <canvas id="moodChart" height="140"></canvas>
     <div id="entries" style="margin-top:10px"></div>
   </div>
@@ -186,9 +187,10 @@ function renderLogs(){
   const logs = loadLogs();
   entriesBox.innerHTML = '';
   if(logs.length===0) entriesBox.innerHTML = '<em>Belum ada mood tercatat.</em>';
-  logs.forEach(l=>{
+  logs.forEach(l, index)=>{
     const d = document.createElement('div');
-    d.textContent = `${l.date} — ${l.mood}`;
+    d.innerHTML = `<span>${l.date} — ${l.mood}</span>
+      <span class="delete-btn" onclick="deleteLog(${index})">🗑️ Hapus</span>`;
     entriesBox.appendChild(d);
   });
 }
