@@ -128,14 +128,11 @@
     .loveSparkle{position:absolute;font-size:16px;pointer-events:none;z-index:100;animation:fadeNscale 1.5s ease-out}
     @keyframes fadeNscale{0%{opacity:1;transform:scale(0.8)}100%{opacity:0;transform:scale(1.5)}}
     
-    /* STICKER CSS REMOVED */
-
     .loveHeart{position:fixed; font-size:28px; animation:floatUp 2.4s ease-out; pointer-events:none; z-index:9999}
     @keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-160px);opacity:0}}
     #secretModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(3px); align-items:center; justify-content:center; z-index:2000}
     #secretModal .box{background:var(--card); color:var(--text); padding:18px; border-radius:14px; width:88%; max-width:420px; text-align:center}
     @media (max-width:420px){ .mood{font-size:34px} } 
-    /* STICKER MEDIA QUERY REMOVED */
   </style>
 </head>
 <body>
@@ -249,7 +246,6 @@
 const gate = document.getElementById('gate');
 const gateInput = document.getElementById('gateInput');
 const gateEnterBtn = document.getElementById('gateEnterBtn');
-const gateMsg = document.getElementById('gateMsg');
 
 // Gate Code
 const SECRET_CODE = "sayang"; 
@@ -262,7 +258,6 @@ const entriesBox = document.getElementById('entries');
 const notesBox = document.getElementById('notes');
 const noteInput = document.getElementById('noteInput');
 const bgm = document.getElementById('bgm');
-// const sticker = document.getElementById('sticker'); // REMOVED
 const secretModal = document.getElementById('secretModal');
 let moodChart;
 let isDark = false;
@@ -322,6 +317,7 @@ const MOOD_COLOR_MAP = {
 
 /* --- Gate Logic --- */
 function checkGate(code){
+    const gateMsg = document.getElementById('gateMsg');
     if (code.toLowerCase() === SECRET_CODE || code === CODE_NAME) {
         gate.style.display = 'none';
         gateMsg.textContent = '';
@@ -643,7 +639,6 @@ moodButtons.forEach(btn=>{
 
     spawnTinyHearts();
     if(mood.includes('Sayang')) spawnBigHearts();
-    // showSticker(); // STICKER FUNCTION CALL REMOVED
     updateChart();
     renderMonthlySummary(); 
     renderCalendar(currentCalendarDate);
@@ -706,7 +701,6 @@ function startSparkles(el) {
         }
     });
 }
-// showSticker() function removed
 
 function spawnTinyHearts(){
   for(let i=0;i<6;i++){
