@@ -590,14 +590,33 @@ saveMood = function(mood){
 <script>
 
 /* GATE */
-function enterGate(){
-  const val=document.getElementById('gateInput').value.trim().toLowerCase();
-  if(val==='mas'){
-    document.getElementById('gate').classList.add('hidden');
-  } else {
-    document.getElementById('gateMsg').textContent='jawabannya salah 😡 cuma mas yang boleh masuk!';
+function enterGate(mode){
+  const val = document.getElementById('gateInput').value.trim().toLowerCase();
+  const msg = document.getElementById('gateMsg');
+
+  // mode “surprise”
+  if(mode === 'surprise'){
+    document.getElementById('gate').style.display = 'none';
+    showBubble('surprise buat mas 🩵');
+    return;
+  }
+
+  // mode normal (jawaban harus "mas")
+  if(val === 'mas'){
+    document.getElementById('gate').style.opacity = '0';
+
+    // animasi fade out biar halus
+    setTimeout(()=>{
+      document.getElementById('gate').style.display = 'none';
+    }, 400);
+
+    showBubble('Halo mas 🩵 masuk sini yaa~');
+  } 
+  else {
+    msg.textContent = 'jawabannya salah 😡 cuma mas yang boleh masuk!';
   }
 }
+
 
 function toggleDark(){ document.body.classList.toggle('dark'); }
 function toggleMusic(){ const m=document.getElementById('bgm'); m.paused?m.play():m.pause(); }
