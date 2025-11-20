@@ -6,8 +6,20 @@
   <title>Mood Tracker Mas 💙</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root { --bg:#e7f1ff; --text:#1a2a3a; --card:#ffffff; --accent:#6fa8dc; }
-    .dark { --bg:#0f1621; --text:#f1f6ff; --card:#1d2b40; --accent:#4a90e2; }
+    :root { 
+      --bg:#e7f1ff; --text:#1a2a3a; --card:#ffffff; --accent:#6fa8dc; 
+      /* Mood Colors for Calendar */
+      --mood-senang: #4CAF50; /* Green */
+      --mood-biasa: #FFC107; /* Yellow */
+      --mood-sedih: #2196F3; /* Blue */
+      --mood-kesel: #F44336; /* Red */
+      --mood-sayang: #FF69B4; /* Pink */
+      --mood-default: #d1d1d1; /* Gray */
+    }
+    .dark { 
+      --bg:#0f1621; --text:#f1f6ff; --card:#1d2b40; --accent:#4a90e2; 
+      --mood-default: #444;
+    }
     *{box-sizing:border-box}
     body{
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
@@ -27,7 +39,7 @@
       background:var(--accent); color:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.12)
     }
     .secondary{background:transparent; color:var(--text); border:1px solid rgba(0,0,0,0.08)}
-    .mood-container{display:flex; gap:14px; margin:18px 0; justify-content:center; flex-wrap:wrap; position: relative;} /* Added position: relative for sparkle effect */
+    .mood-container{display:flex; gap:14px; margin:18px 0; justify-content:center; flex-wrap:wrap; position: relative;}
     .mood{font-size:38px; cursor:pointer; transition:transform .12s}
     .mood:hover{transform:scale(1.18)}
     .card{
@@ -57,10 +69,6 @@
       margin-left: 10px;
       color: #e74c3c;
     }
-    #notes div{
-      padding:8px 0; 
-      border-bottom:1px dashed rgba(0,0,0,0.06)
-    }
 
     /* NEW CSS FOR GAMIFICATION & DAILY EXP */
     .exp-area{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px}
@@ -71,6 +79,32 @@
     /* NEW CSS FOR DAILY QUEST */
     #questList p { margin: 6px 0; font-size: 15px; }
     
+    /* NEW CSS FOR CALENDAR MOOD */
+    #moodCalendar{width:100%; margin-top:12px; text-align:center}
+    #calendarHeader{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
+    #calendarGrid{display:grid; grid-template-columns:repeat(7, 1fr); gap:4px}
+    .day-name{font-weight:bold; font-size:12px; padding:4px 0}
+    .day-cell{
+        width:100%; 
+        aspect-ratio: 1 / 1; 
+        display:flex; 
+        align-items:center; 
+        justify-content:center; 
+        border-radius:50%; 
+        font-size:12px;
+        font-weight:bold;
+        background:var(--mood-default);
+        color:var(--text);
+        position:relative;
+        transition:background .2s, color .2s;
+    }
+    .day-cell.mood-set {
+        color: white; /* Text white for colored backgrounds */
+        cursor: help;
+        box-shadow: 0 0 0 2px var(--card) inset; /* Border inside cell */
+    }
+    .day-cell.today{box-shadow: 0 0 0 3px var(--accent) !important; color:var(--accent)}
+
     /* NEW CSS FOR SPARKLE EFFECT */
     .loveSparkle{position:absolute;font-size:16px;pointer-events:none;z-index:100;animation:fadeNscale 1.5s ease-out}
     @keyframes fadeNscale{0%{opacity:1;transform:scale(0.8)}100%{opacity:0;transform:scale(1.5)}}
@@ -99,7 +133,8 @@
   <div class="controls">
     <button id="themeBtn" class="btn">🌙 Mode</button>
     <button id="musicBtn" class="btn">▶ Backsound</button>
-    <button id="hugBtn" class="btn">🫂 Kirim Peluk</button> <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
+    <button id="hugBtn" class="btn">🫂 Kirim Peluk</button>
+    <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
     <button id="secretBtn" class="btn secondary">💌 Surat Rahasia</button>
     <button id="downloadBtn" class="btn secondary">⬇️ Download HTML</button>
   </div>
@@ -129,6 +164,16 @@
     </div>
     <div id="expBar"><div id="expFill"></div></div>
     <small style="margin-top: 4px; display: block;">*Mendapatkan 10 Poin Cinta setiap hari!</small>
+    
+    <div id="moodCalendar">
+      <div id="calendarHeader">
+        <button id="prevMonth" class="btn secondary">&lt;</button>
+        <h4 id="monthYear" style="margin:0;"></h4>
+        <button id="nextMonth" class="btn secondary">&gt;</button>
+      </div>
+      <div id="calendarGrid">
+        </div>
+    </div>
     <div id="monthlySummary" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background: rgba(111, 168, 220, 0.1); border-radius: 8px;">
       <em>Loading ringkasan mood mas bulan ini...</em>
     </div>
@@ -190,6 +235,7 @@ const sticker = document.getElementById('sticker');
 const secretModal = document.getElementById('secretModal');
 let moodChart;
 let isDark = false;
+let currentCalendarDate = new Date(); // State untuk kalender
 
 // Gamification State
 let loveEXP = parseInt(localStorage.getItem('loveEXP') || '0');
@@ -213,7 +259,7 @@ function saveLogs(logs){ localStorage.setItem('masMoodLog', JSON.stringify(logs)
 function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
 function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
 
-/* --- Reactions map --- */
+/* --- Reactions map & Color Map --- */
 const reactions = {
   '😄 Senang':'mas seneng?? ya ampun caca ikut senenggg 😭💙 peluk dulu sini 🫂',
   '🙂 Biasa aja':'mas biasa aja ya hari ini? sini caca temenin biar makin happy 🩵',
@@ -221,6 +267,15 @@ const reactions = {
   '😡 Kesel':'siapa yang bikin mas kesel?? ceritain yaaaa, biar caca cubit orang yang nakalin masssss 😤💙',
   '🥰 Sayang caca':'aaaa mas sayang cacaaa?? caca juga sayang mas banyak banyakkkkkkk 🥹🩵💙'
 };
+
+const MOOD_COLOR_MAP = {
+    '😄 Senang': 'var(--mood-senang)',
+    '🙂 Biasa aja': 'var(--mood-biasa)',
+    '😢 Sedih': 'var(--mood-sedih)',
+    '😡 Kesel': 'var(--mood-kesel)',
+    '🥰 Sayang caca': 'var(--mood-sayang)',
+};
+
 
 /* --- Gate Logic --- */
 function checkGate(code){
@@ -246,7 +301,7 @@ function updateEXPDisplay() {
     document.getElementById('expFill').style.width = `${progress * 100}%`;
 }
 
-/* --- Hug Logic (NEW) --- */
+/* --- Hug Logic --- */
 function updateHugCount() {
     localStorage.setItem('hugCount', hugCount);
 }
@@ -277,7 +332,7 @@ function sendHug() {
     }
 }
 
-/* --- Daily Quest Logic (NEW) --- */
+/* --- Daily Quest Logic --- */
 function generateQuests() {
     const today = new Date().toDateString();
     let storedQuests = JSON.parse(localStorage.getItem(QUESTS_KEY));
@@ -295,6 +350,7 @@ function generateQuests() {
     return storedQuests;
 }
 
+// MODIFIED: Added Strikethrough logic
 function renderQuests() {
     const storedQuests = generateQuests();
     const quests = storedQuests.list;
@@ -316,7 +372,15 @@ function renderQuests() {
         const status = q.completed ? '✅' : '⬜';
         item.innerHTML = `${status} ${q.text}`;
         item.style.margin = '4px 0';
-        item.style.opacity = q.completed ? '0.6' : '1';
+        
+        if (q.completed) {
+            item.style.opacity = '0.6';
+            item.style.textDecoration = 'line-through'; 
+        } else {
+            item.style.opacity = '1';
+            item.style.textDecoration = 'none';
+        }
+        
         listEl.appendChild(item);
     });
 }
@@ -364,6 +428,76 @@ function checkQuestCompletion(actionType, value = null) {
 }
 /* --- END Daily Quest Logic --- */
 
+/* --- NEW FEATURE: MOOD CALENDAR LOGIC --- */
+function getMoodsByDate() {
+    const logs = loadLogs();
+    const moods = {};
+    // Hanya ambil log pertama (mood dominan) per hari
+    logs.forEach(l => {
+        const dateKey = new Date(l.date).toDateString();
+        if (!moods[dateKey]) {
+            moods[dateKey] = l.mood;
+        }
+    });
+    return moods;
+}
+
+function renderCalendar(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const todayDateString = new Date().toDateString();
+    const moods = getMoodsByDate();
+    
+    document.getElementById('monthYear').textContent = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+
+    const daysOfWeek = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    daysOfWeek.forEach(day => {
+        const d = document.createElement('div');
+        d.className = 'day-name';
+        d.textContent = day;
+        grid.appendChild(d);
+    });
+
+    const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 for Sunday, 6 for Saturday
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Fill initial empty cells
+    for (let i = 0; i < firstDayOfMonth; i++) {
+        grid.appendChild(document.createElement('div'));
+    }
+
+    // Fill days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateKey = new Date(year, month, day).toDateString();
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        cell.textContent = day;
+
+        const mood = moods[dateKey];
+        if (mood) {
+            const moodColor = MOOD_COLOR_MAP[mood] || 'var(--mood-default)';
+            cell.style.backgroundColor = moodColor;
+            cell.classList.add('mood-set');
+            cell.title = `Mood: ${mood} (Catatan Pertama)`;
+        }
+
+        // Highlight today
+        if (dateKey === todayDateString) {
+            cell.classList.add('today');
+        }
+
+        grid.appendChild(cell);
+    }
+}
+
+function updateCalendarMonth(change) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + change);
+    renderCalendar(currentCalendarDate);
+}
+/* --- END MOOD CALENDAR LOGIC --- */
+
 
 /* --- Mood click handler (WITH DAILY EXP) --- */
 moodButtons.forEach(btn=>{
@@ -396,12 +530,16 @@ moodButtons.forEach(btn=>{
     const date = new Date().toLocaleString();
     const entry = { mood, date };
     const logs = loadLogs();
-    logs.unshift(entry);
-    saveLogs(logs);
+    
+    // Hapus log hari ini agar log pertama menjadi yang dominan
+    const cleanedLogs = logs.filter(l => new Date(l.date).toDateString() !== today);
+    
+    cleanedLogs.unshift(entry);
+    saveLogs(cleanedLogs);
     renderLogs();
     
-    // NEW: Pengecekan Quest Mood ke-2
-    const todayLogs = logs.filter(l => new Date(l.date).toDateString() === today);
+    // Pengecekan Quest Mood ke-2 (dari log yang sudah dibersihkan)
+    const todayLogs = cleanedLogs.filter(l => new Date(l.date).toDateString() === today);
     checkQuestCompletion('mood_2', todayLogs.length);
 
     let reactionText = reactions[mood] || '';
@@ -415,10 +553,11 @@ moodButtons.forEach(btn=>{
     showSticker();
     updateChart();
     renderMonthlySummary(); 
+    renderCalendar(currentCalendarDate); // NEW: Update kalender
   });
 });
 
-/* --- Delete Log handler (FITUR HAPUS) --- */
+/* --- Delete Log handler --- */
 window.deleteLog = function(index){
   const logs = loadLogs();
   if(confirm(`Yakin ingin menghapus log mood: ${logs[index].mood} pada ${logs[index].date}?`)){
@@ -427,6 +566,7 @@ window.deleteLog = function(index){
     renderLogs();
     updateChart();
     renderMonthlySummary();
+    renderCalendar(currentCalendarDate); // NEW: Update kalender
   }
 }
 
@@ -457,7 +597,7 @@ function renderNotes(){
 /* --- Visual Effect: Sparkle on Hover --- */
 function startSparkles(el) {
     el.addEventListener('mousemove', function(e) {
-        if (Math.random() < 0.2) { // Sparkle 20% of the time on move
+        if (Math.random() < 0.2) { 
             const sparkle = document.createElement('div');
             sparkle.className = 'loveSparkle';
             sparkle.textContent = '✨'; 
@@ -508,7 +648,7 @@ function updateChart(){
   });
 }
 
-/* --- Monthly Summary (FIXED) --- */
+/* --- Monthly Summary --- */
 function renderMonthlySummary(){
   const logs = loadLogs();
   const summaryBox = document.getElementById('monthlySummary');
@@ -600,8 +740,13 @@ document.getElementById('secretPreview').addEventListener('click', ()=>{
     checkQuestCompletion('secret');
 });
 
-// NEW HUG BUTTON LISTENER
+// HUG BUTTON LISTENER
 document.getElementById('hugBtn').addEventListener('click', sendHug); 
+
+// NEW: Calendar Controls Listener
+document.getElementById('prevMonth').addEventListener('click', () => updateCalendarMonth(-1));
+document.getElementById('nextMonth').addEventListener('click', () => updateCalendarMonth(1));
+
 
 document.getElementById('musicBtn').addEventListener('click', ()=>{
   if(bgm.paused){ bgm.play(); document.getElementById('musicBtn').textContent='⏸ Backsound'; }
@@ -624,7 +769,7 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   a.remove(); URL.revokeObjectURL(url);
 });
 
-/* --- FINAL FIX: Reset Data Handler (FIXED DAN LENGKAP) --- */
+/* --- FINAL FIX: Reset Data Handler --- */
 document.getElementById('resetDataBtn').addEventListener('click', ()=>{
   if(confirm('Yakin ingin menghapus SEMUA data mood, catatan, EXP, dan Streak? Ini tidak bisa dikembalikan!')){
     // Data Aplikasi Utama
@@ -636,8 +781,8 @@ document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     localStorage.removeItem('loveEXP');
     localStorage.removeItem('lastMoodDate');
     localStorage.removeItem('currentStreak');
-    localStorage.removeItem(QUESTS_KEY); // Hapus data quest
-    localStorage.removeItem('hugCount'); // Hapus data hug count
+    localStorage.removeItem(QUESTS_KEY); 
+    localStorage.removeItem('hugCount'); 
 
     alert('Data berhasil di-reset! Silakan muat ulang halaman.');
     window.location.reload();
@@ -652,8 +797,9 @@ function initApp() {
     updateChart(); 
     renderMonthlySummary();
     updateEXPDisplay(); 
-    renderQuests(); // NEW: Render Quests
-    updateHugCount(); // NEW: Update Hug Count
+    renderQuests(); 
+    updateHugCount(); 
+    renderCalendar(currentCalendarDate); // NEW: Render kalender saat aplikasi dimulai
     
     // Terapkan efek sparkle
     startSparkles(document.querySelector('.mood-container'));
