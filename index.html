@@ -472,16 +472,25 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   a.remove(); URL.revokeObjectURL(url);
 });
 
+/* --- New: Reset Data Handler (PERBAIKAN UJI COBA) --- */
 document.getElementById('resetDataBtn').addEventListener('click', ()=>{
-  if(confirm('Yakin ingin menghapus SEMUA data mood dan catatan? Ini tidak bisa dikembalikan!')){
+  if(confirm('Yakin ingin menghapus SEMUA data mood, catatan, EXP, dan Streak? Ini tidak bisa dikembalikan!')){
+    // Data Aplikasi Utama
     localStorage.removeItem('masMoodLog');
     localStorage.removeItem('masNotes');
-    localStorage.removeItem('gateOpened'); // Hapus gate status juga!
+    localStorage.removeItem('gateOpened'); 
+    
+    // KUNCI: DATA GAMIFIKASI
     localStorage.removeItem('loveEXP');
     localStorage.removeItem('lastMoodDate');
     localStorage.removeItem('currentStreak');
-    alert('Data berhasil di-reset! Silakan muat ulang halaman.');
-    window.location.reload();
+    
+    // HANYA UNTUK UJI COBA: Kita tidak me-reload halaman dulu
+    alert('Data SEHARUSNYA sudah terhapus. Cek apakah Streak dan EXP sudah 0.');
+    
+    // Panggil ulang fungsi display agar tampilan di update tanpa reload
+    updateEXPDisplay(); 
+    renderLogs();
   }
 });
 
