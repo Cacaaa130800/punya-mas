@@ -68,6 +68,9 @@
     #expFill{height:100%;background:#ffaa7f;border-radius:3px;transition:width .5s ease}
     .exp-text{font-weight:bold;color:#f39c12}
     
+    /* NEW CSS FOR DAILY QUEST */
+    #questList p { margin: 6px 0; font-size: 15px; }
+    
     /* NEW CSS FOR SPARKLE EFFECT */
     .loveSparkle{position:absolute;font-size:16px;pointer-events:none;z-index:100;animation:fadeNscale 1.5s ease-out}
     @keyframes fadeNscale{0%{opacity:1;transform:scale(0.8)}100%{opacity:0;transform:scale(1.5)}}
@@ -96,11 +99,10 @@
   <div class="controls">
     <button id="themeBtn" class="btn">🌙 Mode</button>
     <button id="musicBtn" class="btn">▶ Backsound</button>
-    <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
+    <button id="hugBtn" class="btn">🫂 Kirim Peluk</button> <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
     <button id="secretBtn" class="btn secondary">💌 Surat Rahasia</button>
     <button id="downloadBtn" class="btn secondary">⬇️ Download HTML</button>
   </div>
-
   <p style="margin:6px 0 0 0">Klik mood mas hari ini — langsung muncul reaksi manis dari caca:</p>
 
   <div class="mood-container">
@@ -113,6 +115,12 @@
 
   <div id="reaction"></div>
 
+  <div class="card" id="dailyQuestCard">
+    <h3>✨ Misi Harian Caca</h3>
+    <div id="questList" style="list-style-type: none; padding: 0; margin: 0;">
+      <em>Memuat misi harian...</em>
+    </div>
+  </div>
   <div class="card">
     <h3>Catatan Mood & Statistik</h3>
     <div class="exp-area">
@@ -188,6 +196,17 @@ let loveEXP = parseInt(localStorage.getItem('loveEXP') || '0');
 let lastMoodDate = localStorage.getItem('lastMoodDate') || null;
 let currentStreak = parseInt(localStorage.getItem('currentStreak') || '0');
 
+// NEW: Hug & Quest State
+let hugCount = parseInt(localStorage.getItem('hugCount') || '0'); 
+const QUESTS_KEY = 'dailyQuests'; 
+const DAILY_EXP_REWARD = 20;      
+const allQuests = [
+    { text: "Kirim Pelukan Pertama Hari Ini", action: "hug" },
+    { text: "Tulis Minimal 1 Catatan Penting", action: "note" },
+    { text: "Catat Mood Lebih dari Sekali", action: "mood_2" },
+    { text: "Buka Halaman Rahasia", action: "secret" },
+];
+
 /* --- Data helpers --- */
 function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]'); }
 function saveLogs(logs){ localStorage.setItem('masMoodLog', JSON.stringify(logs)); }
@@ -227,6 +246,124 @@ function updateEXPDisplay() {
     document.getElementById('expFill').style.width = `${progress * 100}%`;
 }
 
+/* --- Hug Logic (NEW) --- */
+function updateHugCount() {
+    localStorage.setItem('hugCount', hugCount);
+}
+
+function sendHug() {
+    const storedQuests = generateQuests();
+    const isRewarded = storedQuests.rewarded;
+
+    hugCount += 1;
+    updateHugCount();
+    
+    // Tampilkan efek/pesan pelukan
+    const h = document.createElement('div');
+    h.className = 'loveHeart'; 
+    h.style.fontSize = '40px';
+    h.textContent = '🫂'; 
+    h.style.left = '50%'; h.style.bottom = '-10px';
+    h.style.transform = 'translateX(-50%)';
+    document.body.appendChild(h); 
+    setTimeout(() => h.remove(), 2500);
+
+    // Notifikasi
+    reaction.textContent = `Pelukan ke-${hugCount} berhasil dikirim ke caca! 💙`;
+    
+    // Check Quest Completion
+    if (!isRewarded) {
+        checkQuestCompletion('hug');
+    }
+}
+
+/* --- Daily Quest Logic (NEW) --- */
+function generateQuests() {
+    const today = new Date().toDateString();
+    let storedQuests = JSON.parse(localStorage.getItem(QUESTS_KEY));
+
+    if (!storedQuests || storedQuests.date !== today) {
+        // Jika hari baru atau tidak ada data, generate 3 misi baru
+        const shuffled = allQuests.sort(() => 0.5 - Math.random());
+        const newQuests = shuffled.slice(0, 3).map(q => ({
+            ...q,
+            completed: false
+        }));
+        storedQuests = { date: today, list: newQuests, rewarded: false };
+        localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
+    }
+    return storedQuests;
+}
+
+function renderQuests() {
+    const storedQuests = generateQuests();
+    const quests = storedQuests.list;
+    const listEl = document.getElementById('questList');
+    listEl.innerHTML = '';
+    
+    if (storedQuests.rewarded) {
+        listEl.innerHTML = '<p style="font-weight: bold; color: var(--accent);">🎉 Semua Misi Hari Ini Selesai! Mas sudah dapat hadiah EXP! 🎉</p>';
+        return;
+    }
+
+    if(quests.length === 0) {
+        listEl.innerHTML = '<em>Tidak ada misi hari ini.</em>';
+        return;
+    }
+
+    quests.forEach((q, index) => {
+        const item = document.createElement('p');
+        const status = q.completed ? '✅' : '⬜';
+        item.innerHTML = `${status} ${q.text}`;
+        item.style.margin = '4px 0';
+        item.style.opacity = q.completed ? '0.6' : '1';
+        listEl.appendChild(item);
+    });
+}
+
+function checkQuestCompletion(actionType, value = null) {
+    let storedQuests = generateQuests();
+    let changed = false;
+
+    if (storedQuests.rewarded) return; 
+
+    storedQuests.list.forEach(q => {
+        if (q.completed) return;
+
+        if (q.action === actionType) {
+            // Specific checks for mood_2
+            if (q.action === 'mood_2') {
+                if (value >= 2) {
+                    q.completed = true;
+                    changed = true;
+                }
+            } else {
+                q.completed = true;
+                changed = true;
+            }
+        }
+    });
+
+    if (changed) {
+        localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
+        
+        const allCompleted = storedQuests.list.every(q => q.completed);
+        if (allCompleted) {
+            loveEXP += DAILY_EXP_REWARD;
+            localStorage.setItem('loveEXP', loveEXP);
+            storedQuests.rewarded = true; 
+            localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
+
+            updateEXPDisplay();
+            renderQuests(); 
+            reaction.textContent = `SEMUA MISI HARIAN SELESAI! 🎉 Mas dapat ${DAILY_EXP_REWARD} Poin Cinta Tambahan!`;
+        } else {
+            renderQuests(); 
+        }
+    }
+}
+/* --- END Daily Quest Logic --- */
+
 
 /* --- Mood click handler (WITH DAILY EXP) --- */
 moodButtons.forEach(btn=>{
@@ -263,6 +400,10 @@ moodButtons.forEach(btn=>{
     saveLogs(logs);
     renderLogs();
     
+    // NEW: Pengecekan Quest Mood ke-2
+    const todayLogs = logs.filter(l => new Date(l.date).toDateString() === today);
+    checkQuestCompletion('mood_2', todayLogs.length);
+
     let reactionText = reactions[mood] || '';
     if (expGained) {
         reactionText += ` (${loveEXP-10} + 10 Poin Cinta! 💖)`;
@@ -321,11 +462,8 @@ function startSparkles(el) {
             sparkle.className = 'loveSparkle';
             sparkle.textContent = '✨'; 
             const rect = el.getBoundingClientRect();
-            // Posisi relatif terhadap elemen induk
             sparkle.style.left = (e.clientX - rect.left) + 'px';
             sparkle.style.top = (e.clientY - rect.top) + 'px';
-            
-            // Atur posisi agar elemen muncul di atas area mouse
             sparkle.style.position = 'absolute';
 
             el.appendChild(sparkle);
@@ -433,6 +571,8 @@ function renderMonthlySummary(){
 
 
 /* --- Event Listeners lainnya --- */
+
+// MODIFIED: Save Note Listener (Added Quest Check)
 document.getElementById('saveNote').addEventListener('click', ()=>{
   const text = noteInput.value.trim();
   if(!text) return;
@@ -441,15 +581,27 @@ document.getElementById('saveNote').addEventListener('click', ()=>{
   saveNotes(notes);
   noteInput.value='';
   renderNotes();
+  checkQuestCompletion('note');
 });
+
 document.getElementById('clearNotes').addEventListener('click', ()=>{
   if(confirm('Bersihkan semua catatan?')){ localStorage.removeItem('masNotes'); renderNotes(); }
 });
 noteInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ document.getElementById('saveNote').click(); e.preventDefault(); }});
 
-document.getElementById('secretBtn').addEventListener('click', ()=>{ secretModal.style.display='flex'; });
+// MODIFIED: Secret Button Listener (Added Quest Check)
+document.getElementById('secretBtn').addEventListener('click', ()=>{ 
+    secretModal.style.display='flex'; 
+    checkQuestCompletion('secret');
+});
 document.getElementById('closeSecret').addEventListener('click', ()=>{ secretModal.style.display='none'; });
-document.getElementById('secretPreview').addEventListener('click', ()=>{ secretModal.style.display='flex'; });
+document.getElementById('secretPreview').addEventListener('click', ()=>{ 
+    secretModal.style.display='flex'; 
+    checkQuestCompletion('secret');
+});
+
+// NEW HUG BUTTON LISTENER
+document.getElementById('hugBtn').addEventListener('click', sendHug); 
 
 document.getElementById('musicBtn').addEventListener('click', ()=>{
   if(bgm.paused){ bgm.play(); document.getElementById('musicBtn').textContent='⏸ Backsound'; }
@@ -472,7 +624,7 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   a.remove(); URL.revokeObjectURL(url);
 });
 
-/* --- New: Reset Data Handler (PERBAIKAN UJI COBA) --- */
+/* --- FINAL FIX: Reset Data Handler (FIXED DAN LENGKAP) --- */
 document.getElementById('resetDataBtn').addEventListener('click', ()=>{
   if(confirm('Yakin ingin menghapus SEMUA data mood, catatan, EXP, dan Streak? Ini tidak bisa dikembalikan!')){
     // Data Aplikasi Utama
@@ -480,17 +632,15 @@ document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     localStorage.removeItem('masNotes');
     localStorage.removeItem('gateOpened'); 
     
-    // KUNCI: DATA GAMIFIKASI
+    // KUNCI: DATA GAMIFIKASI & QUEST
     localStorage.removeItem('loveEXP');
     localStorage.removeItem('lastMoodDate');
     localStorage.removeItem('currentStreak');
-    
-    // HANYA UNTUK UJI COBA: Kita tidak me-reload halaman dulu
-    alert('Data SEHARUSNYA sudah terhapus. Cek apakah Streak dan EXP sudah 0.');
-    
-    // Panggil ulang fungsi display agar tampilan di update tanpa reload
-    updateEXPDisplay(); 
-    renderLogs();
+    localStorage.removeItem(QUESTS_KEY); // Hapus data quest
+    localStorage.removeItem('hugCount'); // Hapus data hug count
+
+    alert('Data berhasil di-reset! Silakan muat ulang halaman.');
+    window.location.reload();
   }
 });
 
@@ -501,7 +651,9 @@ function initApp() {
     renderNotes(); 
     updateChart(); 
     renderMonthlySummary();
-    updateEXPDisplay(); // Panggil fungsi EXP display
+    updateEXPDisplay(); 
+    renderQuests(); // NEW: Render Quests
+    updateHugCount(); // NEW: Update Hug Count
     
     // Terapkan efek sparkle
     startSparkles(document.querySelector('.mood-container'));
