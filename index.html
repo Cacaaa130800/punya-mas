@@ -150,7 +150,7 @@
     <button id="themeBtn" class="btn">🌙 Mode</button>
     <button id="musicBtn" class="btn">▶ Backsound</button>
     <button id="hugBtn" class="btn">🫂 Kirim Peluk</button>
-    <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
+    <button id="exportDataBtn" class="btn secondary">📋 Copy Data Mas</button> <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
     <button id="secretBtn" class="btn secondary">💌 Surat Rahasia</button>
     <button id="downloadBtn" class="btn secondary">⬇️ Download HTML</button>
   </div>
@@ -224,12 +224,6 @@
       <h2>Pesan Rahasia Buat Mas 💌</h2>
       <p>Mas tuh rumah ternyaman caca... 🩵<br>makasih udah ada di hidup caca yaaa...</p>
       
-      <div style="margin-top: 20px; border-top: 1px solid var(--accent); padding-top: 15px;">
-        <h4 style="margin: 0 0 8px 0; color: var(--accent);">Kotak Pesan Harian untuk Mas:</h4>
-        <textarea id="dailyMessageInput" placeholder="Tulis pesan manis baru di sini..." style="height: 60px;"></textarea>
-        <button id="saveDailyMessageBtn" class="btn" style="margin-top: 8px;">Simpan & Tampilkan Pesan Baru</button>
-        <small style="display: block; margin-top: 5px;">*Pesan ini akan tampil di Home Page.</small>
-      </div>
       <div style="margin-top:18px">
         <button id="closeSecret" class="btn">Tutup</button>
       </div>
@@ -270,13 +264,39 @@ let currentStreak = parseInt(localStorage.getItem('currentStreak') || '0');
 let hugCount = parseInt(localStorage.getItem('hugCount') || '0'); 
 const QUESTS_KEY = 'dailyQuests'; 
 const DAILY_EXP_REWARD = 20;      
-const DAILY_MSG_KEY = 'cacaDailyMessage'; 
+const DAILY_MSG_KEY = 'dailyMsgData'; // KEY BARU
 const allQuests = [
     { text: "Kirim Pelukan Pertama Hari Ini", action: "hug" },
     { text: "Tulis Minimal 1 Catatan Penting", action: "note" },
     { text: "Catat Mood Lebih dari Sekali", action: "mood_2" },
     { text: "Buka Halaman Rahasia", action: "secret" },
+    { text: "Kirim 2 Pelukan Hari Ini", action: "hug_2" },
+    { text: "Tulis 2 Catatan Penting", action: "note_2"},
+    { text: "Kirim 3 Pelukan Hari Ini", action: "hug_3" },
+    { text: "Kirim 4 Pelukan Hari Ini", action: "hug_4" }
 ];
+
+// [BARU] KUMPULAN PESAN HARIAN DARI CACA (Mas bisa tambahkan di sini)
+const DAILY_MESSAGE_POOL = [
+    "Mas adalah alasan caca tersenyum hari ini. Have a good day, sayang! 💙",
+    "Mas tuh rumah ternyaman caca... makasih udah ada di hidup caca yaaa... 🥹",
+    "Setiap caca lihat log mood Mas, caca tahu Mas sedang berjuang. Caca bangga sama Mas! 💪",
+    "Caca selalu mendoakan yang terbaik untuk Mas. Jangan pernah menyerah, oke? 💖",
+    "Ingat, caca sayang Mas lebih dari yang Mas tahu! 🥰",
+    "Mood Mas adalah mood caca juga. Caca harap Mas bahagia hari ini! 😊",
+    "Selamat pagi, sayang! Jangan lupa senyum paling manis Mas hari ini! 😘",
+    "Semangat kerjanya Mas! Kalo capek, istirahat yaa. Caca tunggu kabar Mas! 😚",
+    "Mas adalah hadiah terindah di hidup caca. Caca cinta Mas! ✨",
+    "Mas, caca selalu nemu tenangnya caca di diri mas 🤍✨",
+    "Lucu ya mas… dari semua orang, hati caca milih berhenti di mas 😌💕",
+    "Kalau ada yang paling bikin caca bersyukur hari ini, pasti mas 🌷",
+    "Mas, caca nggak pernah minta apa-apa… tapi semesta ngasih mas, dan caca jagain 💞",
+    "Nggak ada yang ngalahin cara mas bikin caca nyaman 🤗💗",
+    "Cinta itu sederhana, mas… kayak mas sama caca yang sama-sama mau stay 🌙💞",
+    "Mas capek? sini… caca peluk dulu 🤍🤲🏻",
+    "Mas itu alasan caca mau jadi lebih baik tiap hari ✨",
+];
+
 
 /* --- Level System Data (NEW) --- */
 const LOVE_LEVELS = [
@@ -294,16 +314,16 @@ function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]')
 function saveLogs(logs){ localStorage.setItem('masMoodLog', JSON.stringify(logs)); }
 function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
 function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
-function loadDailyMessage() { return localStorage.getItem(DAILY_MSG_KEY) || 'Belum ada pesan baru hari ini. 🥺'; }
+// function loadDailyMessage() { return localStorage.getItem('cacaDailyMessage') || 'Belum ada pesan baru hari ini. 🥺'; }
 
 
 /* --- Reactions map & Color Map --- */
 const reactions = {
   '😄 Senang':'mas seneng?? ya ampun caca ikut senenggg 😭💙 peluk dulu sini 🫂',
-  '🙂 Biasa aja':'mas biasa aja ya hari ini? sini caca temenin biar makin happy 🩵',
-  '😢 Sedih':'kok mas sedihhhh 😭💙 cini ciniiiiii, caca peyukkkkk 🫂🩵',
+  '🙂 Biasa aja':'mas biasa aja ya hari ini? sini caca temenin biar makin happy 🹧',
+  '😢 Sedih':'kok mas sedihhhh 😭💙 cini ciniiiiii, caca peyukkkkk 🫂🹧',
   '😡 Kesel':'siapa yang bikin mas kesel?? ceritain yaaaa, biar caca cubit orang yang nakalin masssss 😤💙',
-  '🥰 Sayang caca':'aaaa mas sayang cacaaa?? caca juga sayang mas banyak banyakkkkkkk 🥹🩵💙'
+  '🥰 Sayang caca':'aaaa mas sayang cacaaa?? caca juga sayang mas banyak banyakkkkkkk 🥹🹧💙'
 };
 
 const MOOD_COLOR_MAP = {
@@ -345,7 +365,7 @@ function getLoveTitle(exp) {
 
 function updateEXPDisplay() {
     const title = getLoveTitle(loveEXP);
-    document.getElementById('currentTitle').textContent = `Gelar: ${title}`; // NEW
+    document.getElementById('currentTitle').textContent = `Gelar: ${title}`; 
     document.getElementById('currentEXP').textContent = loveEXP;
     document.getElementById('currentStreak').textContent = currentStreak;
     // Progress bar (per 100 EXP)
@@ -354,31 +374,68 @@ function updateEXPDisplay() {
     document.getElementById('expFill').style.width = `${progress * 100}%`;
 }
 
-/* --- Daily Message Logic (NEW) --- */
+/* --- Daily Message Logic (RANDOM PER DAY) --- */
+function loadDailyMessage() {
+    // Jika tidak ada pesan di pool, gunakan default
+    if (DAILY_MESSAGE_POOL.length === 0) {
+        return 'Belum ada pesan baru hari ini. 🥺';
+    }
+
+    const storedData = JSON.parse(localStorage.getItem(DAILY_MSG_KEY));
+    const today = new Date().toDateString();
+
+    // 1. Cek: Jika data ada DAN tanggalnya hari ini, kembalikan pesan yang sudah dipilih
+    if (storedData && storedData.date === today) {
+        return storedData.message; 
+    }
+
+    // 2. Jika hari baru, pilih pesan baru secara acak
+    const randomIndex = Math.floor(Math.random() * DAILY_MESSAGE_POOL.length);
+    const newMessage = DAILY_MESSAGE_POOL[randomIndex];
+
+    // 3. Simpan pesan baru dan tanggal hari ini
+    localStorage.setItem(DAILY_MSG_KEY, JSON.stringify({
+        date: today,
+        message: newMessage
+    }));
+    
+    return newMessage;
+}
+
 function renderDailyMessage() {
     const message = loadDailyMessage();
     const contentEl = document.getElementById('dailyMessageContent');
     contentEl.innerHTML = message.replace(/\n/g, '<br>');
-    
-    // Auto-populate input in the modal
-    const inputEl = document.getElementById('dailyMessageInput');
-    if (inputEl) {
-        inputEl.value = (message === 'Belum ada pesan baru hari ini. 🥺') ? '' : message;
-    }
-}
-
-function handleSaveDailyMessage() {
-    const inputEl = document.getElementById('dailyMessageInput');
-    const message = inputEl.value.trim();
-    if (message) {
-        localStorage.setItem(DAILY_MSG_KEY, message);
-        renderDailyMessage();
-        reaction.textContent = 'Pesan Harian Caca berhasil diperbarui! 💌';
-    } else {
-        alert('Pesan tidak boleh kosong!');
-    }
 }
 /* --- END Daily Message Logic --- */
+
+/* --- NEW FEATURE: EXPORT/COPY DATA FOR CACA (MODIFIED) --- */
+async function exportData() {
+    const data = {
+        moodLog: loadLogs(),
+        notes: loadNotes(),
+        gamification: {
+            loveEXP: loveEXP,
+            currentStreak: currentStreak,
+            hugCount: hugCount,
+            title: getLoveTitle(loveEXP)
+        },
+        dailyMessage: loadDailyMessage(),
+        lastUpdated: new Date().toLocaleString('id-ID')
+    };
+    
+    const json = JSON.stringify(data, null, 2); // Format JSON jadi teks rapi
+    
+    try {
+        await navigator.clipboard.writeText(json); // Copy ke clipboard
+        reaction.textContent = 'Data Mood Mas berhasil di-copy ke clipboard! Silakan tempel (paste) di chat ke caca! 📋';
+    } catch (err) {
+        // Fallback jika browser tidak mengizinkan copy otomatis 
+        reaction.textContent = 'Gagal copy otomatis. Mas harus kirim screenshot Log ini ya. 🥺';
+        console.error("Copy failed: ", err);
+    }
+}
+/* --- END EXPORT/COPY DATA --- */
 
 
 /* --- Hug Logic --- */
@@ -617,7 +674,7 @@ moodButtons.forEach(btn=>{
     }
 
     const mood = btn.dataset.mood;
-    const date = new Date().toLocaleString();
+    const date = new Date().toLocaleString('id-ID');
     const entry = { mood, date };
     const logs = loadLogs();
     
@@ -801,20 +858,15 @@ document.getElementById('saveNote').addEventListener('click', ()=>{
   const text = noteInput.value.trim();
   if(!text) return;
   const notes = loadNotes();
-  notes.unshift({ text, time: new Date().toLocaleString() });
+  notes.unshift({ text, time: new Date().toLocaleString('id-ID') });
   saveNotes(notes);
   noteInput.value='';
   renderNotes();
   checkQuestCompletion('note');
 });
 
-// NEW: Save Daily Message Listener
-document.addEventListener('DOMContentLoaded', () => {
-    const saveDailyMessageBtn = document.getElementById('saveDailyMessageBtn');
-    if (saveDailyMessageBtn) {
-        saveDailyMessageBtn.addEventListener('click', handleSaveDailyMessage);
-    }
-});
+// NEW: Export/Copy Data Listener
+document.getElementById('exportDataBtn').addEventListener('click', exportData);
 
 
 document.getElementById('clearNotes').addEventListener('click', ()=>{
@@ -826,13 +878,13 @@ noteInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.ctrlKey||e
 document.getElementById('secretBtn').addEventListener('click', ()=>{ 
     secretModal.style.display='flex'; 
     checkQuestCompletion('secret');
-    renderDailyMessage(); // Ensures the input box is updated
+    renderDailyMessage(); 
 });
 document.getElementById('closeSecret').addEventListener('click', ()=>{ secretModal.style.display='none'; });
 document.getElementById('secretPreview').addEventListener('click', ()=>{ 
     secretModal.style.display='flex'; 
     checkQuestCompletion('secret');
-    renderDailyMessage(); // Ensures the input box is updated
+    renderDailyMessage(); 
 });
 
 // HUG BUTTON LISTENER
@@ -878,7 +930,7 @@ document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     localStorage.removeItem('currentStreak');
     localStorage.removeItem(QUESTS_KEY); 
     localStorage.removeItem('hugCount'); 
-    localStorage.removeItem(DAILY_MSG_KEY); // NEW: Hapus pesan harian
+    localStorage.removeItem(DAILY_MSG_KEY); // Hapus data pesan harian
 
     // Now, force reload to apply clean state
     alert('Data berhasil di-reset! Silakan muat ulang halaman.');
