@@ -1,558 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mood Tracker Mas 💙</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js">
-
-/* ===== EXTRA FEATURES PACK 💙===== */
-
-/* === MODE JEALOUS 😤💗 === */
-let jealous = false;
-const jealousBtn = document.createElement('button');
-jealousBtn.textContent = '😤 Mode Jealous';
-jealousBtn.className = 'btn';
-jealousBtn.style.margin = '10px';
-jealousBtn.onclick = () => {
-  jealous = !jealous;
-  if (jealous) {
-    document.body.style.background = '#ffe6e6';
-    document.body.style.color = '#5a0000';
-    showBubble('mas lagi jealous ya?? sini caca pelukkk 😤💗');
-  } else {
-    document.body.style.background = '';
-    document.body.style.color = '';
-  }
-};
-document.body.insertBefore(jealousBtn, document.body.children[3]);
-
-/* === RANDOM STICKER POP === */
-const stickerList = [
-  'https://i.imgur.com/cy7Q5pA.png',
-  'https://i.imgur.com/6XH8O1g.png',
-  'https://i.imgur.com/OeQO3ZN.png'
-];
-setInterval(() => {
-  const img = document.createElement('img');
-  img.src = stickerList[Math.floor(Math.random()*stickerList.length)];
-  img.style.position='fixed'; img.style.left=Math.random()*80+'vw'; img.style.top='-30px';
-  img.style.width='90px'; img.style.transition='3s'; img.style.zIndex='99999';
-  document.body.appendChild(img);
-  setTimeout(()=>{ img.style.top='100vh'; img.style.opacity='0'; },50);
-  setTimeout(()=>img.remove(),3000);
-}, 4000);
-
-/* === SAKURA PETALS EFFECT === */
-setInterval(()=>{
-  const p=document.createElement('div');
-  p.textContent='🌸';
-  p.style.position='fixed';
-  p.style.left=Math.random()*100+'vw';
-  p.style.top='-20px';
-  p.style.fontSize='20px';
-  p.style.transition='4s linear';
-  document.body.appendChild(p);
-  setTimeout(()=>{ p.style.top='100vh'; p.style.opacity='0'; },20);
-  setTimeout(()=>p.remove(),4000);
-},1000);
-
-/* === VOICE BUBBLE === */
-function voiceBubble(text){
-  const b=document.createElement('div');
-  b.textContent=text;
-  b.style.position='fixed'; b.style.left='20px'; b.style.top='20px';
-  b.style.padding='12px 16px'; b.style.background='#fff6b8';
-  b.style.borderRadius='12px'; b.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';
-  b.style.zIndex='99999'; b.style.opacity='1'; b.style.transition='1.5s';
-  document.body.appendChild(b);
-  setTimeout(()=>b.style.opacity='0',1500);
-  setTimeout(()=>b.remove(),2500);
-}
-
-setInterval(()=>{
-  const lines=[
-    'mas lagi ngapain siiihh 🥺💙',
-    'caca liat mas dari sini 😳',
-    'mas jangan lupa minummm 🩵',
-    'caca kangen mas 😭💙'
-  ];
-  voiceBubble(lines[Math.floor(Math.random()*lines.length)]);
-}, 15000);
-
-/* === EXP LOVE SYSTEM === */
-let exp = parseInt(localStorage.getItem('loveEXP') || '0');
-function addEXP(){
-  exp += 5;
-  localStorage.setItem('loveEXP', exp);
-  showBubble('❤️ LOVE EXP +5 (Total: '+exp+')');
-}
-
-// add exp when mood clicked
-moodButtons.forEach(btn=>{
-  btn.addEventListener('click',()=>addEXP());
-});
-
-// add exp on note
-const originalSave = saveNote;
-saveNote = function(){ originalSave(); addEXP(); };
-
-
-
-/* ============================================= */
-/*         ✨ SUPER CUTE UPDATE PART 2 ✨         */
-/* ============================================= */
-
-/* === FEATURE 8: MODE MARAH PETIR ⚡😡 === */
-let marahMode = false;
-const marahBtn = document.createElement('button');
-marahBtn.textContent = '⚡ Mode Marah';
-marahBtn.className = 'btn';
-marahBtn.style.margin = '10px';
-marahBtn.onclick = () => {
-  marahMode = !marahMode;
-  if (marahMode) {
-    document.body.style.background = '#ffdbdb';
-    showBubble('mas lagi marahh?? caca disiniiiiii, bakal peluk mas kuat kuatttttt 😭💙');
-    startLightning();
-  } else {
-    stopLightning();
-    document.body.style.background = '';
-  }
-};
-document.body.insertBefore(marahBtn, document.body.children[4]);
-
-let lightningInterval;
-function startLightning(){
-  lightningInterval = setInterval(()=>{
-    const flash = document.createElement('div');
-    flash.style.position='fixed'; flash.style.inset='0';
-    flash.style.background='rgba(255,255,255,0.7)';
-    flash.style.opacity='1'; flash.style.transition='0.2s';
-    flash.style.zIndex='999999';
-    document.body.appendChild(flash);
-    setTimeout(()=>flash.style.opacity='0',50);
-    setTimeout(()=>flash.remove(),200);
-  },1200);
-}
-function stopLightning(){ clearInterval(lightningInterval); }
-
-
-/* === FEATURE 9: MODE NGANTUK 😴✨ === */
-let sleepy = false;
-const sleepyBtn = document.createElement('button');
-sleepyBtn.textContent = '😴 Mode Ngantuk';
-sleepyBtn.className = 'btn';
-sleepyBtn.style.margin = '10px';
-sleepyBtn.onclick = ()=>{
-  sleepy = !sleepy;
-  if(sleepy){
-    document.body.style.filter='brightness(0.8)';
-    showBubble('mas ngantuk ya? caca temenin boboooo 🩵😴');
-    startZZZ();
-  } else {
-    stopZZZ(); document.body.style.filter='';
-  }
-};
-document.body.insertBefore(sleepyBtn, document.body.children[5]);
-
-let zzzInterval;
-function startZZZ(){
-  zzzInterval = setInterval(()=>{
-    const z=document.createElement('div');
-    z.textContent='💤';
-    z.style.position='fixed'; z.style.left=Math.random()*100+'vw';
-    z.style.top='-10px'; z.style.fontSize='22px';
-    z.style.transition='3s linear';
-    document.body.appendChild(z);
-    setTimeout(()=>{ z.style.top='100vh'; z.style.opacity='0'; },20);
-    setTimeout(()=>z.remove(),3000);
-  },800);
-}
-function stopZZZ(){ clearInterval(zzzInterval); }
-
-
-/* === FEATURE 10: GACHA STICKER 🎁🩵 === */
-const gachaBtn = document.createElement('button');
-gachaBtn.textContent = '🎁 Gacha Stiker';
-gachaBtn.className = 'btn';
-gachaBtn.style.margin = '10px';
-gachaBtn.onclick = ()=>{
-  const gachabox = document.createElement('div');
-  gachabox.style.position='fixed'; gachabox.style.inset='0';
-  gachabox.style.background='rgba(0,0,0,0.6)';
-  gachabox.style.display='flex'; gachabox.style.flexDirection='column';
-  gachabox.style.justifyContent='center'; gachabox.style.alignItems='center';
-  gachabox.style.zIndex='99999';
-
-  const s = stickerList[Math.floor(Math.random()*stickerList.length)];
-  const img = document.createElement('img');
-  img.src = s;
-  img.style.width='200px'; img.style.borderRadius='12px';
-  img.style.boxShadow='0 6px 18px rgba(0,0,0,0.4)';
-
-  const msg = document.createElement('p');
-  msg.textContent='mas dapet stiker lucuuu 🩵';
-  msg.style.color='white'; msg.style.marginTop='10px';
-
-  const close = document.createElement('button');
-  close.textContent='tutup';
-  close.className='btn';
-  close.style.marginTop='10px';
-  close.onclick=()=>gachabox.remove();
-
-  gachabox.appendChild(img);
-  gachabox.appendChild(msg);
-  gachabox.appendChild(close);
-  document.body.appendChild(gachabox);
-};
-document.body.insertBefore(gachaBtn, document.body.children[6]);
-
-
-/* === FEATURE 11: LOVE LEVEL BADGES ❤️🏅 === */
-function updateLoveBadge(){
-  const level = exp;
-  let badge = '';
-  if(level < 50) badge = '💗 Baby Love';
-  else if(level < 150) badge = '💞 Sweetheart';
-  else if(level < 300) badge = '💘 Lover Lv.3';
-  else badge = '💝 Soulmate Max';
-
-  let badgeBox = document.getElementById('loveBadge');
-  if(!badgeBox){
-    badgeBox = document.createElement('div');
-    badgeBox.id='loveBadge';
-    badgeBox.style.margin='10px';
-    badgeBox.style.fontSize='20px';
-    badgeBox.style.fontWeight='bold';
-    badgeBox.style.textAlign='center';
-    document.body.insertBefore(badgeBox, document.body.children[1]);
-  }
-  badgeBox.textContent = '❤️ Love Level: ' + badge;
-}
-updateLoveBadge();
-
-// hook EXP update
-const EXPoriginal = addEXP;
-addEXP = function(){ EXPoriginal(); updateLoveBadge(); };
-
-
-
-/* ================================================= */
-/*            ✨ SUPER CUTE UPDATE PART 3 ✨          */
-/* ================================================= */
-
-/* === MODE MANJA 🥺💗 === */
-let manja=false;
-const manjaBtn=document.createElement('button');
-manjaBtn.textContent='🐰 Mode Manja';
-manjaBtn.className='btn';
-manjaBtn.style.margin='10px';
-manjaBtn.onclick=()=>{
-  manja=!manja;
-  if(manja){
-    document.body.style.filter='saturate(1.4) brightness(1.1)';
-    showBubble('mas lagi manja yaaa?? caca sukaaaaa 🥺💗🐰');
-    startBlush();
-  } else { stopBlush(); document.body.style.filter=''; }
-};
-document.body.insertBefore(manjaBtn, document.body.children[7]);
-
-let blushInterval;
-function startBlush(){
-  blushInterval=setInterval(()=>{
-    const b=document.createElement('div');
-    b.textContent='💕';
-    b.style.position='fixed'; b.style.left=Math.random()*100+'vw';
-    b.style.top='-20px'; b.style.fontSize='26px';
-    b.style.transition='3s linear';
-    document.body.appendChild(b);
-    setTimeout(()=>b.style.top='100vh',20);
-    setTimeout(()=>b.remove(),3000);
-  },900);
-}
-function stopBlush(){ clearInterval(blushInterval); }
-
-
-/* === MODE SEDIH 🌧️😭 === */
-let sedih=false;
-const sedihBtn=document.createElement('button');
-sedihBtn.textContent='🌧️ Mode Sedih';
-sedihBtn.className='btn';
-sedihBtn.style.margin='10px';
-sedihBtn.onclick=()=>{
-  sedih=!sedih;
-  if(sedih){
-    document.body.style.filter='grayscale(0.4)';
-    showBubble('mas sedih yaaa?? ciniiiii caca peluk erattt 😭💙');
-    startRain();
-  } else { stopRain(); document.body.style.filter=''; }
-};
-document.body.insertBefore(sedihBtn, document.body.children[8]);
-
-let rainInterval;
-function startRain(){
-  rainInterval=setInterval(()=>{
-    const r=document.createElement('div');
-    r.textContent='💧';
-    r.style.position='fixed'; r.style.left=Math.random()*100+'vw';
-    r.style.top='-20px'; r.style.fontSize='18px';
-    r.style.transition='2s linear';
-    document.body.appendChild(r);
-    setTimeout(()=>r.style.top='100vh',20);
-    setTimeout(()=>r.remove(),2000);
-  },120);
-}
-function stopRain(){ clearInterval(rainInterval); }
-
-
-/* === MODE PROTEKTIF 🔥🛡️ === */
-let protek=false;
-const protekBtn=document.createElement('button');
-protekBtn.textContent='🛡️ Mode Protektif';
-protekBtn.className='btn';
-protekBtn.style.margin='10px';
-protekBtn.onclick=()=>{
-  protek=!protek;
-  if(protek){
-    showBubble('mas protektif ya?? cacaaa aman kok sama mas 😳🛡️');
-    startShield();
-  } else stopShield();
-};
-document.body.insertBefore(protekBtn, document.body.children[9]);
-
-let shieldInterval;
-function startShield(){
-  shieldInterval=setInterval(()=>{
-    const s=document.createElement('div');
-    s.textContent='🛡️';
-    s.style.position='fixed'; s.style.left=(Math.random()*80+10)+'vw';
-    s.style.top=(Math.random()*80+10)+'vh';
-    s.style.fontSize='30px'; s.style.opacity='0';
-    s.style.transition='1s';
-    document.body.appendChild(s);
-    setTimeout(()=>s.style.opacity='1',50);
-    setTimeout(()=>s.remove(),1500);
-  },500);
-}
-function stopShield(){ clearInterval(shieldInterval); }
-
-
-/* === LOVE EXPLOSION (tiap EXP kelipatan 50) 💥💗 === */
-function loveExplosion(){
-  for(let i=0;i<20;i++){
-    const h=document.createElement('div');
-    h.textContent='💗';
-    h.style.position='fixed';
-    h.style.left='50vw'; h.style.top='50vh';
-    h.style.fontSize='24px';
-    h.style.transition='1.2s';
-    let angle=Math.random()*360;
-    h.style.transform=`translate(0px,0px)`;
-    document.body.appendChild(h);
-    setTimeout(()=>{
-      h.style.transform=`translate(${Math.cos(angle)*200}px,${Math.sin(angle)*200}px)`;
-      h.style.opacity='0';
-    },20);
-    setTimeout(()=>h.remove(),1200);
-  }
-}
-
-const oldAddEXP = addEXP;
-addEXP = function(){
-  oldAddEXP();
-  if(exp % 50 === 0) loveExplosion();
-};
-
-
-/* === EVENT HARIAN 🎀🎉 === */
-function showDailyQuest(){
-  const quests=[
-    'kirim mood jujur hari ini 🩵',
-    'tulis satu kalimat buat caca 😳💗',
-    'peluk caca 3x 🤗🤗🤗',
-    'bilang “aku sayang cacaaa” 😭💙',
-    'kasih stiker favorit mas 🩵'
-  ];
-  const q=quests[Math.floor(Math.random()*quests.length)];
-
-  const box=document.createElement('div');
-  box.style.position='fixed'; box.style.inset='0';
-  box.style.background='rgba(0,0,0,0.5)';
-  box.style.display='flex'; box.style.flexDirection='column';
-  box.style.justifyContent='center'; box.style.alignItems='center';
-  box.style.zIndex='999999';
-
-  const card=document.createElement('div');
-  card.style.background='white';
-  card.style.padding='20px';
-  card.style.borderRadius='14px';
-  card.style.textAlign='center';
-  card.style.boxShadow='0 8px 20px rgba(0,0,0,0.3)';
-
-  const t=document.createElement('h3');
-  t.textContent='🎀 Daily Quest Mas';
-  const p=document.createElement('p');
-  p.textContent=q;
-
-  const ok=document.createElement('button');
-  ok.className='btn';
-  ok.textContent='oke cacaaaa 🩵';
-  ok.onclick=()=>box.remove();
-
-  card.appendChild(t); card.appendChild(p); card.appendChild(ok);
-  box.appendChild(card);
-  document.body.appendChild(box);
-}
-
-setTimeout(showDailyQuest, 2000);
-
-
-/* === AI AUTO-REPLY to MOOD (super cute) 🤖💙 === */
-function aiReplyToMood(mood){
-  const replies={
-    '😄 Senang':'caca ikut seneng bangettt 😭💙 ayo kita rayain dikit yuk! ✨',
-    '🙂 Biasa aja':'ga papa mas, sini caca temenin biar hari mas lebih hangat 🩵',
-    '😢 Sedih':'mas sedih?? caca disini yaaa, nantiii aku peluk ampe tenang 😭🤍',
-    '😡 Kesel':'siapa yang buat mas kesel?? ayoooo, kita cubit bareng barenggggg! 😤💙',
-    '🥰 Sayang Ca':'MAS SAYANG CACAA??? caca lebih sayang mas 10000x 😭💗'
-  };
-  showBubble(replies[mood] || 'caca ada buat mas 🩵');
-}
-
-const oldSaveMood = saveMood;
-saveMood = function(mood){
-  oldSaveMood(mood);
-  aiReplyToMood(mood);
-};
-
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root { --bg:#eaf3ff; --text:#1b2b3c; --card:#ffffff; --accent:#6fa8dc; }
-    .dark { --bg:#0f1621; --text:#f1f6ff; --card:#1d2b40; --accent:#4a90e2; }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: .3s;
-    }
-
-    .hidden { display:none; }
-
-    /* GATE SCREEN */
-    #gate {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      z-index: 2000;
-    }
-    #gate input {
-      padding: 10px;
-      border-radius: 10px;
-      border:1px solid #aaa;
-    }
-    
-    h1 { margin-bottom: 10px; }
-
-    .btn {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 10px;
-      background: var(--accent);
-      color: white;
-      cursor: pointer;
-      margin: 5px;
-    }
-
-    .mood-container { display:flex; gap:15px; margin:20px; flex-wrap:wrap; }
-    .mood { font-size:38px; cursor:pointer; transition:.2s; }
-    .mood:hover { transform:scale(1.18); }
-
-    .card {
-      background: var(--card);
-      padding: 15px;
-      width: 92%;
-      max-width: 550px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-      margin-top: 20px;
-    }
-
-    textarea {
-      width: 100%; height: 80px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #aaa;
-      background: var(--card);
-      color: var(--text);
-    }
-
-    /* DELETE BUTTON */
-    .deleteBtn {
-      background:#ff6b6b; color:white; border:none; border-radius:6px;
-      padding:3px 8px; margin-left:10px; cursor:pointer;
-    }
-
-    #sticker {
-      position: fixed;
-      right: 10px;
-      bottom: 10px;
-      width: 120px;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: .4s;
-      z-index: 999;
-    }
-
-    #sticker.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* hearts */
-    .loveHeart {
-      position: fixed;
-      font-size: 26px;
-      animation: floatUp 2.3s ease-out;
-      pointer-events:none;
-      z-index: 9000;
-    }
-
-    @keyframes floatUp {
-      0% { transform:translateY(0); opacity:1; }
-      100% { transform:translateY(-150px); opacity:0; }
-    }
+    :root{--bg:#eaf3ff;--text:#1b2b3c;--card:#fff;--accent:#6fa8dc}
+    .dark{--bg:#0f1621;--text:#f1f6ff;--card:#1d2b40;--accent:#4a90e2}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text);margin:0;padding:18px;display:flex;flex-direction:column;align-items:center;transition:background .25s,color .25s,filter .25s}
+    h1{margin:6px 0 10px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;background:var(--accent);color:#fff}
+    .secondary{background:transparent;color:var(--text);border:1px solid rgba(0,0,0,0.08)}
+    .mood-container{display:flex;gap:12px;margin:18px 0;justify-content:center;flex-wrap:wrap}
+    .mood{font-size:38px;cursor:pointer;transition:transform .12s}
+    .mood:hover{transform:scale(1.14)}
+    .card{background:var(--card);padding:14px;width:92%;max-width:760px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06);margin-top:14px}
+    textarea{width:100%;height:78px;border-radius:10px;padding:10px;border:1px solid #ccc;background:transparent;color:var(--text);resize:vertical}
+    #reaction{margin-top:12px;font-size:18px;text-align:center;min-height:36px}
+    #entries div,#notes div{padding:8px 0;border-bottom:1px dashed rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center}
+    #sticker{position:fixed;right:12px;bottom:12px;width:110px;opacity:0;transform:translateY(18px);transition:transform .4s,opacity .3s;z-index:999}
+    #sticker.show{opacity:1;transform:translateY(0)}
+    .loveHeart{position:fixed;font-size:26px;animation:floatUp 2.4s ease-out;pointer-events:none;z-index:9999}
+    @keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-160px);opacity:0}}
+    #secretModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center;z-index:2000}
+    #secretModal .box{background:var(--card);color:var(--text);padding:18px;border-radius:14px;width:88%;max-width:420px;text-align:center}
+    .bubble{position:fixed;right:16px;bottom:16px;padding:10px 14px;background:#ffb7e6;color:#000;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.12);z-index:99999;opacity:1;transition:1s}
+    .voiceBubble{position:fixed;left:16px;top:16px;background:#fff6b8;padding:10px 14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.12);z-index:99999;opacity:1;transition:1s}
+    .loveBadge{margin:10px;font-size:16px;font-weight:600;text-align:center}
+    @media(max-width:420px){.mood{font-size:34px}#sticker{width:86px}}
   </style>
 </head>
 <body>
-
-  <!-- GATE LOGIN CUTE ENTRY -->
-  <div id="gate">
+  <!-- GATE -->
+  <div id="gate" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:3000;flex-direction:column;gap:12px;padding:20px">
     <h2>💙 Siapa kamu? 💙</h2>
-    <p>Mas harus jawab duluuu~</p>
-    <input id="gateInput" placeholder="ketik: mas" />
-    <button class="btn" onclick="enterGate()">Masuk ➜</button>
-    <div id="gateMsg" style="color:red"></div>
+    <input id="gateInput" placeholder="ketik: mas" style="padding:10px;border-radius:10px;border:1px solid #bbb;max-width:260px" />
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn" id="gateEnterBtn">Masuk ➜</button>
+      <button class="btn secondary" id="gateSurprise">Aku temen mas (surprise)</button>
+    </div>
+    <div id="gateMsg" style="color:#e74c3c;margin-top:6px"></div>
   </div>
 
   <h1>Mood Tracker Mas 💙</h1>
+  <div class="controls">
+    <button id="themeBtn" class="btn">🌙 Mode</button>
+    <button id="musicBtn" class="btn">▶ Backsound</button>
+    <button id="secretBtn" class="btn secondary">💌 Surat Rahasia</button>
+    <button id="downloadBtn" class="btn secondary">⬇️ Download</button>
+  </div>
 
-  <button class="btn" onclick="toggleDark()">🌙 Dark/Light</button>
-  <button class="btn" onclick="toggleMusic()">🎵 Music</button>
-
-  <p>Pilih mood mas hari ini:</p>
-
+  <p> Klik mood mas hari ini — caca bakal tau perasaanmu dan kasih respon manis:</p>
   <div class="mood-container">
     <span class="mood" data-mood="😄 Senang">😄</span>
     <span class="mood" data-mood="🙂 Biasa aja">🙂</span>
@@ -561,279 +62,323 @@ saveMood = function(mood){
     <span class="mood" data-mood="🥰 Sayang caca">🥰</span>
   </div>
 
-  <div id="reaction" style="font-size:18px; text-align:center; min-height:40px;"></div>
+  <div id="reaction"></div>
 
   <div class="card">
     <h3>Riwayat Mood</h3>
-    <div id="entries" style="margin-top:12px"></div>
+    <div id="entries" style="margin-top:10px"></div>
   </div>
 
   <div class="card">
     <h3>Mood Bulan Ini</h3>
-    <p id="avgMood"></p>
-    <canvas id="moodChart" height="150"></canvas>
+    <p id="avgMood">Menghitung…</p>
+    <canvas id="moodChart" height="120"></canvas>
   </div>
 
   <div class="card">
     <h3>Catatan dari mas:</h3>
     <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca?"></textarea>
-    <button class="btn" onclick="saveNote()">Simpan</button>
-    <div id="notes" style="margin-top:10px"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button id="saveNote" class="btn">Simpan Catatan</button>
+      <button id="clearNotes" class="btn secondary">Bersihkan Semua</button>
+      <button id="gachaBtn" class="btn secondary">🎁 Gacha</button>
+    </div>
+    <div id="notes" style="margin-top:12px"></div>
   </div>
 
-  <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" />
+  <div class="card" style="cursor:pointer;text-align:center" id="secretPreview">
+    <h3>💙 Halaman Rahasia</h3>
+    <small>Klik tombol Surat Rahasia untuk buka</small>
+  </div>
 
-  <audio id="bgm" loop>
-    <source src="music.mp3" type="audio/mpeg" />
-  </audio>
+  <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" alt="sticker">
+
+  <div id="secretModal">
+    <div class="box"><h2>Pesan Rahasia Buat Mas 💌</h2><p>Mas itu rumah ternyaman caca... 🩵</p><div style="margin-top:12px"><button id="closeSecret" class="btn">Tutup</button></div></div>
+  </div>
+
+  <audio id="bgm" loop preload="auto"><source src="music.mp3" type="audio/mpeg"></audio>
+  <button id="hugButton" class="btn" style="position:fixed;left:10px;bottom:10px;background:#ff8ac8;z-index:9999">🤗 Kirim peluk ke caca</button>
+
+  <div id="sparkleContainer" aria-hidden="true"></div>
 
 <script>
+/* =========================
+   Optimized Super-Complete JS
+   - animations optimized frequency
+   - event delegation
+   - safe initialization order
+   ========================= */
 
-/* GATE */
-function enterGate(mode){
-  const val = document.getElementById('gateInput').value.trim().toLowerCase();
-  const msg = document.getElementById('gateMsg');
+// helpers
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
 
-  // mode “surprise”
-  if(mode === 'surprise'){
-    document.getElementById('gate').style.display = 'none';
-    showBubble('surprise buat mas 🩵');
-    return;
-  }
-
-  // mode normal (jawaban harus "mas")
-  if(val === 'mas'){
-    document.getElementById('gate').style.opacity = '0';
-
-    // animasi fade out biar halus
-    setTimeout(()=>{
-      document.getElementById('gate').style.display = 'none';
-    }, 400);
-
-    showBubble('Halo mas 🩵 masuk sini yaa~');
-  } 
-  else {
-    msg.textContent = 'jawabannya salah 😡 cuma mas yang boleh masuk!';
-  }
-}
-
-
-function toggleDark(){ document.body.classList.toggle('dark'); }
-function toggleMusic(){ const m=document.getElementById('bgm'); m.paused?m.play():m.pause(); }
-
-const moodButtons=document.querySelectorAll('.mood');
-const reaction=document.getElementById('reaction');
-const sticker=document.getElementById('sticker');
+// DOM refs
+const gate = $('#gate');
+const gateInput = $('#gateInput');
+const gateMsg = $('#gateMsg');
+const gateEnterBtn = $('#gateEnterBtn');
+const gateSurpriseBtn = $('#gateSurprise');
+const moodEls = $$('.mood');
+const reaction = $('#reaction');
+const entriesBox = $('#entries');
+const notesBox = $('#notes');
+const noteInput = $('#noteInput');
+const bgm = $('#bgm');
+const sticker = $('#sticker');
+const secretModal = $('#secretModal');
 let moodChart;
 
-const reactions={
-  '😄 Senang':'mas seneng?? caca ikut seneng banget 😭💙',
-  '🙂 Biasa aja':'hari ini biasa aja ya mas? sini caca temenin 🩵',
-  '😢 Sedih':'mas sedihhh? sini aku pelukkkkk 😭🩵',
-  '😡 Kesel':'siapa yang bikin mas kesel?? caca cubit tuh orang 😤💙',
-  '🥰 Sayang caca':'mas sayang cacaaa?? cacaaa juga sayang mas banyak banyakkkkkk 🥹💙'
+// rate limits / tunable
+const SPARKLE_INTERVAL = 700; // ms (reduced frequency)
+const SAKURA_INTERVAL = 1500; // ms
+const STICKER_SHOW_MS = 2200;
+const VOICE_BUBBLE_INTERVAL = 22000; // longer
+const RANDOM_STICKER_INTERVAL = 6000;
+
+// data helpers
+function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]'); }
+function saveLogs(l){ localStorage.setItem('masMoodLog', JSON.stringify(l)); }
+function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
+function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
+function loadEXP(){ return parseInt(localStorage.getItem('loveEXP')||'0'); }
+function saveEXP(v){ localStorage.setItem('loveEXP', String(v)); }
+
+// reactions
+const reactionsMap = {
+  '😄 Senang':'mas seneng?? caca ikut senenggg 😭💙 peluk dulu sini 🫂',
+  '🙂 Biasa aja':'mas biasa aja ya hari ini? sini caca temenin yaaaa 🩵',
+  '😢 Sedih':'kok mas sedihhhh???? cini ciniiiii, caca peyukkkkk 🩵😭',
+  '😡 Kesel':'siapa yang bikin mas kesel?? ceritain ke caca, nanti caca cubittttttt 🛡️😤',
+  '🥰 Sayang Ca':'aaaa mas sayang caca??? cacaa juga sayang mas banyak banyakkkkkk 🥹🩵💙'
 };
 
-moodButtons.forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const mood=btn.dataset.mood;
-    const date=new Date().toLocaleString();
-
-    let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
-    logs.unshift({mood,date});
-    localStorage.setItem('masMoodLog',JSON.stringify(logs));
-
-    showReaction(mood);
-    renderLogs();
-    spawnHearts();
-    showSticker();
-    updateChart();
-    calcAverage();
-  });
-});
-
-function showReaction(mood){ reaction.textContent=reactions[mood]||''; }
-
-function showSticker(){
-  sticker.classList.add('show');
-  setTimeout(()=>sticker.classList.remove('show'),2500);
+/* =========================
+   Gate logic (fixed + smooth)
+   ========================= */
+function enterGate(mode){
+  if(mode === 'surprise'){ gate.style.opacity='0'; setTimeout(()=>gate.style.display='none',350); showBubble('surprise buat mas 🩵'); return; }
+  const val = (gateInput.value||'').trim().toLowerCase();
+  if(val === 'mas'){ gate.style.opacity = '0'; setTimeout(()=> gate.style.display = 'none',350); showBubble('Halo mas 🩵 masuk ya~'); initAfterGate(); }
+  else { gateMsg.textContent = 'jawabannya salah 😡 cuma mas yang boleh masuk!'; }
 }
 
-function spawnHearts(){
-  for(let i=0;i<6;i++){
-    const h=document.createElement('div');
-    h.className='loveHeart';
-    h.textContent='💙';
-    h.style.left=Math.random()*90+'vw';
-    h.style.bottom='-10px';
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(),2300);
-  }
+gateEnterBtn.addEventListener('click', ()=> enterGate());
+gateSurpriseBtn.addEventListener('click', ()=> enterGate('surprise'));
+
+// allow Enter key to submit
+gateInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') gateEnterBtn.click(); });
+
+/* =========================
+   Main features (init after gate to avoid race)
+   ========================= */
+function initAfterGate(){
+  renderLogs(); renderNotes(); updateChart(); calcAverage(); updateLoveBadge();
+  startSparkles(); startSakura(); startRandomStickers(); startVoiceBubbles();
 }
 
-function renderLogs(){
-  const box=document.getElementById('entries');
-  let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
-  box.innerHTML='';
+/* =========================
+   Mood save & UI
+   ========================= */
+function addEXP(amount=5){ const cur = loadEXP(); const next = cur + amount; saveEXP(next); updateLoveBadge(); showBubble('❤️ LOVE EXP +'+amount+' (Total: '+next+')'); return next; }
 
-  logs.forEach((l,index)=>{
-    const d=document.createElement('div');
-    d.innerHTML=`${l.date} — ${l.mood} <button class='deleteBtn' onclick='deleteMood(${index})'>hapus</button>`;
-    box.appendChild(d);
-  });
+function saveMood(mood){
+  const date = new Date().toISOString(); // ISO for reliable parsing
+  const logs = loadLogs(); logs.unshift({mood,date}); saveLogs(logs);
+  renderLogs(); showReaction(mood); spawnTinyHearts(); if(mood.includes('Sayang')) spawnBigHearts(); showSticker(); updateChart(); calcAverage(); aiReplyToMood(mood); const e = addEXP(); if(e % 50 === 0) loveExplosion();
 }
 
-function deleteMood(i){
-  let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
-  logs.splice(i,1);
-  localStorage.setItem('masMoodLog',JSON.stringify(logs));
-  renderLogs(); updateChart(); calcAverage();
-}
+moodEls.forEach(el=> el.addEventListener('click', ()=> saveMood(el.dataset.mood)));
 
-/* NOTES */
-function saveNote(){
-  const text=document.getElementById('noteInput').value.trim(); if(!text) return;
-  let notes=JSON.parse(localStorage.getItem('masNotes')||'[]');
-  notes.unshift({text,time:new Date().toLocaleString()});
-  localStorage.setItem('masNotes',JSON.stringify(notes));
-  document.getElementById('noteInput').value='';
-  renderNotes();
-}
+function showReaction(mood){ reaction.textContent = reactionsMap[mood] || ''; }
 
-function renderNotes(){
-  const box=document.getElementById('notes');
-  let notes=JSON.parse(localStorage.getItem('masNotes')||'[]');
-  box.innerHTML='';
-  notes.forEach(n=>{
-    const d=document.createElement('div');
-    d.textContent=`${n.time} — ${n.text}`;
-    box.appendChild(d);
-  });
-}
+function renderLogs(){ const logs = loadLogs(); entriesBox.innerHTML=''; if(logs.length===0){ entriesBox.innerHTML = '<em>Belum ada mood tercatat.</em>'; return; } logs.forEach((l,idx)=>{ const d = document.createElement('div'); const left = document.createElement('span'); left.textContent = formatDateForDisplay(l.date) + ' — ' + l.mood; const del = document.createElement('button'); del.textContent='🗑️ Hapus'; del.className='btn secondary'; del.style.padding='6px 8px'; del.onclick = ()=> deleteMood(idx); d.appendChild(left); d.appendChild(del); entriesBox.appendChild(d); }); }
 
-/* MONTHLY AVG */
-function calcAverage(){
-  let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
-  if(logs.length===0){ document.getElementById('avgMood').textContent='Belum ada mood'; return; }
+function deleteMood(i){ const logs = loadLogs(); if(!logs[i]) return; if(!confirm('Yakin mas mau hapus mood ini?')) return; logs.splice(i,1); saveLogs(logs); renderLogs(); updateChart(); calcAverage(); showBubble('Catatan dihapus 🗑️'); }
 
-  const score={
-    '😄 Senang':5,
-    '🙂 Biasa aja':3,
-    '😢 Sedih':1,
-    '😡 Kesel':2,
-    '🥰 Sayang caca':4
-  };
+/* =========================
+   Chart & Month average (optimized date parsing)
+   ========================= */
+function updateChart(){ const logs = loadLogs(); const labels=['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca']; const counts = labels.map(m => logs.filter(l => l.mood === m).length); const ctx = document.getElementById('moodChart').getContext('2d'); if(moodChart) moodChart.destroy(); moodChart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'Jumlah', data:counts, backgroundColor:['#66c2ff','#99d6ff','#aab6ff','#c0c0ff','#ffb6c1'] }] }, options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:true, ticks:{precision:0} } } } }); }
 
-  let total=0;
-  logs.forEach(l=> total+=score[l.mood]||0);
-  let avg=(total/logs.length).toFixed(2);
+function calcAverage(){ const logs = loadLogs(); if(logs.length===0){ $('#avgMood').textContent='Belum ada mood'; return; } const now = new Date(); const thisMonthLogs = logs.filter(l=>{ const d = new Date(l.date); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); }); if(thisMonthLogs.length===0){ $('#avgMood').textContent='Belum ada mood di bulan ini'; return; } const score={'😄 Senang':5,'🙂 Biasa aja':3,'😢 Sedih':1,'😡 Kesel':2,'🥰 Sayang caca':4}; let total=0; thisMonthLogs.forEach(l=> total += (score[l.mood]||0)); const avg=(total/thisMonthLogs.length).toFixed(2); let moodText=''; if(avg>=4.5) moodText='Mas happy banget bulan ini 🥰💙'; else if(avg>=3) moodText='Mood mas lumayan stabil bulan ini 🩵'; else moodText='Mas lagi butuh banyak peluk nih 😭💙'; $('#avgMood').textContent=`Rata-rata mood: ${avg} — ${moodText}`; }
 
-  let moodText='';
-  if(avg>=4.5) moodText='Mas happy banget bulan ini 🥰💙';
-  else if(avg>=3) moodText='Mood mas lumayan stabil bulan ini 🩵';
-  else moodText='Mas lagi butuh banyak peluk kayaknya 😭💙';
+/* =========================
+   Notes + cute bubble
+   ========================= */
+function showBubble(msg, ms=2000){ const b = document.createElement('div'); b.className='bubble'; b.textContent=msg; document.body.appendChild(b); setTimeout(()=> b.style.opacity='0', ms-400); setTimeout(()=> b.remove(), ms); }
 
-  document.getElementById('avgMood').textContent=`Rata-rata mood: ${avg} — ${moodText}`;
-}
+document.getElementById('saveNote').addEventListener('click', ()=>{ const txt = noteInput.value.trim(); if(!txt) return; const notes = loadNotes(); notes.unshift({text:txt,time:new Date().toISOString()}); saveNotes(notes); noteInput.value=''; renderNotes(); addEXP(); showBubble('Catatan mas udah caca simpen 🩵', 2200); });
 
-/* CHART */
-function updateChart(){
-  let logs=JSON.parse(localStorage.getItem('masMoodLog')||'[]');
-  const labels=['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca'];
-  const counts=labels.map(m=>logs.filter(l=>l.mood===m).length);
+document.getElementById('clearNotes').addEventListener('click', ()=>{ if(confirm('Bersihkan semua catetan?')){ localStorage.removeItem('masNotes'); renderNotes(); showBubble('Semua catatan dibersihin 🧹',1500); } });
 
-  const ctx=document.getElementById('moodChart').getContext('2d');
-  if(moodChart) moodChart.destroy();
+function renderNotes(){ const notes = loadNotes(); notesBox.innerHTML=''; if(notes.length===0){ notesBox.innerHTML='<em>Belum ada catatan.</em>'; return; } notes.forEach(n=>{ const d=document.createElement('div'); d.textContent = formatDateForDisplay(n.time)+' — '+n.text; notesBox.appendChild(d); }); }
 
-  moodChart=new Chart(ctx,{
-    type:'bar',
-    data:{ labels, datasets:[{ data:counts, backgroundColor:['#7fc8ff','#a6d4ff','#b8b4ff','#d7d1ff','#ffb6d5'] }]},
-    options:{ plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
-  });
-}
+/* =========================
+   Sticker & hearts (optimized)
+   ========================= */
+function showSticker(){ sticker.classList.add('show'); setTimeout(()=> sticker.classList.remove('show'), STICKER_SHOW_MS); }
 
-renderLogs();
-renderNotes();
-updateChart();
-calcAverage();
+function spawnTinyHearts(count=5){ for(let i=0;i<count;i++){ const h=document.createElement('div'); h.className='loveHeart'; h.textContent='💙'; h.style.left = (10+Math.random()*80)+'vw'; h.style.bottom='-10px'; document.body.appendChild(h); setTimeout(()=> h.remove(), 2400); } }
+
+function spawnBigHearts(){ for(let i=0;i<10;i++){ const h=document.createElement('div'); h.className='loveHeart'; h.textContent = ['💖','💗','💕'][Math.floor(Math.random()*3)]; h.style.fontSize = (26 + Math.floor(Math.random()*20))+'px'; h.style.left = (30 + Math.random()*40)+'vw'; h.style.bottom='-10px'; document.body.appendChild(h); setTimeout(()=> h.remove(), 2600); } }
+
+/* Sparkles (throttled) */
+let sparkleTimer;
+function startSparkles(){ if(sparkleTimer) return; sparkleTimer = setInterval(()=>{ const s=document.createElement('div'); s.textContent='✨'; s.style.position='fixed'; s.style.left = Math.random()*100 + 'vw'; s.style.top='-8px'; s.style.fontSize = (10 + Math.random()*12) + 'px'; s.style.opacity='1'; s.style.transition='3s linear'; document.body.appendChild(s); setTimeout(()=>{ s.style.top='100vh'; s.style.opacity='0'; },50); setTimeout(()=> s.remove(), 3000); }, SPARKLE_INTERVAL); }
+function stopSparkles(){ clearInterval(sparkleTimer); sparkleTimer = null; }
+
+/* Sakura petals (throttled) */
+let sakuraTimer;
+function startSakura(){ if(sakuraTimer) return; sakuraTimer = setInterval(()=>{ const p=document.createElement('div'); p.textContent='🌸'; p.style.position='fixed'; p.style.left = Math.random()*100 + 'vw'; p.style.top='-20px'; p.style.fontSize = (12 + Math.random()*14)+'px'; p.style.transition='3.6s linear'; document.body.appendChild(p); setTimeout(()=>{ p.style.top='100vh'; p.style.opacity='0'; },20); setTimeout(()=> p.remove(), 3800); }, SAKURA_INTERVAL); }
+function stopSakura(){ clearInterval(sakuraTimer); sakuraTimer=null; }
+
+/* random sticker pop (throttled) */
+let stickerPopTimer;
+function startRandomStickers(){ if(stickerPopTimer) return; stickerPopTimer = setInterval(()=>{ const img = document.createElement('img'); img.src = stickerList[Math.floor(Math.random()*stickerList.length)]; img.style.position='fixed'; img.style.left=Math.random()*80+'vw'; img.style.top='-30px'; img.style.width='90px'; img.style.transition='3s'; img.style.zIndex='99999'; document.body.appendChild(img); setTimeout(()=>{ img.style.top='100vh'; img.style.opacity='0'; },50); setTimeout(()=> img.remove(), 3000); }, RANDOM_STICKER_INTERVAL); }
+function stopRandomStickers(){ clearInterval(stickerPopTimer); stickerPopTimer=null; }
+
+/* =========================
+   Voice bubble (less frequent)
+   ========================= */
+let voiceTimer;
+function startVoiceBubbles(){ if(voiceTimer) return; voiceTimer = setInterval(()=>{ const lines=['mas lagi ngapain siiihh 🥺💙','caca liat mas dari sini 😳','mas jangan lupa minum ya 🩵','caca kangen mas 😭💙']; voiceBubble(lines[Math.floor(Math.random()*lines.length)]); }, VOICE_BUBBLE_INTERVAL); }
+function stopVoiceBubbles(){ clearInterval(voiceTimer); voiceTimer=null; }
+function voiceBubble(text){ const b = document.createElement('div'); b.className='voiceBubble'; b.textContent = text; document.body.appendChild(b); setTimeout(()=> b.style.opacity='0',1500); setTimeout(()=> b.remove(),2500); }
+
+/* =========================
+   AI auto-reply to mood
+   ========================= */
+function aiReplyToMood(mood){ const replies = { '😄 Senang':'caca ikut seneng bangettt 😭💙 ayo kita rayain dikit yuk! ✨', '🙂 Biasa aja':'ga papa mas, sini caca temenin biar hari mas lebih hangat 🩵', '😢 Sedih':'mas sedih?? caca disini yaaa, nanti caca peluk ampe tenang 😭🤍', '😡 Kesel':'siapa yang buat mas kesel?? ayooo, kita cubit bareng barengggggg! 😤💙', '🥰 Sayang Ca':'MAS SAYANG CACAA??? caca lebih sayang mas 10000x 😭💗' }; showBubble(replies[mood]||'caca ada buat mas 🩵',2200); }
+
+/* =========================
+   Love EXP & badge
+   ========================= */
+const stickerList = ['https://i.imgur.com/cy7Q5pA.png','https://i.imgur.com/6XH8O1g.png','https://i.imgur.com/OeQO3ZN.png'];
+function updateLoveBadge(){ const exp = loadEXP(); let badge=''; if(exp<50) badge='💗 Baby Love'; else if(exp<150) badge='💞 Sweetheart'; else if(exp<300) badge='💘 Lover Lv.3'; else badge='💝 Soulmate Max'; let box = document.getElementById('loveBadge'); if(!box){ box=document.createElement('div'); box.id='loveBadge'; box.className='loveBadge'; document.body.insertBefore(box, document.body.children[1]); } box.textContent = '❤️ Love Level: '+badge+' (EXP:'+exp+')'; }
+
+/* love explosion */
+function loveExplosion(){ for(let i=0;i<18;i++){ const h=document.createElement('div'); h.textContent='💗'; h.style.position='fixed'; h.style.left='50vw'; h.style.top='50vh'; h.style.fontSize=(16+Math.random()*28)+'px'; h.style.transition='1.2s'; const angle=Math.random()*Math.PI*2; document.body.appendChild(h); setTimeout(()=>{ h.style.transform=`translate(${Math.cos(angle)*200}px,${Math.sin(angle)*200}px)`; h.style.opacity='0'; },20); setTimeout(()=>h.remove(),1200); } }
+
+/* =========================
+   Gacha
+   ========================= */
+function startGacha(){ const box=document.createElement('div'); box.style.position='fixed'; box.style.inset='0'; box.style.background='rgba(0,0,0,0.6)'; box.style.display='flex'; box.style.alignItems='center'; box.style.justifyContent='center'; box.style.zIndex='99999'; const card=document.createElement('div'); card.style.background='white'; card.style.padding='18px'; card.style.borderRadius='12px'; card.style.textAlign='center'; const img=document.createElement('img'); img.src=stickerList[Math.floor(Math.random()*stickerList.length)]; img.style.width='180px'; img.style.borderRadius='10px'; const p=document.createElement('p'); p.textContent='mas dapet stiker lucuuu 🩵'; const btn=document.createElement('button'); btn.textContent='tutup'; btn.className='btn'; btn.style.marginTop='12px'; btn.onclick = ()=> box.remove(); card.appendChild(img); card.appendChild(p); card.appendChild(btn); box.appendChild(card); document.body.appendChild(box); addEXPLocal(10); }
+
+document.getElementById('gachaBtn').addEventListener('click', startGacha);
+
+/* =========================
+   Daily quest (show once per day)
+   ========================= */
+function showDailyQuestOnce(){ const last = localStorage.getItem('lastQuestShown'); const today = new Date().toISOString().slice(0,10); if(last===today) return; localStorage.setItem('lastQuestShown', today); const quests=['kirim mood jujur hari ini 🩵','tulis satu kalimat buat caca 😳💗','peluk caca 3x 🤗','bilang mas sayang caca 😭💙','kasih stiker favorit mas 🩵']; const q=quests[Math.floor(Math.random()*quests.length)]; const box=document.createElement('div'); box.style.position='fixed'; box.style.inset='0'; box.style.background='rgba(0,0,0,0.5)'; box.style.display='flex'; box.style.alignItems='center'; box.style.justifyContent='center'; box.style.zIndex='999999'; const card=document.createElement('div'); card.style.background='white'; card.style.padding='20px'; card.style.borderRadius='14px'; card.style.textAlign='center'; card.style.boxShadow='0 8px 20px rgba(0,0,0,0.3)'; const t=document.createElement('h3'); t.textContent='🎀 Daily Quest Mas'; const p=document.createElement('p'); p.textContent=q; const ok=document.createElement('button'); ok.className='btn'; ok.textContent='oke caa 🩵'; ok.onclick=()=> box.remove(); card.appendChild(t); card.appendChild(p); card.appendChild(ok); box.appendChild(card); document.body.appendChild(box); }
+
+/* =========================
+   Modes (kangen, manja, sedih, jealous, marah, sleepy, protektif)
+   Optimized: toggle buttons added once DOM ready
+   ========================= */
+function addModeButtons(){ const modes = [
+  {id:'kangen', label:'🥺 Mode Kangen', action:()=>{ const on = document.body.dataset.kangen!=='1'; document.body.dataset.kangen = on? '1':'0'; document.body.style.filter = on? 'hue-rotate(300deg) brightness(1.12)':''; showBubble(on? 'mas lagi kangen caca yaaa? 😭🩵':'' ); }},
+  {id:'manja', label:'🐰 Mode Manja', action:()=>{ const on = document.body.dataset.manja!=='1'; document.body.dataset.manja=on?'1':'0'; if(on){ showBubble('mas lagi manja yaaa?? caca sukaaaaa 🥺💗🐰'); startManja(); } else stopManja(); }},
+  {id:'sedih', label:'🌧️ Mode Sedih', action:()=>{ const on = document.body.dataset.sedih!=='1'; document.body.dataset.sedih=on?'1':'0'; if(on){ showBubble('mas sedih yaaa?? sini caca peluk 😭💙'); startRain(); } else stopRain(); }},
+  {id:'jealous', label:'😤 Mode Jealous', action:()=>{ const on = document.body.dataset.jealous!=='1'; document.body.dataset.jealous=on?'1':'0'; document.body.style.background = on? '#ffe6e6':''; showBubble(on? 'mas lagi jealous ya?? sini caca pelukkk, caca punya mas kokkkk 😤💗':'' ); }},
+  {id:'marah', label:'⚡ Mode Marah', action:()=>{ const on = document.body.dataset.marah!=='1'; document.body.dataset.marah=on?'1':'0'; if(on){ showBubble('mas lagi marahh?? siniiiiii sama cacaaaa, biar di peyukkkk yang lamaaa 😭💙'); startLightning(); } else stopLightning(); }},
+  {id:'sleepy', label:'😴 Mode Ngantuk', action:()=>{ const on = document.body.dataset.sleepy!=='1'; document.body.dataset.sleepy=on?'1':'0'; if(on){ showBubble('mas ngantuk ya? caca temenin tidur 🩵😴'); startZZZ(); } else stopZZZ(); }},
+  {id:'protek', label:'🛡️ Mode Protektif', action:()=>{ const on = document.body.dataset.protek!=='1'; document.body.dataset.protek=on?'1':'0'; if(on){ showBubble('mas protektif ya?? caca aman kok sama mas 😳🛡️'); startShield(); } else stopShield(); }}
+];
+  const container = document.createElement('div'); container.style.display='flex'; container.style.flexWrap='wrap'; container.style.gap='8px'; container.style.marginTop='10px'; container.style.justifyContent='center'; modes.forEach(m=>{ const b=document.createElement('button'); b.className='btn secondary'; b.textContent=m.label; b.onclick = m.action; container.appendChild(b); }); document.body.insertBefore(container, document.body.children[3]); }
+
+// manja effects
+let manjaTimer; function startManja(){ if(manjaTimer) return; manjaTimer = setInterval(()=>{ const b=document.createElement('div'); b.textContent='💕'; b.style.position='fixed'; b.style.left=Math.random()*100+'vw'; b.style.top='-20px'; b.style.fontSize='22px'; b.style.transition='3s linear'; document.body.appendChild(b); setTimeout(()=>{ b.style.top='100vh'; b.style.opacity='0'; },20); setTimeout(()=>b.remove(),3000); }, 900); } function stopManja(){ clearInterval(manjaTimer); manjaTimer=null; }
+
+// rain
+let rainTimer; function startRain(){ if(rainTimer) return; rainTimer=setInterval(()=>{ const r=document.createElement('div'); r.textContent='💧'; r.style.position='fixed'; r.style.left=Math.random()*100+'vw'; r.style.top='-20px'; r.style.fontSize='16px'; r.style.transition='2s linear'; document.body.appendChild(r); setTimeout(()=>{ r.style.top='100vh'; r.style.opacity='0'; },20); setTimeout(()=>r.remove(),2000); }, 160); } function stopRain(){ clearInterval(rainTimer); rainTimer=null; }
+
+// shield
+let shieldTimer; function startShield(){ if(shieldTimer) return; shieldTimer=setInterval(()=>{ const s=document.createElement('div'); s.textContent='🛡️'; s.style.position='fixed'; s.style.left=(10+Math.random()*80)+'vw'; s.style.top=(20+Math.random()*60)+'vh'; s.style.fontSize='26px'; s.style.opacity='0'; s.style.transition='1s'; document.body.appendChild(s); setTimeout(()=>s.style.opacity='1',50); setTimeout(()=>s.remove(),1400); }, 600); } function stopShield(){ clearInterval(shieldTimer); shieldTimer=null; }
+
+// lightning
+let lightningTimer; function startLightning(){ if(lightningTimer) return; lightningTimer=setInterval(()=>{ const f=document.createElement('div'); f.style.position='fixed'; f.style.inset='0'; f.style.background='rgba(255,255,255,0.75)'; f.style.zIndex='999999'; document.body.appendChild(f); setTimeout(()=> f.style.opacity='0',80); setTimeout(()=> f.remove(),200); }, 1200); } function stopLightning(){ clearInterval(lightningTimer); lightningTimer=null; }
+
+// zzz
+let zzzTimer; function startZZZ(){ if(zzzTimer) return; zzzTimer=setInterval(()=>{ const z=document.createElement('div'); z.textContent='💤'; z.style.position='fixed'; z.style.left=Math.random()*100+'vw'; z.style.top='-20px'; z.style.fontSize='20px'; z.style.transition='3s linear'; document.body.appendChild(z); setTimeout(()=>{ z.style.top='100vh'; z.style.opacity='0' },20); setTimeout(()=>z.remove(),3000); }, 900); } function stopZZZ(){ clearInterval(zzzTimer); zzzTimer=null; }
+
+/* =========================
+   Misc: sticker pop, random stickers
+   ========================= */
+let stickerPopTimer; function startRandomStickers(){ if(stickerPopTimer) return; stickerPopTimer = setInterval(()=>{ const img=document.createElement('img'); img.src = stickerList[Math.floor(Math.random()*stickerList.length)]; img.style.position='fixed'; img.style.left=Math.random()*80+'vw'; img.style.top='-30px'; img.style.width='86px'; img.style.transition='3s'; img.style.zIndex='99999'; document.body.appendChild(img); setTimeout(()=>{ img.style.top='100vh'; img.style.opacity='0'; },50); setTimeout(()=> img.remove(), 3000); }, RANDOM_STICKER_INTERVAL); }
+function stopRandomStickers(){ clearInterval(stickerPopTimer); stickerPopTimer=null; }
+
+/* =========================
+   Sparkles & sakura start/stop
+   ========================= */
+let sparkleTimer; function startSparkles(){ if(sparkleTimer) return; sparkleTimer = setInterval(()=>{ const s=document.createElement('div'); s.textContent='✨'; s.style.position='fixed'; s.style.left = Math.random()*100 + 'vw'; s.style.top='-8px'; s.style.fontSize = (10 + Math.random()*12) + 'px'; s.style.opacity='1'; s.style.transition='3s linear'; document.body.appendChild(s); setTimeout(()=>{ s.style.top = '100vh'; s.style.opacity='0'; },50); setTimeout(()=> s.remove(), 3000); }, SPARKLE_INTERVAL); } function stopSparkles(){ clearInterval(sparkleTimer); sparkleTimer=null; }
+let sakuraTimer; function startSakura(){ if(sakuraTimer) return; sakuraTimer = setInterval(()=>{ const p=document.createElement('div'); p.textContent='🌸'; p.style.position='fixed'; p.style.left=Math.random()*100 + 'vw'; p.style.top='-20px'; p.style.fontSize = (12 + Math.random()*14)+'px'; p.style.transition='3.6s linear'; document.body.appendChild(p); setTimeout(()=>{ p.style.top='100vh'; p.style.opacity='0'; },20); setTimeout(()=> p.remove(), 3800); }, SAKURA_INTERVAL); } function stopSakura(){ clearInterval(sakuraTimer); sakuraTimer=null; }
+
+/* =========================
+   Voice bubbles
+   ========================= */
+function startVoiceBubbles(){ startVoiceBubbles(); } // placeholder
+let voiceInterval; function startVoiceBubbles(){ if(voiceInterval) return; voiceInterval = setInterval(()=>{ const lines=['mas lagi ngapain siiihh 🥺💙','caca liat mas dari sini 😳','mas jangan lupa minum ya 🩵','caca kangen mas 😭💙']; voiceBubble(lines[Math.floor(Math.random()*lines.length)]); }, VOICE_BUBBLE_INTERVAL); }
+function stopVoiceBubbles(){ clearInterval(voiceInterval); voiceInterval=null; }
+function voiceBubble(text){ const b=document.createElement('div'); b.className='voiceBubble'; b.textContent=text; document.body.appendChild(b); setTimeout(()=> b.style.opacity='0',1500); setTimeout(()=> b.remove(),2500); }
+
+/* =========================
+   AI auto-reply to mood
+   ========================= */
+function aiReplyToMood(mood){ const replies={ '😄 Senang':'caca ikut seneng bangettt 😭💙 ayo kita rayain dikit yuk! ✨', '🙂 Biasa aja':'ga papa mas, sini caca temenin biar hari mas lebih hangat 🩵', '😢 Sedih':'mas sedih?? caca disini yaaa, nanti caca peluk ampe tenang 😭🤍', '😡 Kesel':'siapa yang buat mas kesel?? ayooo, kita cubit bareng barengggggg! 😤💙', '🥰 Sayang Ca':'MAS SAYANG CACAA??? caca lebih sayang mas 10000x 😭💗' }; showBubble(replies[mood]||'ca ada buat mas 🩵',2200); }
+
+/* =========================
+   Helper: date formatting
+   ========================= */
+function formatDateForDisplay(iso){ try{ const d=new Date(iso); return d.toLocaleString(); }catch(e){ return iso; } }
+
+/* =========================
+   Init / bindings for misc controls
+   ========================= */
+$('#secretBtn').addEventListener('click', ()=> secretModal.style.display='flex');
+$('#closeSecret').addEventListener('click', ()=> secretModal.style.display='none');
+$('#secretPreview').addEventListener('click', ()=> secretModal.style.display='flex');
+$('#downloadBtn').addEventListener('click', ()=>{ const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='index.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); });
+
+$('#musicBtn').addEventListener('click', ()=>{ if(bgm.paused){ bgm.play().catch(()=> showBubble('Klik play lagi untuk izinkan audio',1200)); $('#musicBtn').textContent='⏸ Backsound'; } else { bgm.pause(); $('#musicBtn').textContent='▶ Backsound'; } });
+
+$('#themeBtn').addEventListener('click', ()=>{ document.body.classList.toggle('dark'); $('#themeBtn').textContent = document.body.classList.contains('dark')? '☀️ Mode' : '🌙 Mode'; });
+
+$('#hugButton').addEventListener('click', ()=>{ showBubble('cacaa dapet peluk dari mas 🤗🩵',2000); spawnBigHearts(); addEXP(); updateLoveBadge(); });
+
+$('#gachaBtn').addEventListener('click', startGacha);
+
+// gacha starter alias
+$('#gachaBtn').title='gacha-trigger';
+
+/* =========================
+   EXP helper used by gacha
+   ========================= */
+function addEXPLocal(n=10){ const cur=loadEXP(); saveEXP(cur+n); updateLoveBadge(); return cur+n; }
+
+/* =========================
+   Start periodic features after gate
+   ========================= */
+function initAfterGateShort(){ renderLogs(); renderNotes(); updateChart(); calcAverage(); updateLoveBadge(); startSparkles(); startSakura(); startRandomStickers(); startVoiceBubbles(); addModeButtons(); }
+
+/* keep both in case enterGate called different name */
+function initAfterGate(){ initAfterGateShort(); }
+
+/* enter gate is already above - ensure binding safe */
+
+/* initial render if gate already hidden */
+if(gate.style.display==='none' || gate.style.opacity==='0') initAfterGate();
+
+/* run daily quest once (if gate removed later it will still show) */
+setTimeout(showDailyQuestOnce, 1800);
+
+/* util: renderNotes defined earlier but ensure available */
+function renderNotes(){ const notes = loadNotes(); notesBox.innerHTML=''; if(notes.length===0){ notesBox.innerHTML='<em>Belum ada catetan.</em>'; return; } notes.forEach(n=>{ const d=document.createElement('div'); d.textContent = formatDateForDisplay(n.time)+' — '+n.text; notesBox.appendChild(d); }); }
+
+/* ensure init binding after script loaded */
+window.addEventListener('load', ()=>{ /* nothing: gate handles flow */ });
 
 </script>
-
-
-<!-- SPARKLE ANIMATION CONTAINER -->
-<div id="sparkleContainer"></div>
-
-<!-- PELUK BUTTON FIXED -->
-<button id="hugButton" class="btn" style="position:fixed; left:10px; bottom:10px; background:#ff8ac8; z-index:9999;">🤗 Kirim peluk ke Caca</button>
-
-<script>
-
-/* ====== SPARKLE EFFECT ====== */
-setInterval(()=>{
-  const s=document.createElement('div');
-  s.textContent='✨';
-  s.style.position='fixed';
-  s.style.left=Math.random()*100+'vw';
-  s.style.top='-10px';
-  s.style.fontSize=(14+Math.random()*10)+'px';
-  s.style.opacity='1';
-  s.style.transition='3s linear';
-  document.body.appendChild(s);
-  setTimeout(()=>{ s.style.top='100vh'; s.style.opacity='0'; },50);
-  setTimeout(()=>s.remove(),3000);
-}, 500);
-
-/* ====== NOTIF BUBBLE CUTE ====== */
-function showBubble(msg){
-  const b=document.createElement('div');
-  b.textContent=msg;
-  b.style.position='fixed';
-  b.style.right='20px';
-  b.style.bottom='20px';
-  b.style.padding='10px 14px';
-  b.style.background='#ffb7e6';
-  b.style.color='#000';
-  b.style.borderRadius='12px';
-  b.style.boxShadow='0 4px 10px rgba(0,0,0,0.2)';
-  b.style.opacity='1';
-  b.style.transition='1s';
-  b.style.zIndex='99999';
-  document.body.appendChild(b);
-  setTimeout(()=>b.style.opacity='0',2000);
-  setTimeout(()=>b.remove(),3000);
-}
-
-/* Trigger bubble on note save */
-const originalSaveNote = saveNote;
-saveNote = function(){
-  originalSaveNote();
-  showBubble('Catatan mas udah caca simpen 🩵');
-};
-
-/* ====== MODE KANGEN ====== */
-let kangen=false;
-const kangenBtn=document.createElement('button');
-kangenBtn.textContent='🥺 Mode Kangen';
-kangenBtn.className='btn';
-kangenBtn.style.margin='10px';
-kangenBtn.onclick=()=>{
-  kangen=!kangen;
-  if(kangen){
-    document.body.style.filter='hue-rotate(300deg) brightness(1.2)';
-    showBubble('mas lagi kangen cacaaa yaaa? 😭🩵');
-  } else {
-    document.body.style.filter='none';
-  }
-};
-document.body.insertBefore(kangenBtn, document.body.children[2]);
-
-/* ====== HUG BUTTON ====== */
-document.getElementById('hugButton').addEventListener('click', ()=>{
-  showBubble('caca dapet peluk dari mas 🤗🩵');
-  spawnHearts();
-});
-
-</script>
-
 </body>
 </html>
