@@ -67,14 +67,14 @@
     <button id="downloadBtn" class="btn secondary">⬇️ Download HTML</button>
   </div>
 
-  <p style="margin:6px 0 0 0">Klik mood mas hari ini — langsung muncul reaksi manis dari ca:</p>
+  <p style="margin:6px 0 0 0">Klik mood mas hari ini — langsung muncul reaksi manis dari caca:</p>
 
   <div class="mood-container">
     <span class="mood" data-mood="😄 Senang">😄</span>
     <span class="mood" data-mood="🙂 Biasa aja">🙂</span>
     <span class="mood" data-mood="😢 Sedih">😢</span>
     <span class="mood" data-mood="😡 Kesel">😡</span>
-    <span class="mood" data-mood="🥰 Sayang Ca">🥰</span>
+    <span class="mood" data-mood="🥰 Sayang caca">🥰</span>
   </div>
 
   <div id="reaction"></div>
@@ -86,10 +86,10 @@
   </div>
 
   <div class="card">
-    <h3>Catetan Penting dari Mas</h3>
-    <textarea id="noteInput" placeholder="Mas mau nulis apa ke ca?"></textarea>
+    <h3>Catatan Penting dari Mas</h3>
+    <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca?"></textarea>
     <div style="display:flex; gap:8px; margin-top:8px">
-      <button id="saveNote" class="btn">Simpan Catetan</button>
+      <button id="saveNote" class="btn">Simpan Catatan</button>
       <button id="clearNotes" class="btn secondary">Bersihkan Semua</button>
     </div>
     <div id="notes" style="margin-top:12px"></div>
@@ -107,7 +107,7 @@
   <div id="secretModal">
     <div class="box">
       <h2>Pesan Rahasia Buat Mas 💌</h2>
-      <p>Mas tuh rumah ternyaman ca... 🩵<br>makasih udah ada di hidup ca yaaa...</p>
+      <p>Mas tuh rumah ternyaman caca... 🩵<br>makasih udah ada di hidup caca yaaa...</p>
       <div style="margin-top:12px">
         <button id="closeSecret" class="btn">Tutup</button>
       </div>
@@ -116,7 +116,7 @@
 
   <!-- audio (backsound) -->
   <audio id="bgm" loop preload="auto">
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7c85c2cf29.mp3?filename=relaxing-ambient-111237.mp3" type="audio/mpeg">
+    <source src="music.mp3" type="audio/mpeg">
     <!-- fallback: if external source blocked, user can host audio locally -->
   </audio>
 
@@ -142,10 +142,10 @@ function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
 /* --- Reactions map --- */
 const reactions = {
   '😄 Senang':'mas seneng?? ya ampun aku ikut senenggg 😭💙 peluk dulu sini 🫂',
-  '🙂 Biasa aja':'mas biasa aja ya hari ini? sini ca temenin biar makin happy 🩵',
-  '😢 Sedih':'kok mas sedihhhh 😭💙 cini cini, aku peyukkkkk 🫂🩵',
-  '😡 Kesel':'siapa yang bikin mas kesel?? ca mau bela mas, ceritain ya 😤💙',
-  '🥰 Sayang Ca':'aaaa mas sayang ca?? ca tambah sayang mas lagiii 🥹🩵💙'
+  '🙂 Biasa aja':'mas biasa aja ya hari ini? sini aku temenin biar makin happy 🩵',
+  '😢 Sedih':'kok mas sedihhhh 😭💙 cini ciniiiiii, aku peyukkkkk 🫂🩵',
+  '😡 Kesel':'siapa yang bikin mas kesel?? ceritain yaaaa, biar aku cubit orang yang nakalin masssss 😤💙',
+  '🥰 Sayang caca':'aaaa mas sayang akuuuu?? aku juga sayang mas banyak banyakkkkkkk 🥹🩵💙'
 };
 
 /* --- Mood click handler --- */
@@ -181,7 +181,7 @@ function renderLogs(){
 function renderNotes(){
   const notes = loadNotes();
   notesBox.innerHTML = '';
-  if(notes.length===0) notesBox.innerHTML = '<em>Belum ada catetan.</em>';
+  if(notes.length===0) notesBox.innerHTML = '<em>Belum ada catatan.</em>';
   notes.forEach(n=>{
     const d = document.createElement('div');
     d.textContent = `${n.time} — ${n.text}`;
@@ -274,7 +274,7 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
 /* --- Chart --- */
 function updateChart(){
   const logs = loadLogs();
-  const moodNames = ['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang Ca'];
+  const moodNames = ['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca'];
   const counts = moodNames.map(m => logs.filter(l => l.mood===m).length);
   const ctx = document.getElementById('moodChart').getContext('2d');
   if(moodChart) moodChart.destroy();
