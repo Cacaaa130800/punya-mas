@@ -469,83 +469,81 @@ function sendHug() {
     }
 }
 
-/* --- Daily Quest Logic --- */
-function generateQuests() {
-    const today = new Date().toDateString();
-    let storedQuests = JSON.parse(localStorage.getItem(QUESTS_KEY));
-
-    if (!storedQuests || storedQuests.date !== today) {
-        // Jika hari baru atau tidak ada data, generate 3 misi baru
-        const shuffled = allQuests.sort(() => 0.5 - Math.random());
-        const newQuests = shuffled.slice(0, 3).map(q => ({
-            ...q,
-            completed: false
-        }));
-        storedQuests = { date: today, list: newQuests, rewarded: false };
-        localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
-    }
-    return storedQuests;
-}
-
-// MODIFIED: Added Strikethrough logic
-function renderQuests() {
-    const storedQuests = generateQuests();
-    const quests = storedQuests.list;
-    const listEl = document.getElementById('questList');
-    listEl.innerHTML = '';
-    
-    if (storedQuests.rewarded) {
-        listEl.innerHTML = '<p style="font-weight: bold; color: var(--accent);">🎉 Semua Misi Hari Ini Selesai! Mas sudah dapat hadiah EXP! 🎉</p>';
-        return;
-    }
-
-    if(quests.length === 0) {
-        listEl.innerHTML = '<em>Tidak ada misi hari ini.</em>';
-        return;
-    }
-
-    quests.forEach((q, index) => {
-        const item = document.createElement('p');
-        const status = q.completed ? '✅' : '⬜';
-        item.innerHTML = `${status} ${q.text}`;
-        item.style.margin = '4px 0';
-        
-        if (q.completed) {
-            item.style.opacity = '0.6';
-            item.style.textDecoration = 'line-through'; 
-        } else {
-            item.style.opacity = '1';
-            item.style.textDecoration = 'none';
-        }
-        
-        listEl.appendChild(item);
-    });
-}
-
+/* --- Daily Quest Logic (MODIFIED to support multi-step quests) --- */
 function checkQuestCompletion(actionType, value = null) {
     let storedQuests = generateQuests();
     let changed = false;
 
     if (storedQuests.rewarded) return; 
 
+    // Mendapatkan jumlah log dan catatan hari ini
+    const logs = loadLogs();
+    const notes = loadNotes();
+    const today = new Date().toDateString();
+    // Hitung jumlah log mood hari ini (untuk misi mood_2)
+    const todayLogsCount = logs.filter(l => new Date(l.date).toDateString() === today).length;
+    // Hitung jumlah catatan hari ini (untuk misi note_2)
+    const todayNotesCount = notes.filter(n => new Date(n.time).toDateString() === today).length;
+
     storedQuests.list.forEach(q => {
         if (q.completed) return;
 
-        if (q.action === actionType) {
-            // Specific checks for mood_2
-            if (q.action === 'mood_2') {
-                const logs = loadLogs();
-                const todayLogs = logs.filter(l => new Date(l.date).toDateString() === new Date().toDateString());
-                if (todayLogs.length >= 2) { // Use real log count
-                    q.completed = true;
-                    changed = true;
-                }
-            } else {
-                q.completed = true;
-                changed = true;
+        let conditionMet = false;
+
+        // --- Core Logic: Check conditions based on quest action ---
+
+        // 1. Single-step Quests (e.g., Secret)
+        if (q.action === 'secret' && actionType === 'secret') {
+            conditionMet = true;
+        }
+
+        // 2. Mood Quests (mood_2)
+        if (q.action === 'mood_2' && actionType.startsWith('mood')) {
+            if (todayLogsCount >= 2) {
+                conditionMet = true;
             }
         }
+
+        // 3. Hug Quests (hug, hug_2, hug_3, hug_4)
+        // Cek jika ada aksi pelukan OR misi adalah misi pelukan
+        if (actionType === 'hug' || q.action.startsWith('hug')) { 
+            // Cek untuk misi 'Kirim Pelukan Pertama' (action: hug)
+            if (q.action === 'hug' && hugCount >= 1) {
+                conditionMet = true;
+            }
+            // Cek untuk Multi-hug Quests (action: hug_2, hug_3, hug_4)
+            const hugMatch = q.action.match(/^hug_(\d+)$/);
+            if (hugMatch) {
+                const requiredHugs = parseInt(hugMatch[1]);
+                if (hugCount >= requiredHugs) {
+                    conditionMet = true;
+                }
+            }
+        }
+        
+        // 4. Note Quests (note, note_2)
+        // Cek jika ada aksi catatan OR misi adalah misi catatan
+        if (actionType === 'note' || q.action.startsWith('note')) {
+            // Cek untuk misi 'Tulis Minimal 1 Catatan' (action: note)
+            if (q.action === 'note' && todayNotesCount >= 1) {
+                conditionMet = true;
+            }
+            // Cek untuk Multi-note Quests (action: note_2)
+            const noteMatch = q.action.match(/^note_(\d+)$/);
+            if (noteMatch) {
+                const requiredNotes = parseInt(noteMatch[1]);
+                if (todayNotesCount >= requiredNotes) {
+                    conditionMet = true;
+                }
+            }
+        }
+        
+        if (conditionMet) {
+            q.completed = true;
+            changed = true;
+        }
     });
+    // --- End Core Logic ---
 
     if (changed) {
         localStorage.setItem(QUESTS_KEY, JSON.stringify(storedQuests));
@@ -566,7 +564,7 @@ function checkQuestCompletion(actionType, value = null) {
     }
 }
 /* --- END Daily Quest Logic --- */
-
+  
 /* --- NEW FEATURE: MOOD CALENDAR LOGIC --- */
 function getMoodsByDate() {
     const logs = loadLogs();
