@@ -477,6 +477,9 @@ document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     localStorage.removeItem('masMoodLog');
     localStorage.removeItem('masNotes');
     localStorage.removeItem('gateOpened'); // Hapus gate status juga!
+    localStorage.removeItem('loveEXP');
+    localStorage.removeItem('lastMoodDate');
+    localStorage.removeItem('currentStreak');
     alert('Data berhasil di-reset! Silakan muat ulang halaman.');
     window.location.reload();
   }
