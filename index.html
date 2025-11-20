@@ -4,8 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mood Tracker Mas 💙</title>
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="styles.css" />
   <style>
+    /* minimal core styles kept inline so user doesn't need extra files */
     :root{--bg:#eaf3ff;--text:#1b2b3c;--card:#fff;--accent:#6fa8dc}
     .dark{--bg:#0f1621;--text:#f1f6ff;--card:#1d2b40;--accent:#4a90e2}
     *{box-sizing:border-box}
@@ -25,16 +30,17 @@
     #sticker.show{opacity:1;transform:translateY(0)}
     .loveHeart{position:fixed;font-size:26px;animation:floatUp 2.4s ease-out;pointer-events:none;z-index:9999}
     @keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-160px);opacity:0}}
-    #secretModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center;z-index:2000}
-    #secretModal .box{background:var(--card);color:var(--text);padding:18px;border-radius:14px;width:88%;max-width:420px;text-align:center}
     .bubble{position:fixed;right:16px;bottom:16px;padding:10px 14px;background:#ffb7e6;color:#000;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.12);z-index:99999;opacity:1;transition:1s}
     .voiceBubble{position:fixed;left:16px;top:16px;background:#fff6b8;padding:10px 14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.12);z-index:99999;opacity:1;transition:1s}
     .loveBadge{margin:10px;font-size:16px;font-weight:600;text-align:center}
+    #secretModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center;z-index:2000}
+    #secretModal .box{background:var(--card);color:var(--text);padding:18px;border-radius:14px;width:88%;max-width:420px;text-align:center}
     @media(max-width:420px){.mood{font-size:34px}#sticker{width:86px}}
   </style>
 </head>
 <body>
-  <!-- GATE -->
+
+  <!-- Gate -->
   <div id="gate" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:3000;flex-direction:column;gap:12px;padding:20px">
     <h2>💙 Siapa kamu? 💙</h2>
     <input id="gateInput" placeholder="ketik: mas" style="padding:10px;border-radius:10px;border:1px solid #bbb;max-width:260px" />
@@ -46,6 +52,7 @@
   </div>
 
   <h1>Mood Tracker Mas 💙</h1>
+
   <div class="controls">
     <button id="themeBtn" class="btn">🌙 Mode</button>
     <button id="musicBtn" class="btn">▶ Backsound</button>
@@ -54,12 +61,13 @@
   </div>
 
   <p> Klik mood mas hari ini — caca bakal tau perasaanmu dan kasih respon manis:</p>
+
   <div class="mood-container">
     <span class="mood" data-mood="😄 Senang">😄</span>
     <span class="mood" data-mood="🙂 Biasa aja">🙂</span>
     <span class="mood" data-mood="😢 Sedih">😢</span>
     <span class="mood" data-mood="😡 Kesel">😡</span>
-    <span class="mood" data-mood="🥰 Sayang caca">🥰</span>
+    <span class="mood" data-mood="🥰 Sayang cacaaa">🥰</span>
   </div>
 
   <div id="reaction"></div>
@@ -77,7 +85,7 @@
 
   <div class="card">
     <h3>Catatan dari mas:</h3>
-    <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca?"></textarea>
+    <textarea id="noteInput" placeholder="Mas mau nulis apa ke cacaaa?"></textarea>
     <div style="display:flex;gap:8px;margin-top:8px">
       <button id="saveNote" class="btn">Simpan Catatan</button>
       <button id="clearNotes" class="btn secondary">Bersihkan Semua</button>
@@ -94,291 +102,16 @@
   <img id="sticker" src="https://i.imgur.com/cy7Q5pA.png" alt="sticker">
 
   <div id="secretModal">
-    <div class="box"><h2>Pesan Rahasia Buat Mas 💌</h2><p>Mas itu rumah ternyaman caca... 🩵</p><div style="margin-top:12px"><button id="closeSecret" class="btn">Tutup</button></div></div>
+    <div class="box"><h2>Pesan Rahasia Buat Mas 💌</h2><p>Mas itu rumah ternyaman cacaaa... 🩵<br>makasih udah ada di hidup cacaaa yaaa...</p><div style="margin-top:12px"><button id="closeSecret" class="btn">Tutup</button></div></div>
   </div>
 
   <audio id="bgm" loop preload="auto"><source src="music.mp3" type="audio/mpeg"></audio>
-  <button id="hugButton" class="btn" style="position:fixed;left:10px;bottom:10px;background:#ff8ac8;z-index:9999">🤗 Kirim peluk ke caca</button>
+
+  <button id="hugButton" class="btn" style="position:fixed;left:10px;bottom:10px;background:#ff8ac8;z-index:9999">🤗 Kirim peluk ke cacaaa</button>
 
   <div id="sparkleContainer" aria-hidden="true"></div>
 
-<script>
-/* =========================
-   Optimized Super-Complete JS
-   - animations optimized frequency
-   - event delegation
-   - safe initialization order
-   ========================= */
-
-// helpers
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-
-// DOM refs
-const gate = $('#gate');
-const gateInput = $('#gateInput');
-const gateMsg = $('#gateMsg');
-const gateEnterBtn = $('#gateEnterBtn');
-const gateSurpriseBtn = $('#gateSurprise');
-const moodEls = $$('.mood');
-const reaction = $('#reaction');
-const entriesBox = $('#entries');
-const notesBox = $('#notes');
-const noteInput = $('#noteInput');
-const bgm = $('#bgm');
-const sticker = $('#sticker');
-const secretModal = $('#secretModal');
-let moodChart;
-
-// rate limits / tunable
-const SPARKLE_INTERVAL = 700; // ms (reduced frequency)
-const SAKURA_INTERVAL = 1500; // ms
-const STICKER_SHOW_MS = 2200;
-const VOICE_BUBBLE_INTERVAL = 22000; // longer
-const RANDOM_STICKER_INTERVAL = 6000;
-
-// data helpers
-function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]'); }
-function saveLogs(l){ localStorage.setItem('masMoodLog', JSON.stringify(l)); }
-function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
-function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
-function loadEXP(){ return parseInt(localStorage.getItem('loveEXP')||'0'); }
-function saveEXP(v){ localStorage.setItem('loveEXP', String(v)); }
-
-// reactions
-const reactionsMap = {
-  '😄 Senang':'mas seneng?? caca ikut senenggg 😭💙 peluk dulu sini 🫂',
-  '🙂 Biasa aja':'mas biasa aja ya hari ini? sini caca temenin yaaaa 🩵',
-  '😢 Sedih':'kok mas sedihhhh???? cini ciniiiii, caca peyukkkkk 🩵😭',
-  '😡 Kesel':'siapa yang bikin mas kesel?? ceritain ke caca, nanti caca cubittttttt 🛡️😤',
-  '🥰 Sayang Ca':'aaaa mas sayang caca??? cacaa juga sayang mas banyak banyakkkkkk 🥹🩵💙'
-};
-
-/* =========================
-   Gate logic (fixed + smooth)
-   ========================= */
-function enterGate(mode){
-  if(mode === 'surprise'){ gate.style.opacity='0'; setTimeout(()=>gate.style.display='none',350); showBubble('surprise buat mas 🩵'); return; }
-  const val = (gateInput.value||'').trim().toLowerCase();
-  if(val === 'mas'){ gate.style.opacity = '0'; setTimeout(()=> gate.style.display = 'none',350); showBubble('Halo mas 🩵 masuk ya~'); initAfterGate(); }
-  else { gateMsg.textContent = 'jawabannya salah 😡 cuma mas yang boleh masuk!'; }
-}
-
-gateEnterBtn.addEventListener('click', ()=> enterGate());
-gateSurpriseBtn.addEventListener('click', ()=> enterGate('surprise'));
-
-// allow Enter key to submit
-gateInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') gateEnterBtn.click(); });
-
-/* =========================
-   Main features (init after gate to avoid race)
-   ========================= */
-function initAfterGate(){
-  renderLogs(); renderNotes(); updateChart(); calcAverage(); updateLoveBadge();
-  startSparkles(); startSakura(); startRandomStickers(); startVoiceBubbles();
-}
-
-/* =========================
-   Mood save & UI
-   ========================= */
-function addEXP(amount=5){ const cur = loadEXP(); const next = cur + amount; saveEXP(next); updateLoveBadge(); showBubble('❤️ LOVE EXP +'+amount+' (Total: '+next+')'); return next; }
-
-function saveMood(mood){
-  const date = new Date().toISOString(); // ISO for reliable parsing
-  const logs = loadLogs(); logs.unshift({mood,date}); saveLogs(logs);
-  renderLogs(); showReaction(mood); spawnTinyHearts(); if(mood.includes('Sayang')) spawnBigHearts(); showSticker(); updateChart(); calcAverage(); aiReplyToMood(mood); const e = addEXP(); if(e % 50 === 0) loveExplosion();
-}
-
-moodEls.forEach(el=> el.addEventListener('click', ()=> saveMood(el.dataset.mood)));
-
-function showReaction(mood){ reaction.textContent = reactionsMap[mood] || ''; }
-
-function renderLogs(){ const logs = loadLogs(); entriesBox.innerHTML=''; if(logs.length===0){ entriesBox.innerHTML = '<em>Belum ada mood tercatat.</em>'; return; } logs.forEach((l,idx)=>{ const d = document.createElement('div'); const left = document.createElement('span'); left.textContent = formatDateForDisplay(l.date) + ' — ' + l.mood; const del = document.createElement('button'); del.textContent='🗑️ Hapus'; del.className='btn secondary'; del.style.padding='6px 8px'; del.onclick = ()=> deleteMood(idx); d.appendChild(left); d.appendChild(del); entriesBox.appendChild(d); }); }
-
-function deleteMood(i){ const logs = loadLogs(); if(!logs[i]) return; if(!confirm('Yakin mas mau hapus mood ini?')) return; logs.splice(i,1); saveLogs(logs); renderLogs(); updateChart(); calcAverage(); showBubble('Catatan dihapus 🗑️'); }
-
-/* =========================
-   Chart & Month average (optimized date parsing)
-   ========================= */
-function updateChart(){ const logs = loadLogs(); const labels=['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca']; const counts = labels.map(m => logs.filter(l => l.mood === m).length); const ctx = document.getElementById('moodChart').getContext('2d'); if(moodChart) moodChart.destroy(); moodChart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'Jumlah', data:counts, backgroundColor:['#66c2ff','#99d6ff','#aab6ff','#c0c0ff','#ffb6c1'] }] }, options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:true, ticks:{precision:0} } } } }); }
-
-function calcAverage(){ const logs = loadLogs(); if(logs.length===0){ $('#avgMood').textContent='Belum ada mood'; return; } const now = new Date(); const thisMonthLogs = logs.filter(l=>{ const d = new Date(l.date); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); }); if(thisMonthLogs.length===0){ $('#avgMood').textContent='Belum ada mood di bulan ini'; return; } const score={'😄 Senang':5,'🙂 Biasa aja':3,'😢 Sedih':1,'😡 Kesel':2,'🥰 Sayang caca':4}; let total=0; thisMonthLogs.forEach(l=> total += (score[l.mood]||0)); const avg=(total/thisMonthLogs.length).toFixed(2); let moodText=''; if(avg>=4.5) moodText='Mas happy banget bulan ini 🥰💙'; else if(avg>=3) moodText='Mood mas lumayan stabil bulan ini 🩵'; else moodText='Mas lagi butuh banyak peluk nih 😭💙'; $('#avgMood').textContent=`Rata-rata mood: ${avg} — ${moodText}`; }
-
-/* =========================
-   Notes + cute bubble
-   ========================= */
-function showBubble(msg, ms=2000){ const b = document.createElement('div'); b.className='bubble'; b.textContent=msg; document.body.appendChild(b); setTimeout(()=> b.style.opacity='0', ms-400); setTimeout(()=> b.remove(), ms); }
-
-document.getElementById('saveNote').addEventListener('click', ()=>{ const txt = noteInput.value.trim(); if(!txt) return; const notes = loadNotes(); notes.unshift({text:txt,time:new Date().toISOString()}); saveNotes(notes); noteInput.value=''; renderNotes(); addEXP(); showBubble('Catatan mas udah caca simpen 🩵', 2200); });
-
-document.getElementById('clearNotes').addEventListener('click', ()=>{ if(confirm('Bersihkan semua catetan?')){ localStorage.removeItem('masNotes'); renderNotes(); showBubble('Semua catatan dibersihin 🧹',1500); } });
-
-function renderNotes(){ const notes = loadNotes(); notesBox.innerHTML=''; if(notes.length===0){ notesBox.innerHTML='<em>Belum ada catatan.</em>'; return; } notes.forEach(n=>{ const d=document.createElement('div'); d.textContent = formatDateForDisplay(n.time)+' — '+n.text; notesBox.appendChild(d); }); }
-
-/* =========================
-   Sticker & hearts (optimized)
-   ========================= */
-function showSticker(){ sticker.classList.add('show'); setTimeout(()=> sticker.classList.remove('show'), STICKER_SHOW_MS); }
-
-function spawnTinyHearts(count=5){ for(let i=0;i<count;i++){ const h=document.createElement('div'); h.className='loveHeart'; h.textContent='💙'; h.style.left = (10+Math.random()*80)+'vw'; h.style.bottom='-10px'; document.body.appendChild(h); setTimeout(()=> h.remove(), 2400); } }
-
-function spawnBigHearts(){ for(let i=0;i<10;i++){ const h=document.createElement('div'); h.className='loveHeart'; h.textContent = ['💖','💗','💕'][Math.floor(Math.random()*3)]; h.style.fontSize = (26 + Math.floor(Math.random()*20))+'px'; h.style.left = (30 + Math.random()*40)+'vw'; h.style.bottom='-10px'; document.body.appendChild(h); setTimeout(()=> h.remove(), 2600); } }
-
-/* Sparkles (throttled) */
-let sparkleTimer;
-function startSparkles(){ if(sparkleTimer) return; sparkleTimer = setInterval(()=>{ const s=document.createElement('div'); s.textContent='✨'; s.style.position='fixed'; s.style.left = Math.random()*100 + 'vw'; s.style.top='-8px'; s.style.fontSize = (10 + Math.random()*12) + 'px'; s.style.opacity='1'; s.style.transition='3s linear'; document.body.appendChild(s); setTimeout(()=>{ s.style.top='100vh'; s.style.opacity='0'; },50); setTimeout(()=> s.remove(), 3000); }, SPARKLE_INTERVAL); }
-function stopSparkles(){ clearInterval(sparkleTimer); sparkleTimer = null; }
-
-/* Sakura petals (throttled) */
-let sakuraTimer;
-function startSakura(){ if(sakuraTimer) return; sakuraTimer = setInterval(()=>{ const p=document.createElement('div'); p.textContent='🌸'; p.style.position='fixed'; p.style.left = Math.random()*100 + 'vw'; p.style.top='-20px'; p.style.fontSize = (12 + Math.random()*14)+'px'; p.style.transition='3.6s linear'; document.body.appendChild(p); setTimeout(()=>{ p.style.top='100vh'; p.style.opacity='0'; },20); setTimeout(()=> p.remove(), 3800); }, SAKURA_INTERVAL); }
-function stopSakura(){ clearInterval(sakuraTimer); sakuraTimer=null; }
-
-/* random sticker pop (throttled) */
-let stickerPopTimer;
-function startRandomStickers(){ if(stickerPopTimer) return; stickerPopTimer = setInterval(()=>{ const img = document.createElement('img'); img.src = stickerList[Math.floor(Math.random()*stickerList.length)]; img.style.position='fixed'; img.style.left=Math.random()*80+'vw'; img.style.top='-30px'; img.style.width='90px'; img.style.transition='3s'; img.style.zIndex='99999'; document.body.appendChild(img); setTimeout(()=>{ img.style.top='100vh'; img.style.opacity='0'; },50); setTimeout(()=> img.remove(), 3000); }, RANDOM_STICKER_INTERVAL); }
-function stopRandomStickers(){ clearInterval(stickerPopTimer); stickerPopTimer=null; }
-
-/* =========================
-   Voice bubble (less frequent)
-   ========================= */
-let voiceTimer;
-function startVoiceBubbles(){ if(voiceTimer) return; voiceTimer = setInterval(()=>{ const lines=['mas lagi ngapain siiihh 🥺💙','caca liat mas dari sini 😳','mas jangan lupa minum ya 🩵','caca kangen mas 😭💙']; voiceBubble(lines[Math.floor(Math.random()*lines.length)]); }, VOICE_BUBBLE_INTERVAL); }
-function stopVoiceBubbles(){ clearInterval(voiceTimer); voiceTimer=null; }
-function voiceBubble(text){ const b = document.createElement('div'); b.className='voiceBubble'; b.textContent = text; document.body.appendChild(b); setTimeout(()=> b.style.opacity='0',1500); setTimeout(()=> b.remove(),2500); }
-
-/* =========================
-   AI auto-reply to mood
-   ========================= */
-function aiReplyToMood(mood){ const replies = { '😄 Senang':'caca ikut seneng bangettt 😭💙 ayo kita rayain dikit yuk! ✨', '🙂 Biasa aja':'ga papa mas, sini caca temenin biar hari mas lebih hangat 🩵', '😢 Sedih':'mas sedih?? caca disini yaaa, nanti caca peluk ampe tenang 😭🤍', '😡 Kesel':'siapa yang buat mas kesel?? ayooo, kita cubit bareng barengggggg! 😤💙', '🥰 Sayang Ca':'MAS SAYANG CACAA??? caca lebih sayang mas 10000x 😭💗' }; showBubble(replies[mood]||'caca ada buat mas 🩵',2200); }
-
-/* =========================
-   Love EXP & badge
-   ========================= */
-const stickerList = ['https://i.imgur.com/cy7Q5pA.png','https://i.imgur.com/6XH8O1g.png','https://i.imgur.com/OeQO3ZN.png'];
-function updateLoveBadge(){ const exp = loadEXP(); let badge=''; if(exp<50) badge='💗 Baby Love'; else if(exp<150) badge='💞 Sweetheart'; else if(exp<300) badge='💘 Lover Lv.3'; else badge='💝 Soulmate Max'; let box = document.getElementById('loveBadge'); if(!box){ box=document.createElement('div'); box.id='loveBadge'; box.className='loveBadge'; document.body.insertBefore(box, document.body.children[1]); } box.textContent = '❤️ Love Level: '+badge+' (EXP:'+exp+')'; }
-
-/* love explosion */
-function loveExplosion(){ for(let i=0;i<18;i++){ const h=document.createElement('div'); h.textContent='💗'; h.style.position='fixed'; h.style.left='50vw'; h.style.top='50vh'; h.style.fontSize=(16+Math.random()*28)+'px'; h.style.transition='1.2s'; const angle=Math.random()*Math.PI*2; document.body.appendChild(h); setTimeout(()=>{ h.style.transform=`translate(${Math.cos(angle)*200}px,${Math.sin(angle)*200}px)`; h.style.opacity='0'; },20); setTimeout(()=>h.remove(),1200); } }
-
-/* =========================
-   Gacha
-   ========================= */
-function startGacha(){ const box=document.createElement('div'); box.style.position='fixed'; box.style.inset='0'; box.style.background='rgba(0,0,0,0.6)'; box.style.display='flex'; box.style.alignItems='center'; box.style.justifyContent='center'; box.style.zIndex='99999'; const card=document.createElement('div'); card.style.background='white'; card.style.padding='18px'; card.style.borderRadius='12px'; card.style.textAlign='center'; const img=document.createElement('img'); img.src=stickerList[Math.floor(Math.random()*stickerList.length)]; img.style.width='180px'; img.style.borderRadius='10px'; const p=document.createElement('p'); p.textContent='mas dapet stiker lucuuu 🩵'; const btn=document.createElement('button'); btn.textContent='tutup'; btn.className='btn'; btn.style.marginTop='12px'; btn.onclick = ()=> box.remove(); card.appendChild(img); card.appendChild(p); card.appendChild(btn); box.appendChild(card); document.body.appendChild(box); addEXPLocal(10); }
-
-document.getElementById('gachaBtn').addEventListener('click', startGacha);
-
-/* =========================
-   Daily quest (show once per day)
-   ========================= */
-function showDailyQuestOnce(){ const last = localStorage.getItem('lastQuestShown'); const today = new Date().toISOString().slice(0,10); if(last===today) return; localStorage.setItem('lastQuestShown', today); const quests=['kirim mood jujur hari ini 🩵','tulis satu kalimat buat caca 😳💗','peluk caca 3x 🤗','bilang mas sayang caca 😭💙','kasih stiker favorit mas 🩵']; const q=quests[Math.floor(Math.random()*quests.length)]; const box=document.createElement('div'); box.style.position='fixed'; box.style.inset='0'; box.style.background='rgba(0,0,0,0.5)'; box.style.display='flex'; box.style.alignItems='center'; box.style.justifyContent='center'; box.style.zIndex='999999'; const card=document.createElement('div'); card.style.background='white'; card.style.padding='20px'; card.style.borderRadius='14px'; card.style.textAlign='center'; card.style.boxShadow='0 8px 20px rgba(0,0,0,0.3)'; const t=document.createElement('h3'); t.textContent='🎀 Daily Quest Mas'; const p=document.createElement('p'); p.textContent=q; const ok=document.createElement('button'); ok.className='btn'; ok.textContent='oke caa 🩵'; ok.onclick=()=> box.remove(); card.appendChild(t); card.appendChild(p); card.appendChild(ok); box.appendChild(card); document.body.appendChild(box); }
-
-/* =========================
-   Modes (kangen, manja, sedih, jealous, marah, sleepy, protektif)
-   Optimized: toggle buttons added once DOM ready
-   ========================= */
-function addModeButtons(){ const modes = [
-  {id:'kangen', label:'🥺 Mode Kangen', action:()=>{ const on = document.body.dataset.kangen!=='1'; document.body.dataset.kangen = on? '1':'0'; document.body.style.filter = on? 'hue-rotate(300deg) brightness(1.12)':''; showBubble(on? 'mas lagi kangen caca yaaa? 😭🩵':'' ); }},
-  {id:'manja', label:'🐰 Mode Manja', action:()=>{ const on = document.body.dataset.manja!=='1'; document.body.dataset.manja=on?'1':'0'; if(on){ showBubble('mas lagi manja yaaa?? caca sukaaaaa 🥺💗🐰'); startManja(); } else stopManja(); }},
-  {id:'sedih', label:'🌧️ Mode Sedih', action:()=>{ const on = document.body.dataset.sedih!=='1'; document.body.dataset.sedih=on?'1':'0'; if(on){ showBubble('mas sedih yaaa?? sini caca peluk 😭💙'); startRain(); } else stopRain(); }},
-  {id:'jealous', label:'😤 Mode Jealous', action:()=>{ const on = document.body.dataset.jealous!=='1'; document.body.dataset.jealous=on?'1':'0'; document.body.style.background = on? '#ffe6e6':''; showBubble(on? 'mas lagi jealous ya?? sini caca pelukkk, caca punya mas kokkkk 😤💗':'' ); }},
-  {id:'marah', label:'⚡ Mode Marah', action:()=>{ const on = document.body.dataset.marah!=='1'; document.body.dataset.marah=on?'1':'0'; if(on){ showBubble('mas lagi marahh?? siniiiiii sama cacaaaa, biar di peyukkkk yang lamaaa 😭💙'); startLightning(); } else stopLightning(); }},
-  {id:'sleepy', label:'😴 Mode Ngantuk', action:()=>{ const on = document.body.dataset.sleepy!=='1'; document.body.dataset.sleepy=on?'1':'0'; if(on){ showBubble('mas ngantuk ya? caca temenin tidur 🩵😴'); startZZZ(); } else stopZZZ(); }},
-  {id:'protek', label:'🛡️ Mode Protektif', action:()=>{ const on = document.body.dataset.protek!=='1'; document.body.dataset.protek=on?'1':'0'; if(on){ showBubble('mas protektif ya?? caca aman kok sama mas 😳🛡️'); startShield(); } else stopShield(); }}
-];
-  const container = document.createElement('div'); container.style.display='flex'; container.style.flexWrap='wrap'; container.style.gap='8px'; container.style.marginTop='10px'; container.style.justifyContent='center'; modes.forEach(m=>{ const b=document.createElement('button'); b.className='btn secondary'; b.textContent=m.label; b.onclick = m.action; container.appendChild(b); }); document.body.insertBefore(container, document.body.children[3]); }
-
-// manja effects
-let manjaTimer; function startManja(){ if(manjaTimer) return; manjaTimer = setInterval(()=>{ const b=document.createElement('div'); b.textContent='💕'; b.style.position='fixed'; b.style.left=Math.random()*100+'vw'; b.style.top='-20px'; b.style.fontSize='22px'; b.style.transition='3s linear'; document.body.appendChild(b); setTimeout(()=>{ b.style.top='100vh'; b.style.opacity='0'; },20); setTimeout(()=>b.remove(),3000); }, 900); } function stopManja(){ clearInterval(manjaTimer); manjaTimer=null; }
-
-// rain
-let rainTimer; function startRain(){ if(rainTimer) return; rainTimer=setInterval(()=>{ const r=document.createElement('div'); r.textContent='💧'; r.style.position='fixed'; r.style.left=Math.random()*100+'vw'; r.style.top='-20px'; r.style.fontSize='16px'; r.style.transition='2s linear'; document.body.appendChild(r); setTimeout(()=>{ r.style.top='100vh'; r.style.opacity='0'; },20); setTimeout(()=>r.remove(),2000); }, 160); } function stopRain(){ clearInterval(rainTimer); rainTimer=null; }
-
-// shield
-let shieldTimer; function startShield(){ if(shieldTimer) return; shieldTimer=setInterval(()=>{ const s=document.createElement('div'); s.textContent='🛡️'; s.style.position='fixed'; s.style.left=(10+Math.random()*80)+'vw'; s.style.top=(20+Math.random()*60)+'vh'; s.style.fontSize='26px'; s.style.opacity='0'; s.style.transition='1s'; document.body.appendChild(s); setTimeout(()=>s.style.opacity='1',50); setTimeout(()=>s.remove(),1400); }, 600); } function stopShield(){ clearInterval(shieldTimer); shieldTimer=null; }
-
-// lightning
-let lightningTimer; function startLightning(){ if(lightningTimer) return; lightningTimer=setInterval(()=>{ const f=document.createElement('div'); f.style.position='fixed'; f.style.inset='0'; f.style.background='rgba(255,255,255,0.75)'; f.style.zIndex='999999'; document.body.appendChild(f); setTimeout(()=> f.style.opacity='0',80); setTimeout(()=> f.remove(),200); }, 1200); } function stopLightning(){ clearInterval(lightningTimer); lightningTimer=null; }
-
-// zzz
-let zzzTimer; function startZZZ(){ if(zzzTimer) return; zzzTimer=setInterval(()=>{ const z=document.createElement('div'); z.textContent='💤'; z.style.position='fixed'; z.style.left=Math.random()*100+'vw'; z.style.top='-20px'; z.style.fontSize='20px'; z.style.transition='3s linear'; document.body.appendChild(z); setTimeout(()=>{ z.style.top='100vh'; z.style.opacity='0' },20); setTimeout(()=>z.remove(),3000); }, 900); } function stopZZZ(){ clearInterval(zzzTimer); zzzTimer=null; }
-
-/* =========================
-   Misc: sticker pop, random stickers
-   ========================= */
-let stickerPopTimer; function startRandomStickers(){ if(stickerPopTimer) return; stickerPopTimer = setInterval(()=>{ const img=document.createElement('img'); img.src = stickerList[Math.floor(Math.random()*stickerList.length)]; img.style.position='fixed'; img.style.left=Math.random()*80+'vw'; img.style.top='-30px'; img.style.width='86px'; img.style.transition='3s'; img.style.zIndex='99999'; document.body.appendChild(img); setTimeout(()=>{ img.style.top='100vh'; img.style.opacity='0'; },50); setTimeout(()=> img.remove(), 3000); }, RANDOM_STICKER_INTERVAL); }
-function stopRandomStickers(){ clearInterval(stickerPopTimer); stickerPopTimer=null; }
-
-/* =========================
-   Sparkles & sakura start/stop
-   ========================= */
-let sparkleTimer; function startSparkles(){ if(sparkleTimer) return; sparkleTimer = setInterval(()=>{ const s=document.createElement('div'); s.textContent='✨'; s.style.position='fixed'; s.style.left = Math.random()*100 + 'vw'; s.style.top='-8px'; s.style.fontSize = (10 + Math.random()*12) + 'px'; s.style.opacity='1'; s.style.transition='3s linear'; document.body.appendChild(s); setTimeout(()=>{ s.style.top = '100vh'; s.style.opacity='0'; },50); setTimeout(()=> s.remove(), 3000); }, SPARKLE_INTERVAL); } function stopSparkles(){ clearInterval(sparkleTimer); sparkleTimer=null; }
-let sakuraTimer; function startSakura(){ if(sakuraTimer) return; sakuraTimer = setInterval(()=>{ const p=document.createElement('div'); p.textContent='🌸'; p.style.position='fixed'; p.style.left=Math.random()*100 + 'vw'; p.style.top='-20px'; p.style.fontSize = (12 + Math.random()*14)+'px'; p.style.transition='3.6s linear'; document.body.appendChild(p); setTimeout(()=>{ p.style.top='100vh'; p.style.opacity='0'; },20); setTimeout(()=> p.remove(), 3800); }, SAKURA_INTERVAL); } function stopSakura(){ clearInterval(sakuraTimer); sakuraTimer=null; }
-
-/* =========================
-   Voice bubbles
-   ========================= */
-function startVoiceBubbles(){ startVoiceBubbles(); } // placeholder
-let voiceInterval; function startVoiceBubbles(){ if(voiceInterval) return; voiceInterval = setInterval(()=>{ const lines=['mas lagi ngapain siiihh 🥺💙','caca liat mas dari sini 😳','mas jangan lupa minum ya 🩵','caca kangen mas 😭💙']; voiceBubble(lines[Math.floor(Math.random()*lines.length)]); }, VOICE_BUBBLE_INTERVAL); }
-function stopVoiceBubbles(){ clearInterval(voiceInterval); voiceInterval=null; }
-function voiceBubble(text){ const b=document.createElement('div'); b.className='voiceBubble'; b.textContent=text; document.body.appendChild(b); setTimeout(()=> b.style.opacity='0',1500); setTimeout(()=> b.remove(),2500); }
-
-/* =========================
-   AI auto-reply to mood
-   ========================= */
-function aiReplyToMood(mood){ const replies={ '😄 Senang':'caca ikut seneng bangettt 😭💙 ayo kita rayain dikit yuk! ✨', '🙂 Biasa aja':'ga papa mas, sini caca temenin biar hari mas lebih hangat 🩵', '😢 Sedih':'mas sedih?? caca disini yaaa, nanti caca peluk ampe tenang 😭🤍', '😡 Kesel':'siapa yang buat mas kesel?? ayooo, kita cubit bareng barengggggg! 😤💙', '🥰 Sayang Ca':'MAS SAYANG CACAA??? caca lebih sayang mas 10000x 😭💗' }; showBubble(replies[mood]||'ca ada buat mas 🩵',2200); }
-
-/* =========================
-   Helper: date formatting
-   ========================= */
-function formatDateForDisplay(iso){ try{ const d=new Date(iso); return d.toLocaleString(); }catch(e){ return iso; } }
-
-/* =========================
-   Init / bindings for misc controls
-   ========================= */
-$('#secretBtn').addEventListener('click', ()=> secretModal.style.display='flex');
-$('#closeSecret').addEventListener('click', ()=> secretModal.style.display='none');
-$('#secretPreview').addEventListener('click', ()=> secretModal.style.display='flex');
-$('#downloadBtn').addEventListener('click', ()=>{ const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='index.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); });
-
-$('#musicBtn').addEventListener('click', ()=>{ if(bgm.paused){ bgm.play().catch(()=> showBubble('Klik play lagi untuk izinkan audio',1200)); $('#musicBtn').textContent='⏸ Backsound'; } else { bgm.pause(); $('#musicBtn').textContent='▶ Backsound'; } });
-
-$('#themeBtn').addEventListener('click', ()=>{ document.body.classList.toggle('dark'); $('#themeBtn').textContent = document.body.classList.contains('dark')? '☀️ Mode' : '🌙 Mode'; });
-
-$('#hugButton').addEventListener('click', ()=>{ showBubble('cacaa dapet peluk dari mas 🤗🩵',2000); spawnBigHearts(); addEXP(); updateLoveBadge(); });
-
-$('#gachaBtn').addEventListener('click', startGacha);
-
-// gacha starter alias
-$('#gachaBtn').title='gacha-trigger';
-
-/* =========================
-   EXP helper used by gacha
-   ========================= */
-function addEXPLocal(n=10){ const cur=loadEXP(); saveEXP(cur+n); updateLoveBadge(); return cur+n; }
-
-/* =========================
-   Start periodic features after gate
-   ========================= */
-function initAfterGateShort(){ renderLogs(); renderNotes(); updateChart(); calcAverage(); updateLoveBadge(); startSparkles(); startSakura(); startRandomStickers(); startVoiceBubbles(); addModeButtons(); }
-
-/* keep both in case enterGate called different name */
-function initAfterGate(){ initAfterGateShort(); }
-
-/* enter gate is already above - ensure binding safe */
-
-/* initial render if gate already hidden */
-if(gate.style.display==='none' || gate.style.opacity==='0') initAfterGate();
-
-/* run daily quest once (if gate removed later it will still show) */
-setTimeout(showDailyQuestOnce, 1800);
-
-/* util: renderNotes defined earlier but ensure available */
-function renderNotes(){ const notes = loadNotes(); notesBox.innerHTML=''; if(notes.length===0){ notesBox.innerHTML='<em>Belum ada catetan.</em>'; return; } notes.forEach(n=>{ const d=document.createElement('div'); d.textContent = formatDateForDisplay(n.time)+' — '+n.text; notesBox.appendChild(d); }); }
-
-/* ensure init binding after script loaded */
-window.addEventListener('load', ()=>{ /* nothing: gate handles flow */ });
-
-</script>
+  <!-- main script (all features) -->
+  <script src="script.js"></script>
 </body>
 </html>
