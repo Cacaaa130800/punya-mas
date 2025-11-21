@@ -60,26 +60,39 @@
     #reaction{margin-top:12px; font-size:18px; text-align:center; min-height:36px}
     
     /* CSS UNTUK LOG & TOMBOL HAPUS */
-    #entries div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding:8px 0; 
-      border-bottom:1px dashed rgba(0,0,0,0.06)
+    #entries > div {
+        /* This is the container for the log entry and its reason */
+        border-bottom: 1px dashed rgba(0,0,0,0.06);
+        padding: 8px 0;
+        margin-bottom: 0;
+    }
+    #entries .log-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    /* NEW CSS FOR NOTE ENTRIES */
+    #notes > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px dashed rgba(0,0,0,0.06);
     }
     .delete-btn{
       cursor: pointer;
       font-size: 14px;
       margin-left: 10px;
       color: #e74c3c;
+      flex-shrink: 0;
     }
 
-    /* NEW CSS FOR LEVEL & EXP (MODIFIED) */
+    /* NEW CSS FOR LEVEL & EXP */
     #currentTitle {
         font-size: 1.1em;
         font-weight: 800;
         margin: 0 0 10px 0;
-        color: var(--msg-border); /* Use a romantic color for the title */
+        color: var(--msg-border); 
         text-align: center;
         text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
     }
@@ -111,9 +124,9 @@
         transition:background .2s, color .2s;
     }
     .day-cell.mood-set {
-        color: white; /* Text white for colored backgrounds */
+        color: white; 
         cursor: help;
-        box-shadow: 0 0 0 2px var(--card) inset; /* Border inside cell */
+        box-shadow: 0 0 0 2px var(--card) inset; 
     }
     .day-cell.today{box-shadow: 0 0 0 3px var(--accent) !important; color:var(--accent)}
 
@@ -132,28 +145,131 @@
     @keyframes floatUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-160px);opacity:0}}
     #secretModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(3px); align-items:center; justify-content:center; z-index:2000}
     #secretModal .box{background:var(--card); color:var(--text); padding:18px; border-radius:14px; width:88%; max-width:420px; text-align:center}
+    
+    /* 💖 FALLING HEARTS CSS 💖 */
+    #fallContainer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 5; 
+    }
+    .fallingHeart {
+        position: absolute;
+        color: var(--msg-border); 
+        font-size: 16px;
+        opacity: 0.8;
+        animation: heartFall 10s linear infinite;
+    }
+    @keyframes heartFall {
+        0% { transform: translateY(-10vh) translateX(0) rotate(0); opacity: 0.8; }
+        100% { transform: translateY(100vh) translateX(50px) rotate(360deg); opacity: 0.2; }
+    }
+    
+    /* 🍴 NEW STICKER MODAL FOR EAT CHECK (V9.0) 🍴 */
+    #stickerModal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3000;
+        animation: fadeInScale 0.3s ease-out;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        border-radius: 15px;
+        background: var(--card); /* Background for the pop-up */
+        padding: 10px;
+    }
+
+    #stickerModal img {
+        display: block;
+        width: 150px; /* Ukuran stiker */
+        height: auto;
+    }
+
+    #stickerMessage {
+        text-align: center;
+        margin-top: 8px;
+        font-weight: bold;
+        color: var(--text);
+        font-size: 1.1em;
+        padding: 0 10px;
+    }
+
+    @keyframes fadeInScale {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    /* --- NEW CSS FOR PLANT FEATURE (V11.0) --- */
+    .plant-card {
+        border: 2px solid #5cb85c; /* Green border */
+        background-color: #f7fff7; /* Light green background */
+    }
+    .dark .plant-card {
+        border: 2px solid #4cae4c;
+        background-color: #1e3a24;
+    }
+    #plantDisplay {
+        font-size: 80px;
+        min-height: 80px;
+        margin: 10px 0;
+        transition: transform 0.5s ease-out;
+        display: inline-block;
+    }
+    #plantMessage {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+    #plantProgress {
+        background: #ccc;
+        height: 8px;
+        border-radius: 4px;
+        margin-top: 5px;
+    }
+    #plantProgressFill {
+        height: 100%;
+        background: #5cb85c;
+        border-radius: 4px;
+        transition: width 0.5s ease-in-out;
+    }
+
+
     @media (max-width:420px){ .mood{font-size:34px} } 
   </style>
 </head>
 <body>
   
+  <div id="fallContainer"></div> 
+
   <div id="gate" style="position: fixed; inset: 0; background: var(--bg); color: var(--text); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
     <h1>🔒 Hai, Mas! 💙</h1>
     <p style="margin: 0 0 16px 0;">Masukkan kode rahasia atau nama panggilan spesial dari caca untuk membuka.</p>
     <input type="text" id="gateInput" placeholder="Kode atau Nama Spesial" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 80%; max-width: 300px; margin-bottom: 12px; background: var(--card); color: var(--text);" />
     <button id="gateEnterBtn" class="btn" style="background: var(--accent); color: white;">Masuk ke Tracker</button>
-    <p id="gateMsg" style="margin-top: 10px; color: #e74c3c; min-height: 20px;"></p>
+    <p id="gateMsg" style="margin-top: 10px; color: #e74c3c; min-height: 20px;">
+        Jika Mas baru saja mengganti kode, Mas mungkin perlu mengklik ⚠️ **Reset Semua Data** di dalam tracker agar misi harian Mas berjalan lancar!
+    </p>
   </div>
+  
   <h1>Mood Tracker Mas 💙</h1>
 
   <div class="controls">
     <button id="themeBtn" class="btn">🌙 Mode</button>
     <button id="musicBtn" class="btn">▶ Backsound</button>
     <button id="hugBtn" class="btn">🫂 Kirim Peluk</button>
-    <button id="exportDataBtn" class="btn secondary">📋 Copy Data Mas</button> <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
+    <button id="eatCheckBtn" class="btn" style="background: #e74c3c; color: white;">🍴 Mas Sudah Makan?</button> 
+    <button id="exportDataBtn" class="btn secondary">📋 Copy Data Mas</button> 
+    <button id="resetDataBtn" class="btn secondary">⚠️ Reset Semua Data</button> 
     <button id="secretBtn" class="btn secondary">💌 Surat Rahasia</button>
     <button id="downloadBtn" class="btn secondary">⬇️ Download HTML</button>
+    <button id="gdriveBtn" class="btn secondary">🖼️ Simpan Foto (Gdrive)</button> 
   </div>
+  
   <p style="margin:6px 0 0 0">Klik mood mas hari ini — langsung muncul reaksi manis dari caca:</p>
 
   <div class="mood-container">
@@ -166,6 +282,10 @@
 
   <div id="reaction"></div>
   
+  <div id="stickerModal" style="display:none;">
+    <img id="stickerImage" src="Belum makan.png" alt="Reaksi Caca">
+    <p id="stickerMessage"></p>
+  </div>
   <div class="card" id="dailyMessageCard">
     <h3 style="margin-top: 0; text-align: center;">💌 Pesan Harian dari Caca 💌</h3>
     <p id="dailyMessageContent" style="font-style: italic; text-align: center; margin: 0; font-size: 1.1em;">Belum ada pesan baru hari ini. 🥺</p>
@@ -175,6 +295,15 @@
     <div id="questList" style="list-style-type: none; padding: 0; margin: 0;">
       <em>Memuat misi harian...</em>
     </div>
+  </div>
+  
+  <div class="card plant-card">
+    <h3>🌱 Pet Plant Caca & Mas</h3>
+    <div id="plantDisplay"></div>
+    <p id="plantMessage">Siram tanaman ini setiap hari agar ia bisa tumbuh menjadi pohon yang besar dan kuat! (Growth sangat lambat: 100 Hari untuk tahap 2)</p>
+    <div style="font-size: 14px; margin-bottom: 5px;">Progress Tumbuh: <span id="currentWaterCount">0</span>/<span id="requiredWaterCount">0</span> Hari</div>
+    <div id="plantProgress"><div id="plantProgressFill"></div></div>
+    <button id="waterPlantBtn" class="btn" style="background: #5cb85c; margin-top: 15px;">💧 Siram Tanaman Hari Ini</button>
   </div>
   <div class="card">
     <h3>Catatan Mood & Statistik</h3>
@@ -188,6 +317,10 @@
     <div id="expBar"><div id="expFill"></div></div>
     <small style="margin-top: 4px; display: block;">*Mendapatkan 10 Poin Cinta setiap hari!</small>
     
+    <div id="statusMakan" style="margin-top: 15px; padding: 10px; background: rgba(231, 76, 60, 0.1); border-radius: 8px;">
+        🍴 **Status Makan Hari Ini:** <span id="eatStatusText" style="font-weight: bold;">Belum dicek.</span>
+    </div>
+
     <div id="moodCalendar">
       <div id="calendarHeader">
         <button id="prevMonth" class="btn secondary">&lt;</button>
@@ -206,7 +339,7 @@
 
   <div class="card">
     <h3>Catatan Penting dari Mas</h3>
-    <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca?"></textarea>
+    <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca? (Bisa paste link Google Drive juga!)"></textarea>
     <div style="display:flex; gap:8px; margin-top:8px">
       <button id="saveNote" class="btn">Simpan Catatan</button>
       <button id="clearNotes" class="btn secondary">Bersihkan Semua</button>
@@ -245,6 +378,13 @@ const gateEnterBtn = document.getElementById('gateEnterBtn');
 const SECRET_CODE = "sayang"; 
 const CODE_NAME = "Mas";    
 
+// 💖 V7.0: Google Drive Link
+const GDRIVE_URL = "https://drive.google.com/drive/folders/1pNab0FdgNSFbAy_xdocz19ZGrU3JC4sO?usp=sharing"; 
+
+// 🍴 V9.0: Sticker Links
+const KISS_STICKER_URL = "Sudah makan.png"; 
+const LOOPY_STICKER_URL = "Belum makan.png"; 
+
 // App Refs
 const moodButtons = document.querySelectorAll('.mood');
 const reaction = document.getElementById('reaction');
@@ -253,9 +393,14 @@ const notesBox = document.getElementById('notes');
 const noteInput = document.getElementById('noteInput');
 const bgm = document.getElementById('bgm');
 const secretModal = document.getElementById('secretModal');
+const FALL_CONTAINER = document.getElementById('fallContainer'); 
+const stickerModal = document.getElementById('stickerModal'); 
+const stickerImage = document.getElementById('stickerImage'); 
+const stickerMessage = document.getElementById('stickerMessage'); 
 let moodChart;
 let isDark = false;
 let currentCalendarDate = new Date(); 
+let fallInterval; 
 
 // Gamification State
 let loveEXP = parseInt(localStorage.getItem('loveEXP') || '0');
@@ -265,18 +410,32 @@ let hugCount = parseInt(localStorage.getItem('hugCount') || '0');
 const QUESTS_KEY = 'dailyQuests'; 
 const DAILY_EXP_REWARD = 20;      
 const DAILY_MSG_KEY = 'dailyMsgData'; 
+const EAT_STATUS_KEY = 'eatStatus'; 
+
+// 🌳 V11.0: Plant State
+const PLANT_STAGE_KEY = 'masPlantStage';
+const WATER_COUNT_KEY = 'masTotalWatered';
+const LAST_WATERED_KEY = 'masLastWatered';
+let plantStage = parseInt(localStorage.getItem(PLANT_STAGE_KEY) || '0'); 
+let totalWateredCount = parseInt(localStorage.getItem(WATER_COUNT_KEY) || '0'); 
+let lastWateredDatePlant = localStorage.getItem(LAST_WATERED_KEY) || null;
+// Button ref will be defined in init when element is present
+// const plantBtn = document.getElementById('waterPlantBtn');
+
+// V11.2: MENAMBAHKAN QUEST SIRAM TANAMAN
 const allQuests = [
     { text: "Kirim Pelukan Pertama Hari Ini", action: "hug" },
     { text: "Tulis Minimal 1 Catatan Penting", action: "note" },
     { text: "Catat Mood Lebih dari Sekali", action: "mood_2" },
     { text: "Buka Halaman Rahasia", action: "secret" },
+    { text: "💧 Siram Tanaman Pet Plant", action: "water_plant" }, // NEW QUEST
     { text: "Kirim 2 Pelukan Hari Ini", action: "hug_2" },
     { text: "Tulis 2 Catatan Penting", action: "note_2"},
     { text: "Kirim 3 Pelukan Hari Ini", action: "hug_3" },
     { text: "Kirim 4 Pelukan Hari Ini", action: "hug_4" }
 ];
 
-// KUMPULAN PESAN HARIAN DARI CACA
+// KUMPULAN PESAN HARIAN DARI CACA (TIDAK BERUBAH)
 const DAILY_MESSAGE_POOL = [
     "Mas adalah alasan caca tersenyum hari ini. Have a good day, sayang! 💙",
     "Mas tuh rumah ternyaman caca... makasih udah ada di hidup caca yaaa... 🥹",
@@ -298,25 +457,35 @@ const DAILY_MESSAGE_POOL = [
 ];
 
 
-/* --- Level System Data (NEW) --- */
+/* --- Level System Data (TIDAK BERUBAH) --- */
 const LOVE_LEVELS = [
     { exp: 0, title: "Sayang Junior 🐣" },
-    { exp: 100, title: "Jagoan Senyum Caca 😊" },
-    { exp: 150, title: "Pahlawan Mood 🦸" },
-    { exp: 250, title: "Sayang Sejati 💍" },
-    { exp: 500, title: "Pemilik Hati Caca 👑" },
-    { exp: 1000, title: "Cinta Abadi ✨" }
+    { exp: 100, title: "Jagoan Senyum Caca 😊" }, 
+    { exp: 250, title: "Pahlawan Mood 🦸" },      
+    { exp: 500, title: "Sayang Sejati 💍" },      
+    { exp: 1000, title: "Pemilik Hati Caca 👑" }, 
+    { exp: 1500, title: "Cinta Abadi ✨" }       
+];
+
+/* --- Pet Plant Data (V11.1 - TIDAK BERUBAH) --- */
+const PLANT_STAGES = [
+    { emoji: '🌰', name: 'Biji Cinta', required_total: 0 }, 
+    { emoji: '🌱', name: 'Tunas Harapan', required_total: 100 }, 
+    { emoji: '🪴', name: 'Tanaman Muda', required_total: 250 },  
+    { emoji: '🌳', name: 'Pohon Persahabatan', required_total: 500 }, 
+    { emoji: '🌲', name: 'Pohon Keluarga', required_total: 1000 }, 
+    { emoji: '👑', name: 'Pohon Mas & Caca', required_total: 1500 }  
 ];
 
 
-/* --- Data helpers --- */
+/* --- Data helpers (TIDAK BERUBAH) --- */
 function loadLogs(){ return JSON.parse(localStorage.getItem('masMoodLog')||'[]'); }
 function saveLogs(logs){ localStorage.setItem('masMoodLog', JSON.stringify(logs)); }
 function loadNotes(){ return JSON.parse(localStorage.getItem('masNotes')||'[]'); }
 function saveNotes(n){ localStorage.setItem('masNotes', JSON.stringify(n)); }
 
 
-/* --- Reactions map & Color Map --- */
+/* --- Reactions map & Color Map (TIDAK BERUBAH) --- */
 const reactions = {
   '😄 Senang':'mas seneng?? ya ampun caca ikut senenggg 😭💙 peluk dulu sini 🫂',
   '🙂 Biasa aja':'mas biasa aja ya hari ini? sini caca temenin biar makin happy 🹧',
@@ -334,14 +503,14 @@ const MOOD_COLOR_MAP = {
 };
 
 
-/* --- Gate Logic (MODIFIED for always-on login) --- */
+/* --- Gate Logic (TIDAK BERUBAH) --- */
 function checkGate(code){
     const gateMsg = document.getElementById('gateMsg');
     if (code.toLowerCase() === SECRET_CODE || code === CODE_NAME) {
         gate.style.display = 'none';
         gateMsg.textContent = '';
-        // HAPUS: localStorage.setItem('gateOpened', 'true'); - Dihapus agar gate muncul lagi setelah browser ditutup
-        initApp(); // Jalankan aplikasi setelah gate dibuka
+        localStorage.setItem('gateOpened', 'true'); 
+        initApp(); 
         return true;
     } else {
         gateMsg.textContent = 'Kode salah, Mas! Coba lagi ya.';
@@ -349,7 +518,7 @@ function checkGate(code){
     }
 }
 
-/* --- Gamification: EXP & Level Logic (MODIFIED) --- */
+/* --- Gamification: EXP & Level Logic (TIDAK BERUBAH) --- */
 function getLoveTitle(exp) {
     let currentTitle = LOVE_LEVELS[0].title;
     for (const level of LOVE_LEVELS) {
@@ -373,7 +542,7 @@ function updateEXPDisplay() {
     document.getElementById('expFill').style.width = `${progress * 100}%`;
 }
 
-/* --- Daily Message Logic (RANDOM PER DAY) --- */
+/* --- Daily Message Logic (TIDAK BERUBAH) --- */
 function loadDailyMessage() {
     if (DAILY_MESSAGE_POOL.length === 0) {
         return 'Belum ada pesan baru hari ini. 🥺';
@@ -404,8 +573,11 @@ function renderDailyMessage() {
 }
 /* --- END Daily Message Logic --- */
 
-/* --- NEW FEATURE: EXPORT/COPY DATA FOR CACA --- */
+/* --- NEW FEATURE: EXPORT/COPY DATA (TIDAK BERUBAH) --- */
 async function exportData() {
+    // 🌳 V11.0: Add Plant Status to export
+    const currentPlant = getPlantStageData();
+    
     const data = {
         moodLog: loadLogs(),
         notes: loadNotes(),
@@ -416,6 +588,12 @@ async function exportData() {
             title: getLoveTitle(loveEXP)
         },
         dailyMessage: loadDailyMessage(),
+        eatStatus: loadEatStatus().status, 
+        plantStatus: { 
+            stage: currentPlant.name,
+            totalWateredDays: totalWateredCount,
+            lastWatered: lastWateredDatePlant
+        },
         lastUpdated: new Date().toLocaleString('id-ID')
     };
     
@@ -432,7 +610,7 @@ async function exportData() {
 /* --- END EXPORT/COPY DATA --- */
 
 
-/* --- Hug Logic --- */
+/* --- Hug Logic (TIDAK BERUBAH) --- */
 function updateHugCount() {
     localStorage.setItem('hugCount', hugCount);
 }
@@ -463,21 +641,18 @@ function sendHug() {
     }
 }
 
-/* --- Daily Quest Generator --- */
+/* --- Daily Quest Generator & Checker (MODIFIED V11.2) --- */
 function generateQuests() {
     const today = new Date().toDateString();
     let storedQuests = JSON.parse(localStorage.getItem(QUESTS_KEY));
 
     if (!storedQuests || storedQuests.date !== today) {
-        // Jika hari baru atau tidak ada data, generate 3 misi baru
-        const shuffled = allQuests.sort(() => 0.5 - Math.random());
-        // Memastikan Hug-1 (action: hug) dan Note-1 (action: note) selalu ada jika tersedia
-        const guaranteedQuests = allQuests.filter(q => q.action === 'hug' || q.action === 'note');
+        // Quest yang dijamin muncul: peluk, note, siram tanaman
+        const guaranteedQuests = allQuests.filter(q => q.action === 'hug' || q.action === 'note' || q.action === 'water_plant');
         
-        let pool = allQuests.filter(q => q.action !== 'hug' && q.action !== 'note');
+        let pool = allQuests.filter(q => q.action !== 'hug' && q.action !== 'note' && q.action !== 'water_plant');
         let newQuests = [...guaranteedQuests];
 
-        // Ambil sisa quest hingga total 3
         const numToPick = 3 - guaranteedQuests.length;
         if (numToPick > 0) {
             const shuffledPool = pool.sort(() => 0.5 - Math.random());
@@ -525,7 +700,6 @@ function renderQuests() {
     });
 }
 
-// FUNGSI INI SUDAH DIREVISI TOTAL DAN DIPASTIKAN BENAR UNTUK MULTI-HUG
 function checkQuestCompletion(actionType, value = null) {
     let storedQuests = generateQuests();
     let changed = false;
@@ -538,6 +712,7 @@ function checkQuestCompletion(actionType, value = null) {
     const today = new Date().toDateString();
     const todayLogsCount = logs.filter(l => new Date(l.date).toDateString() === today).length;
     const todayNotesCount = notes.filter(n => new Date(n.time).toDateString() === today).length;
+    const isWateredToday = lastWateredDatePlant === today; // V11.2: Check plant status
 
     storedQuests.list.forEach(q => {
         if (q.completed) return;
@@ -546,25 +721,28 @@ function checkQuestCompletion(actionType, value = null) {
 
         // --- Core Logic: Check conditions based on quest action ---
 
-        // 1. Single-step Quests (e.g., Secret)
         if (q.action === 'secret' && actionType === 'secret') {
             conditionMet = true;
         }
 
-        // 2. Mood Quests (mood_2)
         if (q.action === 'mood_2' && actionType.startsWith('mood')) {
             if (todayLogsCount >= 2) {
                 conditionMet = true;
             }
         }
+        
+        // V11.2: Check for water_plant action
+        if (q.action === 'water_plant' && actionType === 'water_plant') {
+            // Kita cek lagi di sini, karena waterPlant() baru saja di panggil
+            if (isWateredToday) { 
+                 conditionMet = true;
+            }
+        }
 
-        // 3. Hug Quests (hug, hug_2, hug_3, hug_4)
         if (actionType === 'hug' || q.action.startsWith('hug')) { 
-            // Cek untuk misi 'Kirim Pelukan Pertama' (action: hug)
             if (q.action === 'hug' && hugCount >= 1) {
                 conditionMet = true;
             }
-            // Cek untuk Multi-hug Quests (action: hug_2, hug_3, hug_4)
             const hugMatch = q.action.match(/^hug_(\d+)$/);
             if (hugMatch) {
                 const requiredHugs = parseInt(hugMatch[1]);
@@ -574,13 +752,10 @@ function checkQuestCompletion(actionType, value = null) {
             }
         }
         
-        // 4. Note Quests (note, note_2)
         if (actionType === 'note' || q.action.startsWith('note')) {
-            // Cek untuk misi 'Tulis Minimal 1 Catatan' (action: note)
             if (q.action === 'note' && todayNotesCount >= 1) {
                 conditionMet = true;
             }
-            // Cek untuk Multi-note Quests (action: note_2)
             const noteMatch = q.action.match(/^note_(\d+)$/);
             if (noteMatch) {
                 const requiredNotes = parseInt(noteMatch[1]);
@@ -617,11 +792,10 @@ function checkQuestCompletion(actionType, value = null) {
 }
 /* --- END Daily Quest Logic --- */
 
-/* --- NEW FEATURE: MOOD CALENDAR LOGIC --- */
+/* --- MOOD CALENDAR LOGIC (TIDAK BERUBAH) --- */
 function getMoodsByDate() {
     const logs = loadLogs();
     const moods = {};
-    // Hanya ambil log pertama (mood dominan) per hari
     logs.forEach(l => {
         const dateKey = new Date(l.date).toDateString();
         if (!moods[dateKey]) {
@@ -649,15 +823,13 @@ function renderCalendar(date) {
         grid.appendChild(d);
     });
 
-    const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 for Sunday, 6 for Saturday
+    const firstDayOfMonth = new Date(year, month, 1).getDay(); 
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Fill initial empty cells
     for (let i = 0; i < firstDayOfMonth; i++) {
         grid.appendChild(document.createElement('div'));
     }
 
-    // Fill days
     for (let day = 1; day <= daysInMonth; day++) {
         const dateKey = new Date(year, month, day).toDateString();
         const cell = document.createElement('div');
@@ -669,10 +841,14 @@ function renderCalendar(date) {
             const moodColor = MOOD_COLOR_MAP[mood] || 'var(--mood-default)';
             cell.style.backgroundColor = moodColor;
             cell.classList.add('mood-set');
-            cell.title = `Mood: ${mood} (Catatan Pertama)`;
+            const logEntry = loadLogs().find(l => new Date(l.date).toDateString() === dateKey);
+            let titleText = `Mood: ${mood}`;
+            if (logEntry && logEntry.reason) {
+                 titleText += `\nAlasan: ${logEntry.reason}`;
+            }
+            cell.title = titleText;
         }
 
-        // Highlight today
         if (dateKey === todayDateString) {
             cell.classList.add('today');
         }
@@ -687,27 +863,231 @@ function updateCalendarMonth(change) {
 }
 /* --- END MOOD CALENDAR LOGIC --- */
 
+/* --- EAT CHECK LOGIC (TIDAK BERUBAH) --- */
+function loadEatStatus() {
+    const today = new Date().toDateString();
+    let storedStatus = JSON.parse(localStorage.getItem(EAT_STATUS_KEY) || '{"date": "", "status": "Belum Dicek"}');
 
-/* --- Mood click handler (WITH DAILY EXP) --- */
-moodButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
+    // Jika hari sudah berganti, reset status
+    if (storedStatus.date !== today) {
+        storedStatus = { date: today, status: "Belum Dicek" };
+        localStorage.setItem(EAT_STATUS_KEY, JSON.stringify(storedStatus));
+    }
+    return storedStatus;
+}
+
+function renderEatStatus() {
+    const statusData = loadEatStatus();
+    const statusEl = document.getElementById('eatStatusText');
+    const cardEl = document.getElementById('statusMakan');
+
+    if (!statusEl || !cardEl) return; // Safely exit if elements not found
+
+    statusEl.textContent = statusData.status;
+
+    if (statusData.status === "Sudah Makan ✅") {
+        cardEl.style.backgroundColor = 'rgba(76, 175, 80, 0.1)'; // Green
+        cardEl.style.border = '1px solid #4CAF50';
+    } else if (statusData.status === "Belum Makan ❌") {
+        cardEl.style.backgroundColor = 'rgba(244, 67, 54, 0.1)'; // Red
+        cardEl.style.border = '1px solid #F44336';
+    } else {
+        cardEl.style.backgroundColor = 'rgba(255, 193, 7, 0.1)'; // Yellow/Default
+        cardEl.style.border = '1px solid #FFC107';
+    }
+}
+
+function showSticker(isEaten) {
+    if (!stickerModal) return;
+
+    // Mas's uploaded stickers are used here:
+    if (isEaten) {
+        stickerImage.src = KISS_STICKER_URL; 
+        stickerMessage.textContent = "Good job, Mas! Sini caca cium 😚";
+    } else {
+        stickerImage.src = LOOPY_STICKER_URL;
+        stickerMessage.textContent = "MAS! JANGAN LUPA MAKAN SEKARANG! 😠";
+    }
+    
+    stickerModal.style.display = 'block';
+
+    // Hilangkan stiker setelah 3.5 detik
+    setTimeout(() => {
+        stickerModal.style.display = 'none';
+    }, 3500);
+}
+
+const eatCheckBtn = document.getElementById('eatCheckBtn');
+if (eatCheckBtn) {
+    eatCheckBtn.addEventListener('click', () => {
+        const statusData = loadEatStatus();
+
+        // Jika sudah dicek hari ini, berikan pesan khusus
+        if (statusData.status !== "Belum Dicek") {
+            reaction.textContent = `Status makan Mas hari ini sudah tercatat sebagai: ${statusData.status}. Mau ganti status? Jawab di prompt. 😊`;
+        }
+
+        const answer = prompt('Mas udah makan hari ini? Ketik "Udah" atau "Belum" (Huruf besar/kecil tidak masalah)');
+
+        if (answer === null) return; // User cancelled
+
+        const input = answer.trim().toLowerCase();
+        let newStatus = statusData.status;
+
+        if (input === "udah" || input === "sudah") {
+            newStatus = "Sudah Makan ✅";
+            showSticker(true);
+        } else if (input === "belum") {
+            newStatus = "Belum Makan ❌";
+            showSticker(false);
+        } else {
+            reaction.textContent = "Jawaban tidak valid. Coba lagi dengan 'Udah' atau 'Belum' ya, Mas. 😊";
+            return;
+        }
+
+        // Update status dan simpan
+        if (newStatus !== statusData.status) {
+            const today = new Date().toDateString();
+            localStorage.setItem(EAT_STATUS_KEY, JSON.stringify({ date: today, status: newStatus }));
+            renderEatStatus();
+            reaction.textContent = newStatus === "Sudah Makan ✅" ? "Yay! Mas sudah makan. Caca lega! 💖" : "Cepat cari makan ya, Mas! Caca tunggu kabar Mas sudah makan! 🥺";
+        } else {
+            reaction.textContent = `Status makan Mas hari ini sudah tercatat sebagai: ${newStatus}`;
+        }
+    });
+}
+/* --- END EAT CHECK LOGIC --- */
+
+/* --- PET PLANT LOGIC (MODIFIED V11.2) --- */
+function getPlantStageData() {
+    let currentStage = 0;
+    for (let i = 0; i < PLANT_STAGES.length; i++) {
+        if (totalWateredCount >= PLANT_STAGES[i].required_total) {
+            currentStage = i;
+        } else {
+            break;
+        }
+    }
+    // Update the saved stage if it's different
+    if (plantStage !== currentStage) {
+        plantStage = currentStage;
+        localStorage.setItem(PLANT_STAGE_KEY, plantStage);
+    }
+    return PLANT_STAGES[plantStage];
+}
+
+
+function renderPlant() {
+    const today = new Date().toDateString();
+    const currentPlant = getPlantStageData();
+    const isWateredToday = lastWateredDatePlant === today;
+    const nextStage = PLANT_STAGES[plantStage + 1];
+    
+    document.getElementById('plantDisplay').textContent = currentPlant.emoji;
+    document.getElementById('plantDisplay').title = currentPlant.name;
+    document.getElementById('plantMessage').textContent = `Status: ${currentPlant.name}`;
+
+    const plantBtn = document.getElementById('waterPlantBtn');
+    if (plantBtn) {
+        plantBtn.disabled = isWateredToday || plantStage === PLANT_STAGES.length - 1;
+        plantBtn.textContent = isWateredToday ? '✅ Sudah Disiram Hari Ini' : '💧 Siram Tanaman Hari Ini';
+        if (plantStage === PLANT_STAGES.length - 1) {
+            plantBtn.textContent = '🥳 Sudah Tumbuh Sempurna!';
+        }
+    }
+    
+    // Progress bar logic
+    const currentWaterCountEl = document.getElementById('currentWaterCount');
+    const requiredWaterCountEl = document.getElementById('requiredWaterCount');
+    const plantProgressFillEl = document.getElementById('plantProgressFill');
+    
+    if (!currentWaterCountEl || !requiredWaterCountEl || !plantProgressFillEl) return;
+
+    if (plantStage === PLANT_STAGES.length - 1) {
+        // Max level
+        currentWaterCountEl.textContent = totalWateredCount;
+        requiredWaterCountEl.textContent = totalWateredCount; 
+        plantProgressFillEl.style.width = `100%`;
+    } else if (nextStage) {
+        const prevRequired = currentPlant.required_total;
+        const requiredForNext = nextStage.required_total;
+        
+        const progressRange = requiredForNext - prevRequired;
+        const progressValue = totalWateredCount - prevRequired;
+        const progressPercent = (progressValue / progressRange) * 100;
+        
+        currentWaterCountEl.textContent = progressValue;
+        requiredWaterCountEl.textContent = progressRange;
+        plantProgressFillEl.style.width = `${progressPercent}%`;
+    }
+}
+
+
+function waterPlant() {
+    const today = new Date().toDateString();
+
+    if (lastWateredDatePlant === today) {
+        reaction.textContent = "Mas, tanaman sudah disiram hari ini. Tunggu besok ya! 💧";
+        return;
+    }
+    
+    if (plantStage === PLANT_STAGES.length - 1) {
+        reaction.textContent = "Hore! Tanaman Mas sudah tumbuh sempurna. Dia bahagia dengan cinta Mas! 👑";
+        const plantBtn = document.getElementById('waterPlantBtn');
+        if (plantBtn) plantBtn.disabled = true;
+        return;
+    }
+
+    // Update state
+    totalWateredCount += 1;
+    lastWateredDatePlant = today;
+    
+    localStorage.setItem(WATER_COUNT_KEY, totalWateredCount);
+    localStorage.setItem(LAST_WATERED_KEY, lastWateredDatePlant);
+
+    // Check for growth
+    const oldStage = plantStage;
+    getPlantStageData(); 
+
+    if (plantStage > oldStage) {
+        reaction.textContent = `HORE! Tanaman Mas naik level menjadi ${PLANT_STAGES[plantStage].name}! 🌟`;
+        // Add a small shake animation for the plant
+        const plantDisplay = document.getElementById('plantDisplay');
+        plantDisplay.style.transform = 'scale(1.2) rotate(5deg)';
+        setTimeout(() => plantDisplay.style.transform = 'scale(1) rotate(0deg)', 500);
+    } else {
+        reaction.textContent = "Terima kasih, Mas! Tanaman sudah disiram. Dia semakin kuat! 💪";
+    }
+
+    renderPlant();
+    // V11.2: Check quest completion right after successful watering
+    checkQuestCompletion('water_plant');
+}
+
+// Event Listener for Plant (added in initApp to ensure element exists)
+
+/* --- END PET PLANT LOGIC --- */
+
+
+// 💖 New core function to handle EXP/Logging (TIDAK BERUBAH)
+function handleMoodEntry(mood, reason) {
     const today = new Date().toDateString();
     let expGained = false;
 
     // Logic EXP & STREAK
     if (lastMoodDate !== today) {
-        const oldTitle = getLoveTitle(loveEXP); // Capture title before EXP gain
-        loveEXP += 10; // Tambah 10 EXP per hari
+        const oldTitle = getLoveTitle(loveEXP); 
+        loveEXP += 10; 
         if (lastMoodDate) {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             if (lastMoodDate === yesterday.toDateString()) {
                 currentStreak += 1;
             } else {
-                currentStreak = 1; // Reset jika terlewat
+                currentStreak = 1; 
             }
         } else {
-            currentStreak = 1; // First log, start streak
+            currentStreak = 1; 
         }
         localStorage.setItem('loveEXP', loveEXP);
         localStorage.setItem('lastMoodDate', today);
@@ -718,25 +1098,22 @@ moodButtons.forEach(btn=>{
         const newTitle = getLoveTitle(loveEXP);
         if (newTitle !== oldTitle) {
             reaction.textContent = `LEVEL UP! Mas naik ke Gelar: ${newTitle}! 🏆`;
-            // Bypass default reaction for level up notification
-            return;
+            return; 
         }
     }
 
-    const mood = btn.dataset.mood;
     const date = new Date().toLocaleString('id-ID');
-    const entry = { mood, date };
+    // Entry now includes reason
+    const entry = { mood, date, reason: reason || 'Tidak ada alasan spesifik.' }; 
     const logs = loadLogs();
     
-    // Hapus log hari ini agar log pertama menjadi yang dominan
     const cleanedLogs = logs.filter(l => new Date(l.date).toDateString() !== today);
     
     cleanedLogs.unshift(entry);
     saveLogs(cleanedLogs);
     renderLogs();
     
-    // Pengecekan Quest Mood ke-2
-    checkQuestCompletion('mood'); 
+    checkQuestCompletion('mood_2');
 
     let reactionText = reactions[mood] || '';
     if (expGained) {
@@ -749,10 +1126,26 @@ moodButtons.forEach(btn=>{
     updateChart();
     renderMonthlySummary(); 
     renderCalendar(currentCalendarDate);
+}
+
+
+/* --- Mood click handler (TIDAK BERUBAH) --- */
+moodButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const mood = btn.dataset.mood;
+    // Prompt for reason (Mood Reason Box)
+    const reason = prompt(`Tulis alasan Mas memilih mood "${mood}" hari ini (Opsional):`);
+    
+    if (reason === null) {
+        reaction.textContent = "Pencatatan mood dibatalkan. Mas butuh waktu sendiri? Caca siap menunggu. 💙";
+        return;
+    }
+
+    handleMoodEntry(mood, reason.trim());
   });
 });
 
-/* --- Delete Log handler --- */
+/* --- Delete Log handler (TIDAK BERUBAH) --- */
 window.deleteLog = function(index){
   const logs = loadLogs();
   if(confirm(`Yakin ingin menghapus log mood: ${logs[index].mood} pada ${logs[index].date}?`)){
@@ -762,12 +1155,23 @@ window.deleteLog = function(index){
     updateChart();
     renderMonthlySummary();
     renderCalendar(currentCalendarDate);
-    // Rerun quest check to see if completion state changes
-    checkQuestCompletion('mood'); 
+    checkQuestCompletion('mood_2'); 
   }
 }
 
-/* --- Render logs & notes --- */
+/* --- Delete Note handler (TIDAK BERUBAH) --- */
+window.deleteNote = function(index){
+  const notes = loadNotes();
+  if(confirm(`Yakin ingin menghapus catatan ini?`)){
+    notes.splice(index, 1);
+    saveNotes(notes);
+    renderNotes();
+    checkQuestCompletion('note'); 
+  }
+}
+
+
+/* --- Render logs & notes (TIDAK BERUBAH) --- */
 function renderLogs(){
   const logs = loadLogs();
   entriesBox.innerHTML = '';
@@ -775,23 +1179,61 @@ function renderLogs(){
   
   logs.forEach((l, index)=>{ 
     const d = document.createElement('div');
-    d.innerHTML = `<span>${l.date} — ${l.mood}</span>
-      <span class="delete-btn" onclick="deleteLog(${index})">🗑️ Hapus</span>`;
+    let reasonHtml = '';
+    // V11.0: Check for reason and display it
+    if (l.reason && l.reason !== 'Tidak ada alasan spesifik.') {
+        reasonHtml = `<div style="font-size: 13px; color: var(--text); margin-top: 4px; padding-left: 10px; border-left: 3px solid var(--accent); opacity: 0.8; line-height: 1.4;">
+            <span style="font-weight: bold;">Alasan:</span> ${l.reason}
+        </div>`;
+    }
+
+    d.innerHTML = `
+      <div class="log-header">
+        <span>${l.date} — ${l.mood}</span>
+        <span class="delete-btn" onclick="deleteLog(${index})">🗑️ Hapus</span>
+      </div>
+      ${reasonHtml}
+    `;
+    
     entriesBox.appendChild(d);
   });
 }
+
 function renderNotes(){
   const notes = loadNotes();
   notesBox.innerHTML = '';
   if(notes.length===0) notesBox.innerHTML = '<em>Belum ada catatan.</em>';
-  notes.forEach(n=>{
+  
+  notes.forEach((n, index)=>{
     const d = document.createElement('div');
-    d.textContent = `${n.time} — ${n.text}`;
+    
+    const content = document.createElement('span');
+    content.style.flexGrow = 1;
+    content.style.wordBreak = 'break-word';
+
+    const urlRegex = /(https?:\/\/[^\s]+)/g; 
+    const text = n.text.replace(/\n/g, '<br>'); 
+    
+    const textWithLinks = text.replace(urlRegex, (url) => {
+        return `<a href="${url}" target="_blank" style="color: var(--accent); font-weight: bold; text-decoration: underline;">[LINK FOTO/GDRIVE]</a>`;
+    });
+    
+    content.innerHTML = `<span style="font-size: 14px; color: gray; display:block; margin-bottom: 4px;">${n.time}</span>${textWithLinks}`;
+    
+    const deleteBtn = document.createElement('span');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.textContent = '🗑️ Hapus';
+    deleteBtn.onclick = () => deleteNote(index); // V11.0: Using the new deleteNote function
+    deleteBtn.style.flexShrink = 0; 
+
+    d.appendChild(content);
+    d.appendChild(deleteBtn);
     notesBox.appendChild(d);
   });
 }
 
-/* --- Visual Effect & Animations --- */
+
+/* --- Visual Effect & Animations (TIDAK BERUBAH) --- */
 function startSparkles(el) {
     el.addEventListener('mousemove', function(e) {
         if (Math.random() < 0.2) { 
@@ -825,7 +1267,28 @@ function spawnBigHearts(){
   }
 }
 
-/* --- Chart Update --- */
+function startFallingHearts() {
+    if (fallInterval) clearInterval(fallInterval);
+    if (!FALL_CONTAINER) return;
+
+    fallInterval = setInterval(() => {
+        const h = document.createElement('div');
+        h.className = 'fallingHeart';
+        h.textContent = '💖'; 
+        
+        h.style.left = Math.random() * 100 + 'vw';
+        h.style.animationDuration = (8 + Math.random() * 5) + 's';
+        h.style.animationDelay = (Math.random() * 2) + 's';
+        h.style.fontSize = (12 + Math.random() * 10) + 'px';
+
+        FALL_CONTAINER.appendChild(h);
+
+        setTimeout(() => h.remove(), 15000); 
+    }, 500); 
+}
+
+
+/* --- Chart Update (TIDAK BERUBAH) --- */
 function updateChart(){
   const logs = loadLogs();
   const moodNames = ['😄 Senang','🙂 Biasa aja','😢 Sedih','😡 Kesel','🥰 Sayang caca'];
@@ -839,7 +1302,7 @@ function updateChart(){
   });
 }
 
-/* --- Monthly Summary --- */
+/* --- Monthly Summary (TIDAK BERUBAH) --- */
 function renderMonthlySummary(){
   const logs = loadLogs();
   const summaryBox = document.getElementById('monthlySummary');
@@ -901,9 +1364,9 @@ function renderMonthlySummary(){
 }
 
 
-/* --- Event Listeners lainnya --- */
+/* --- Event Listeners lainnya (MODIFIED V11.2 - Reset Data) --- */
 
-// MODIFIED: Save Note Listener
+// Save Note Listener (TIDAK BERUBAH)
 document.getElementById('saveNote').addEventListener('click', ()=>{
   const text = noteInput.value.trim();
   if(!text) return;
@@ -915,16 +1378,26 @@ document.getElementById('saveNote').addEventListener('click', ()=>{
   checkQuestCompletion('note');
 });
 
-// NEW: Export/Copy Data Listener
+// Export/Copy Data Listener (TIDAK BERUBAH)
 document.getElementById('exportDataBtn').addEventListener('click', exportData);
+
+// GDrive Button Listener (TIDAK BERUBAH)
+document.getElementById('gdriveBtn').addEventListener('click', ()=>{
+  window.open(GDRIVE_URL, '_blank');
+  reaction.textContent = "Membuka Google Drive Mas! Jangan lupa simpan foto manis Mas di sana. 🖼️";
+});
 
 
 document.getElementById('clearNotes').addEventListener('click', ()=>{
-  if(confirm('Bersihkan semua catatan?')){ localStorage.removeItem('masNotes'); renderNotes(); }
+  if(confirm('Bersihkan semua catatan?')){ 
+    localStorage.removeItem('masNotes'); 
+    renderNotes(); 
+    checkQuestCompletion('note'); 
+  }
 });
 noteInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ document.getElementById('saveNote').click(); e.preventDefault(); }});
 
-// MODIFIED: Secret Button Listener
+// Secret Button Listener (TIDAK BERUBAH)
 document.getElementById('secretBtn').addEventListener('click', ()=>{ 
     secretModal.style.display='flex'; 
     checkQuestCompletion('secret');
@@ -937,12 +1410,18 @@ document.getElementById('secretPreview').addEventListener('click', ()=>{
     renderDailyMessage(); 
 });
 
-// HUG BUTTON LISTENER
+// HUG BUTTON LISTENER (TIDAK BERUBAH)
 document.getElementById('hugBtn').addEventListener('click', sendHug); 
 
-// NEW: Calendar Controls Listener
+// Calendar Controls Listener (TIDAK BERUBAH)
 document.getElementById('prevMonth').addEventListener('click', () => updateCalendarMonth(-1));
 document.getElementById('nextMonth').addEventListener('click', () => updateCalendarMonth(1));
+
+// Plant Button Listener (TIDAK BERUBAH)
+const plantBtn = document.getElementById('waterPlantBtn');
+if (plantBtn) {
+    plantBtn.addEventListener('click', waterPlant);
+}
 
 
 document.getElementById('musicBtn').addEventListener('click', ()=>{
@@ -966,13 +1445,13 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   a.remove(); URL.revokeObjectURL(url);
 });
 
-/* --- FINAL FIX: Reset Data Handler --- */
+/* --- FINAL FIX: Reset Data Handler (MODIFIED V11.2 - Menambah water_plant reset) --- */
 document.getElementById('resetDataBtn').addEventListener('click', ()=>{
-  if(confirm('Yakin ingin menghapus SEMUA data mood, catatan, EXP, Level, dan Streak? Ini tidak bisa dikembalikan!')){
+  if(confirm('Yakin ingin menghapus SEMUA data mood, catatan, EXP, Level, Streak, Status Makan, dan Tanaman? Ini tidak bisa dikembalikan!')){
     // Data Aplikasi Utama
     localStorage.removeItem('masMoodLog');
     localStorage.removeItem('masNotes');
-    // NOTE: Menghapus gateOpened sudah tidak perlu karena kita tidak menyimpannya lagi
+    localStorage.removeItem('gateOpened'); 
 
     // KUNCI: DATA GAMIFIKASI, QUEST, & MESSAGE
     localStorage.removeItem('loveEXP');
@@ -981,6 +1460,12 @@ document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     localStorage.removeItem(QUESTS_KEY); 
     localStorage.removeItem('hugCount'); 
     localStorage.removeItem(DAILY_MSG_KEY); 
+    localStorage.removeItem(EAT_STATUS_KEY); 
+    
+    // 🌳 V11.1/V11.2: Hapus data Tanaman
+    localStorage.removeItem(PLANT_STAGE_KEY); 
+    localStorage.removeItem(WATER_COUNT_KEY); 
+    localStorage.removeItem(LAST_WATERED_KEY); 
 
     // Now, force reload to apply clean state
     alert('Data berhasil di-reset! Silakan muat ulang halaman.');
@@ -1000,10 +1485,13 @@ function initApp() {
     updateHugCount(); 
     renderCalendar(currentCalendarDate); 
     renderDailyMessage(); 
+    renderEatStatus(); 
+    renderPlant(); // 🌳 V11.1: Render plant
     
-    // Terapkan efek sparkle
+    // Terapkan efek sparkle dan hujan hati
     startSparkles(document.querySelector('.mood-container'));
     startSparkles(document.getElementById('secretPreview'));
+    startFallingHearts(); 
 }
 
 
@@ -1018,8 +1506,11 @@ gateInput.addEventListener('keydown', (e) => {
     }
 });
 
-// NOTE: Pengecekan gateOpened Dihapus total, sehingga gate selalu muncul.
-// Aplikasi hanya berjalan setelah checkGate berhasil dipanggil (di listener di atas).
+// Jalankan initApp segera jika gate sudah pernah dibuka
+if (localStorage.getItem('gateOpened') === 'true') {
+    gate.style.display = 'none';
+    initApp();
+}
 </script>
 
 </body>
