@@ -207,6 +207,7 @@
     .plant-card {
         border: 2px solid #5cb85c; /* Green border */
         background-color: #f7fff7; /* Light green background */
+        text-align: center; /* <<< CSS BARU: Membuat konten di tengah */
     }
     .dark .plant-card {
         border: 2px solid #4cae4c;
@@ -252,8 +253,7 @@
     <input type="text" id="gateInput" placeholder="Kode atau Nama Spesial" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 80%; max-width: 300px; margin-bottom: 12px; background: var(--card); color: var(--text);" />
     <button id="gateEnterBtn" class="btn" style="background: var(--accent); color: white;">Masuk ke Tracker</button>
     <p id="gateMsg" style="margin-top: 10px; color: #e74c3c; min-height: 20px;">
-        Jika Mas baru saja mengganti kode, Mas mungkin perlu mengklik ⚠️ **Reset Semua Data** di dalam tracker agar misi harian Mas berjalan lancar!
-    </p>
+        </p>
   </div>
   
   <h1>Mood Tracker Mas 💙</h1>
@@ -298,9 +298,9 @@
   </div>
   
   <div class="card plant-card">
-    <h3>🌱 Pet Plant Caca & Mas</h3>
+    <h3>🌱 Pet Plant Mas & Caca</h3>
     <div id="plantDisplay"></div>
-    <p id="plantMessage">Siram tanaman ini setiap hari agar ia bisa tumbuh menjadi pohon yang besar dan kuat! (Growth sangat lambat: 100 Hari untuk tahap 2)</p>
+    <p id="plantMessage">Status:</p>
     <div style="font-size: 14px; margin-bottom: 5px;">Progress Tumbuh: <span id="currentWaterCount">0</span>/<span id="requiredWaterCount">0</span> Hari</div>
     <div id="plantProgress"><div id="plantProgressFill"></div></div>
     <button id="waterPlantBtn" class="btn" style="background: #5cb85c; margin-top: 15px;">💧 Siram Tanaman Hari Ini</button>
@@ -339,7 +339,7 @@
 
   <div class="card">
     <h3>Catatan Penting dari Mas</h3>
-    <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca? (Bisa paste link Google Drive juga!)"></textarea>
+    <textarea id="noteInput" placeholder="Mas mau nulis apa ke caca?"></textarea>
     <div style="display:flex; gap:8px; margin-top:8px">
       <button id="saveNote" class="btn">Simpan Catatan</button>
       <button id="clearNotes" class="btn secondary">Bersihkan Semua</button>
